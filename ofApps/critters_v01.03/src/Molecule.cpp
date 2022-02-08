@@ -66,7 +66,7 @@ glm::vec2 Molecule::repulsion() {
 		Molecule * other = systemPtr->molecules.at(i);
         glm::vec2 newForce = other->position - position;
         float distance = glm::length(newForce);
-		float threshold = 12.0;
+		float threshold = 25.0;
 
         if( distance > 0 && distance < threshold ){	// check also for > 0 because if its 0 then its checking against itself (because we do not exclude itself from the moleculeSystem pointer)
 

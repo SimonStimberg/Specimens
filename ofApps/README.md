@@ -12,5 +12,9 @@
 
 ###  v01.02
 - a copy of v01.01 with the difference that the molecules in the System class are not saved as pointers but as real instances
-  - found it less confusion and error prone but in the end it turned out not to make any difference, hence the pointer version might be the better choise to avoid memory intense copying of instances
-    
+  - found it less confusing and error prone but in the end it turned out not to make any difference, hence the pointer version might be the better choise to avoid memory intense copying of instances
+
+###  v01.03
+- Iteration of v01.01 (the version with pointers)
+  - added parameter in the molecular system class to control the world size (aka canvas size) from outside - so it no longer depends on the oF canvas size  
+  This is a first step towards the idea of drawing the system to a Frame Buffer which can then be easier send to a micro controller (which controlls a TV)
