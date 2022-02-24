@@ -18,3 +18,13 @@
 - Iteration of v01.01 (the version with pointers)
   - added parameter in the molecular system class to control the world size (aka canvas size) from outside - so it no longer depends on the oF canvas size  
   This is a first step towards the idea of drawing the system to a Frame Buffer which can then be easier send to a micro controller (which controlls a TV)
+
+## v01.04
+- Fullscreen Mode on second monitor to test visual behavior + appearence on plugged CRT screen
+
+## v01.05
+- added a Spring class and connected the Molecules with springs
+
+## v01.06
+- added a flattening force to make the particles align with their neighbors to that they are connected via a string
+  - to smoothen out the particle chains/macro-molecules into rather round curves then zigzag patterns
