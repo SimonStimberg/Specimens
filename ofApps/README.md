@@ -38,13 +38,13 @@
 
 ### v01.08
 - writing a Cell class to organize all molecules that are connected with springs seperately
-- and to handle the creation etc. of a single cell at once
-v01.08.2
+- and to handle the creation etc. of a single cell at once  
+#### v01.08.2
 - alternatively tried to solve the problem without a class
 
 ### v01.09
 - Repulsion works for all molecules against all
 - new function in Molecule class: expansion (aka breathing)
-- reset function for all molecules and cells
-v01.09.2  
+- reset function for all molecules and cells  
+#### v01.09.2  
 - extra window for the GUI
