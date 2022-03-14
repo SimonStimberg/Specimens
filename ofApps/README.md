@@ -19,12 +19,32 @@
   - added parameter in the molecular system class to control the world size (aka canvas size) from outside - so it no longer depends on the oF canvas size  
   This is a first step towards the idea of drawing the system to a Frame Buffer which can then be easier send to a micro controller (which controlls a TV)
 
-## v01.04
+### v01.04
 - Fullscreen Mode on second monitor to test visual behavior + appearence on plugged CRT screen
 
-## v01.05
+### v01.05
 - added a Spring class and connected the Molecules with springs
 
-## v01.06
+### v01.06
 - added a flattening force to make the particles align with their neighbors to that they are connected via a string
   - to smoothen out the particle chains/macro-molecules into rather round curves then zigzag patterns
+
+### v01.07
+- added a Gui to tune the forces in the system
+  - to adjust them between each other to achieve a natural looking behaviour
+    - (in order to later derive constant values from them)
+- made the flattening force propotional to the distance to the desired (completely flat) position
+  - (so the more zig-zaggy the more flattening)
+
+### v01.08
+- writing a Cell class to organize all molecules that are connected with springs seperately
+- and to handle the creation etc. of a single cell at once
+v01.08.2
+- alternatively tried to solve the problem without a class
+
+### v01.09
+- Repulsion works for all molecules against all
+- new function in Molecule class: expansion (aka breathing)
+- reset function for all molecules and cells
+v01.09.2  
+- extra window for the GUI
