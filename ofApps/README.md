@@ -48,3 +48,13 @@
 - reset function for all molecules and cells  
 #### v01.09.2  
 - extra window for the GUI
+
+### v01.10
+- with Serial connection for sending the position values to the ESP
+- failed / discontinued for the moment
+
+### v01.11
+- continuation von v01.09.2
+- added Gravity
+- added curved vertex line for the cells to look round
+- set Framerate to 50fps to be closeer to the TV native framerate (50i) 
