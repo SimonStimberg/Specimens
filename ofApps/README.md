@@ -58,3 +58,11 @@
 - added Gravity
 - added curved vertex line for the cells to look round
 - set Framerate to 50fps to be closeer to the TV native framerate (50i) 
+#### v01.11.2
+- save/load Parameter Presets
+- save by pressing 's' and load by dragging into the preset window
+- hardcoded interchangable default preset
+
+### v01.12
+- increased expansion force (breathing): now cells have the power to breathe under water (pressure) :)
+- mouse interaction: a repulsion force on mouse position
