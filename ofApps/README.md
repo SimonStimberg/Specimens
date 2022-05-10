@@ -66,3 +66,8 @@
 ### v01.12
 - increased expansion force (breathing): now cells have the power to breathe under water (pressure) :)
 - mouse interaction: a repulsion force on mouse position
+
+### v01.13
+- added signed distance functions for boundary checking
+- now every implicit geometry (also combinations) can be used as boundary shape
+- Molecules now live in a roundly shaped vessel, redrawing the curves of a CRT screen
