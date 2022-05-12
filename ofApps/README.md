@@ -74,3 +74,7 @@
 #### v01.13.2
 - added flush: particles can drain through a hole in the ground
 - added mask for TV screen mapping and enhanced mapping interface parameters
+
+### v01.14
+- improved breathing motion + better controls for breathing
+- cells tend less to overlap
