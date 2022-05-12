@@ -71,3 +71,6 @@
 - added signed distance functions for boundary checking
 - now every implicit geometry (also combinations) can be used as boundary shape
 - Molecules now live in a roundly shaped vessel, redrawing the curves of a CRT screen
+#### v01.13.2
+- added flush: particles can drain through a hole in the ground
+- added mask for TV screen mapping and enhanced mapping interface parameters

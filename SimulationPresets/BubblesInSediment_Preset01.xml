@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<group>
+	<Tune_Forces>
+		<Friction>0.96029</Friction>
+		<Repulsion_Radius>27.4783</Repulsion_Radius>
+		<Tune_Repulsion_Force>-1.44928</Tune_Repulsion_Force>
+		<Flattening_min_Thresh>2</Flattening_min_Thresh>
+		<Flattening_Distance>11.9275</Flattening_Distance>
+		<Tune_Flattening_Force_Limit>-3.76812</Tune_Flattening_Force_Limit>
+		<Spring_Length>5.83333</Spring_Length>
+		<Tune_Spring_Elasticity>-5.14493</Tune_Spring_Elasticity>
+		<Tune_Spring_Force_limit>-1.52174</Tune_Spring_Force_limit>
+		<Switch_breathing>0</Switch_breathing>
+	</Tune_Forces>
+</group>

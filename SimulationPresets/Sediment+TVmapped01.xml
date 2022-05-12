@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<group>
+	<Tune_Forces>
+		<Friction>0.96029</Friction>
+		<Repulsion_Radius>27.4783</Repulsion_Radius>
+		<Tune_Repulsion_Force>-1.44928</Tune_Repulsion_Force>
+		<Flattening_min_Thresh>2</Flattening_min_Thresh>
+		<Flattening_Distance>11.9275</Flattening_Distance>
+		<Tune_Flattening_Force_Limit>-3.76812</Tune_Flattening_Force_Limit>
+		<Spring_Length>5.83333</Spring_Length>
+		<Tune_Spring_Elasticity>-5.14493</Tune_Spring_Elasticity>
+		<Tune_Spring_Force_limit>-1.52174</Tune_Spring_Force_limit>
+		<Switch_breathing>0</Switch_breathing>
+		<Interaction_Repul_Radius>62</Interaction_Repul_Radius>
+		<Interaction_Repul_Force>-1</Interaction_Repul_Force>
+	</Tune_Forces>
+	<Tune_Canvas_Shape>
+		<Canvas_Width>342.609</Canvas_Width>
+		<Canvas_Height>273.971</Canvas_Height>
+		<Vertical_Bow>1178.26</Vertical_Bow>
+		<Horizontal_Bow>950</Horizontal_Bow>
+		<Smooth_Edges>20.2174</Smooth_Edges>
+		<X_Position>-7.24638</X_Position>
+		<Y_Position>3.62319</Y_Position>
+		<Rotation>-1.19565</Rotation>
+	</Tune_Canvas_Shape>
+</group>
