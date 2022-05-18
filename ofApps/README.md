@@ -78,3 +78,8 @@
 ### v01.14
 - improved breathing motion + better controls for breathing
 - cells tend less to overlap
+
+### v01.15
+- integrated synth module (ofxPDSP)
+- every cell has a synth voice with a different pitch
+- increasing inflation of the cells opens the filter of the synth voice
