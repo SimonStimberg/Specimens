@@ -83,3 +83,7 @@
 - integrated synth module (ofxPDSP)
 - every cell has a synth voice with a different pitch
 - increasing inflation of the cells opens the filter of the synth voice
+
+### v01.16
+- added Neuron Class
+- adjusted Parameters for Springs etc to fit for Neurons
