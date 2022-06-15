@@ -87,3 +87,7 @@
 ### v01.16
 - added Neuron Class
 - adjusted Parameters for Springs etc to fit for Neurons
+
+### v01.16.2
+- Neurons now have several arm elements
+- debugged some memory errors caused by wrong iterators
