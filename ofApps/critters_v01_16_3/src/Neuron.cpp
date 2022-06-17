@@ -31,7 +31,8 @@ void Neuron::set(int arms, int elements, int x, int y)
     for (int i = 0; i < arms; i++)
     {
         // float radius = 2.5 * arms;
-        float radius = guiPtr->tuneRepulsionThresh;
+        // float radius = guiPtr->tuneRepulsionThresh;
+        float radius = guiPtr->tuneSpringLength;
         float angle = 360.0 / arms * i;
 
         
@@ -71,17 +72,45 @@ void Neuron::update()
         springs[i]->update();
     }
 
+    for (unsigned int i = 0; i < connections.size(); i++)
+    {
+        connections[i]->update();
+    }
+
     for (unsigned int i = 0; i < neuronMolecules.size(); i++)
     {
         neuronMolecules[i]->update();
     }
 }
 
-// //------------------------------------------------------------------
-// void Neuron::update()
-// {
 
-// }
+//------------------------------------------------------------------
+void Neuron::connect(Molecule * moleculeA, Molecule * moleculeB)
+{
+
+    Spring *s = new Spring(systemPtr);
+    s->reset(moleculeA, moleculeB);
+
+    moleculeA->addBonding(moleculeB);
+    moleculeB->addBonding(moleculeA);
+
+    // springs.push_back(s);
+    connections.push_back(s);
+
+
+    // for (int i = 0; i < neuronMolecules.size(); i++) {
+    //     if (neuronMolecules[i]->bondings.size() == 1) {
+
+    //         for (int i = 0; i < systemPtr->neurons.size(); i++) {
+    //             for (int j = 0; j < systemPtr->neurons[i]->neuronMolecules.size(); j++) {
+    //                 if()
+    //             }
+    //         }
+    //     }
+
+    // }
+
+}
 
 
 
@@ -94,6 +123,7 @@ void Neuron::draw()
 
     // ofSetHexColor(0x2bdbe6);
     ofSetColor(63, 255, 208);
+    // ofSetColor(ofColor::greenYellow);
 
     for (int i = 0; i < numDendrites; i++) {
         ofBeginShape();
@@ -118,8 +148,12 @@ void Neuron::draw()
     // {
     //     springs[i]->draw();
     // }
-    // for (unsigned int i = 0; i < neuronMolecules.size(); i++)
-    // {
-    //     neuronMolecules[i]->draw();
-    // }
+    for (unsigned int i = 0; i < neuronMolecules.size(); i++)
+    {
+        neuronMolecules[i]->draw();
+    }
+    for (unsigned int i = 0; i < connections.size(); i++)
+    {
+        connections[i]->draw();
+    }
 }

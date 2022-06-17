@@ -31,7 +31,8 @@ void Neuron::set(int arms, int elements, int x, int y)
     for (int i = 0; i < arms; i++)
     {
         // float radius = 2.5 * arms;
-        float radius = guiPtr->tuneRepulsionThresh;
+        // float radius = guiPtr->tuneRepulsionThresh;
+        float radius = guiPtr->tuneSpringLength;
         float angle = 360.0 / arms * i;
 
         
@@ -71,17 +72,48 @@ void Neuron::update()
         springs[i]->update();
     }
 
+    for (unsigned int i = 0; i < connections.size(); i++)
+    {
+        connections[i]->update();
+    }
+
     for (unsigned int i = 0; i < neuronMolecules.size(); i++)
     {
         neuronMolecules[i]->update();
     }
 }
 
-// //------------------------------------------------------------------
-// void Neuron::update()
-// {
 
-// }
+//------------------------------------------------------------------
+void Neuron::connect(Molecule * myMolecule, Molecule * otherMolecule)
+{
+    Neuron * otherNeuron = otherMolecule->neuronPtr;
+    bool connect = true;
+
+    // check if Me already has a connection with the other Molecule's Neuron - if so DON'T connect
+    for (unsigned int i = 0; i < numDendrites; i++) {
+        int idxArmEnd = i * numElements + numElements;
+        for (unsigned int j = 0; j < neuronMolecules[idxArmEnd]->bondings.size(); j++) {   
+            if (neuronMolecules[idxArmEnd]->bondings[j]->neuronPtr == otherNeuron) { 
+                connect = false; 
+                break; 
+            }
+        }
+        if(!connect) break;
+    }
+
+    if(connect) {
+        Spring *s = new Spring(systemPtr);
+        s->reset(myMolecule, otherMolecule);
+
+        myMolecule->addBonding(otherMolecule);
+        otherMolecule->addBonding(myMolecule);
+
+        // springs.push_back(s);
+        connections.push_back(s);
+    }
+
+}
 
 
 
@@ -93,7 +125,17 @@ void Neuron::draw()
     ofSetLineWidth(3);
 
     // ofSetHexColor(0x2bdbe6);
-    ofSetColor(63, 255, 208);
+    ofSetHexColor(0xfcfdbd);    // very bright yellow
+    // ofSetHexColor(0xd8d97b);    // mellow yellow
+    // ofSetHexColor(0xbfcf55);       // grass green
+    // ofSetHexColor(0x8fb57e);       // mellow grass green
+    // ofSetHexColor(0x69b57e);       // mellow grass green 2
+    
+    
+    
+    
+    // ofSetColor(63, 255, 208);
+    // ofSetColor(ofColor::greenYellow);
 
     for (int i = 0; i < numDendrites; i++) {
         ofBeginShape();
@@ -118,8 +160,12 @@ void Neuron::draw()
     // {
     //     springs[i]->draw();
     // }
-    // for (unsigned int i = 0; i < neuronMolecules.size(); i++)
-    // {
-    //     neuronMolecules[i]->draw();
-    // }
+    for (unsigned int i = 0; i < neuronMolecules.size(); i++)
+    {
+        neuronMolecules[i]->draw();
+    }
+    for (unsigned int i = 0; i < connections.size(); i++)
+    {
+        connections[i]->draw();
+    }
 }

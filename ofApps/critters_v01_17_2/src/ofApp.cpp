@@ -14,9 +14,9 @@ void ofApp::setup() {
     showMask = false;
 
     molSystem.setup(ofGetWidth(), ofGetHeight());
-    molSystem.addCells(15);
-    molSystem.addMolecules(100);
-    molSystem.addNeurons(45);
+    molSystem.addCells(20);
+    molSystem.addMolecules(200);
+    molSystem.addNeurons(35);
 
     // ofLogNotice("fric: " + ofToString(guiPtr->tuneFriction));
     ofLogNotice("Canvas Size: " + ofToString(ofGetWidth()) + "x" + ofToString(ofGetHeight()));

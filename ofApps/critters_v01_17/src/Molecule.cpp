@@ -8,13 +8,13 @@ Molecule::Molecule() {
 	cellPtr = NULL;
 	neuronPtr = NULL;
 
-	
 }
 
 Molecule::Molecule(molecularSystem * system) {
 
 	Molecule();
 	this->systemPtr = system;
+	type = LIQUID;
 	
 }
 
@@ -23,6 +23,7 @@ Molecule::Molecule(molecularSystem * system, Cell * myCell) {
 	Molecule();
 	this->systemPtr = system;
 	this->cellPtr = myCell;
+	type = CELL;
 	
 }
 
@@ -31,6 +32,7 @@ Molecule::Molecule(molecularSystem * system, Neuron * myNeuron) {
 	Molecule();
 	this->systemPtr = system;
 	this->neuronPtr = myNeuron;
+	type = NEURON;
 	
 }
 
@@ -66,6 +68,8 @@ void Molecule::update() {
 
 	friction = guiPtr->tuneFriction;	// GUI Debug
 
+	if(guiPtr->switchConnections) { searchConnection(); }
+
 
     force = glm::vec2(0,0);
 
@@ -100,17 +104,24 @@ void Molecule::draw() {
 
     
 
-	if (bondings.size() > 1 && cellPtr != NULL) {
+	if (bondings.size() > 1 && type == CELL) {
 		if(systemPtr->debugView) {
 			ofFill();
 			ofSetColor(208, 255, 63);
-			ofDrawCircle(position.x, position.y, 3.0);
+			// ofDrawCircle(position.x, position.y, 3.0);
 			// ofSetColor(255, 0, 0);
 			// ofDrawLine(0.0 ,0.0 , debugVector.x, debugVector.y);
-			ofSetColor(ofColor::indianRed);
-			ofDrawCircle(debugVector.x, debugVector.y, 3.0);
+			// ofSetColor(ofColor::indianRed);
+			// ofDrawCircle(debugVector.x, debugVector.y, 3.0);
+			// ofDrawLine(position.x ,position.y , debugVector2.x, debugVector2.y);
 		}
-	} else {
+	} else if (type == NEURON && bondings.size() == 1) {
+		if(systemPtr->debugView) {
+			ofSetColor(ofColor::hotPink);
+			ofDrawLine(position.x ,position.y , debugVector2.x, debugVector2.y);
+		}
+
+	} else if (type == LIQUID) {
 		// ofSetColor(0, 10, 130);
 		ofFill();
 		// ofSetColor(ofColor::deepSkyBlue);
@@ -130,7 +141,10 @@ void Molecule::draw() {
 			col = ofColor::mediumSeaGreen;
 		}
 		// // ofColor col = (debug) ? ofColor::red : ofColor::mediumSeaGreen;
-		ofSetColor(col);
+		// ofSetColor(col);
+		// ofSetHexColor(0x481f82);
+		ofSetHexColor(0x1b9080);
+
 		// ofSetColor(ofColor::darkBlue);
     	ofDrawCircle(position.x, position.y, 3.0);
 
@@ -290,8 +304,8 @@ glm::vec2 Molecule::expansion() {
 
 	glm::vec2 expansionForce(0,0);
 
-	// if (bondings.size() > 1 && ofGetKeyPressed('f') ) {
-	if (bondings.size() == 2 && cellPtr != NULL && guiPtr->switchOscillation ) {
+
+	if (bondings.size() == 2 && type == CELL && guiPtr->switchOscillation ) {
 
 		// get the position of the center of the cell aka the average position
 		glm::vec2 averagePos(0,0);
@@ -322,8 +336,14 @@ glm::vec2 Molecule::expansion() {
 		float freqMultiplier = ofMap(cellPtr->cellMolecules.size(), 13, 31, 2.0, 0.5);
 		// float phaseShift = ofRandom(3.14159);
 
+
+		float oscillate = 0.0;
 		// float oscillate = (sin(ofGetElapsedTimef())+1) * 0.5;  // oscillate between 0. and 1.
-		float oscillate = sin(ofGetElapsedTimef() * freqMultiplier) * guiPtr->tuneOscillationAmount + guiPtr->tuneOscillationAmount*0.5;	// oscillate between -0.5 and 1.5
+		if (cellPtr->cellMolecules.size() > 14) {
+			oscillate = sin(ofGetElapsedTimef() * freqMultiplier) * guiPtr->tuneOscillationAmount + guiPtr->tuneOscillationAmount*0.5;	// oscillate between -0.5 and 1.5
+		} else {
+			oscillate = (ofGetElapsedTimeMillis() % (int)(2000*freqMultiplier) <= 300) ? -0.05 : 0.01;	// oscillate between 0.04 : -0.005
+		}
 		expansionForce *= oscillate;
     	// ofLogNotice(ofToString(oscillate));
 
@@ -331,6 +351,55 @@ glm::vec2 Molecule::expansion() {
 	}
 
 	return expansionForce;
+}
+
+
+//------------------------------------------------------------------
+void Molecule::searchConnection() { 
+
+	// if Me is part of a Neuron and Me only has 1 bonding (-> end Molecules of a Neuron arm)
+	if(type == NEURON  &&  bondings.size() == 1) {
+
+		bool found = false;
+		debugVector2 = position;
+		// debugVector2 = glm::vec2(0, 0);
+
+		// check against all Neurons in the system
+		for (int i = 0; i < systemPtr->neurons.size(); i++) {
+
+			// excluding my own Neuron
+			if (systemPtr->neurons[i] != neuronPtr) {
+
+				// check against all Molecules in that Neuron
+				for (int j = 0; j < systemPtr->neurons[i]->neuronMolecules.size(); j++) {
+
+					int numBondings = systemPtr->neurons[i]->neuronMolecules[j]->bondings.size();
+					
+					// check if the Molecule is either an end Molecule of an arm (bondings = 1) or a middle joint (bondings = 3) and it is not Myself (!)
+					if ( (numBondings == 1) && systemPtr->neurons[i]->neuronMolecules[j]->position != position) {	// || numBondings == 3   -> to include middle joints
+
+						Molecule * other = systemPtr->neurons[i]->neuronMolecules.at(j);
+						glm::vec2 newForce = other->position - position;
+						float distance = glm::length(newForce);					
+						// float thresholdRadius = (numBondings == 3) ? 25.0 : 35.0;
+						float thresholdRadius = guiPtr->tuneRepulsionThresh + 5;
+
+						// if this is all true and the other Molecule is within a closer reach -> connect us!
+						if(distance < thresholdRadius && !found) {
+
+							debugVector2 = other->position;
+							found = true;
+							neuronPtr->connect(this, other);
+							break;			
+
+						} 
+					}
+				}
+			}
+
+			if (found) { break; }
+		}
+	}
 }
 
 

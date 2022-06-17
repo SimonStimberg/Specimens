@@ -36,15 +36,20 @@ class Neuron{
         Neuron(molecularSystem * system);
 
         void set(int arms, int elements, int x, int y);
+        void connect(Molecule * myMolecule, Molecule * otherMolecule);
+        void grow();
         void update();
         void draw();
 
         molecularSystem * systemPtr;
 
         vector <Molecule *> neuronMolecules;
+        vector <vector <Molecule *>> dendrites;
         vector <Spring *> springs;
-        int numDendrites;
-        int numElements;
+        vector <Spring *> connections;
+        // int numDendrites;
+        int maxArmElements;
+        int nextGrowth;
 
 
     private:

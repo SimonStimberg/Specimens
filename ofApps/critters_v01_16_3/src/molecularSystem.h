@@ -36,6 +36,7 @@ class Neuron{
         Neuron(molecularSystem * system);
 
         void set(int arms, int elements, int x, int y);
+        void connect(Molecule * moleculeA, Molecule * moleculeB);
         void update();
         void draw();
 
@@ -43,6 +44,7 @@ class Neuron{
 
         vector <Molecule *> neuronMolecules;
         vector <Spring *> springs;
+        vector <Spring *> connections;
         int numDendrites;
         int numElements;
 

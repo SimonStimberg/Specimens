@@ -8,14 +8,15 @@
 		<Flattening_Distance>11.9275</Flattening_Distance>
 		<Tune_Flattening_Force_Limit>-3.76812</Tune_Flattening_Force_Limit>
 		<Spring_Length>10.0362</Spring_Length>
-		<Tune_Spring_Elasticity>-4.63768</Tune_Spring_Elasticity>
+		<Tune_Spring_Elasticity>-3.18841</Tune_Spring_Elasticity>
 		<Tune_Spring_Force_limit>2.97101</Tune_Spring_Force_limit>
 		<Switch_breathing>1</Switch_breathing>
-		<Tune_Expansion_Force>3.18841</Tune_Expansion_Force>
-		<Tune_Expansion_Radius_Factor>3.43478</Tune_Expansion_Radius_Factor>
-		<Tune_Oscillation_Amount>0.0398551</Tune_Oscillation_Amount>
+		<Tune_Expansion_Force>2.82609</Tune_Expansion_Force>
+		<Tune_Expansion_Radius_Factor>3.92754</Tune_Expansion_Radius_Factor>
+		<Tune_Oscillation_Amount>0.0608696</Tune_Oscillation_Amount>
 		<Interaction_Repul_Radius>62</Interaction_Repul_Radius>
 		<Interaction_Repul_Force>-1.00181</Interaction_Repul_Force>
+		<Switch_connections>1</Switch_connections>
 	</Tune_Forces>
 	<Tune_Canvas_Shape>
 		<Canvas_Width>338.551</Canvas_Width>

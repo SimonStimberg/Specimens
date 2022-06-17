@@ -89,5 +89,19 @@
 - adjusted Parameters for Springs etc to fit for Neurons
 
 ### v01.16.2
-- Neurons now have several arm elements
+- Neurons now have several arm elements that are drawn by curved lines
 - debugged some memory errors caused by wrong iterators
+
+### v01.16.3
+- added Neuron connectivity
+  - Neuron arms connect to others on command and form a net
+- added enum Molecule type name
+- added basic heartbeat movement fore smaller Cells
+
+### v01.17
+- Neuron no longer connect twice to the same Neuron -> more networking
+- new color scheme (partly sticked to the old)
+
+### v01.17
+- added Neuron growth
+- their arms grow until they reach a max number of elements or being connected to another neuron

@@ -142,8 +142,8 @@ void molecularSystem::addNeurons(int num) {
             int x = ofRandom(-worldSize.x*0.4, worldSize.x*0.4);
             int y = ofRandom(-worldSize.y*0.4, worldSize.y*0.4);
             int arms = 3;
-            // int arms = ofRandom(3, 6);
-            int elements = 2;
+            // int arms = floor(ofRandom(3, 6));
+            int elements = 1;
 
 
             Neuron * n = new Neuron(this);

@@ -67,23 +67,24 @@ void ofApp::draw(){
         for (int x = 0; x < ofGetWidth(); x += xStep) {
             int red   = (256 / 7) * (y / yStep);
             int green = (256 / 7) * (x / xStep);
-            ofSetColor(red, green, blueStep);
+            // ofSetColor(red, green, blueStep);
+            ofSetColor(red, green, blue);
             ofDrawRectangle(x, y, xStep, yStep);
         }
     }
 
-    if (blueStep >= 255) {
-        changeBlueBy = -1;
-    } else if (blueStep < 1) {
-        changeBlueBy = 1;
-    }
+    // if (blueStep >= 255) {
+    //     changeBlueBy = -1;
+    // } else if (blueStep < 1) {
+    //     changeBlueBy = 1;
+    // }
 
-    blueStep += changeBlueBy;
+    // blueStep += changeBlueBy;
     
-    // blueStep++;
-    // blueStep = blueStep > 3 ? 0 : blueStep;
+    blueStep++;
+    blueStep = blueStep > 3 ? 0 : blueStep;
 
-    // ofSleepMillis(1000);
+    ofSleepMillis(1000);
 
     // ofSetColor(255);
     // ofDrawCircle(50, 50, 20);
