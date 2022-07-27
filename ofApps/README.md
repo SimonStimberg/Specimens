@@ -102,6 +102,10 @@
 - Neuron no longer connect twice to the same Neuron -> more networking
 - new color scheme (partly sticked to the old)
 
-### v01.17
+### v01.17.2
 - added Neuron growth
 - their arms grow until they reach a max number of elements or being connected to another neuron
+
+### v01.17.3
+- added Kinect "touch interaction"
+- the audience can move their hands in front of the screen and their finger positions serve as interaction points towards the system

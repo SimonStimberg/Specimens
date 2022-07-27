@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<group>
+	<Tune_Forces>
+		<Friction>0.96029</Friction>
+		<Repulsion_Radius>27</Repulsion_Radius>
+		<Tune_Repulsion_Force>-1.44928</Tune_Repulsion_Force>
+		<Flattening_min_Thresh>2</Flattening_min_Thresh>
+		<Flattening_Distance>11.9275</Flattening_Distance>
+		<Tune_Flattening_Force_Limit>-3.76812</Tune_Flattening_Force_Limit>
+		<Spring_Length>10.0362</Spring_Length>
+		<Tune_Spring_Elasticity>-4.63768</Tune_Spring_Elasticity>
+		<Tune_Spring_Force_limit>2.97101</Tune_Spring_Force_limit>
+		<Switch_breathing>1</Switch_breathing>
+		<Tune_Expansion_Force>3.18841</Tune_Expansion_Force>
+		<Tune_Expansion_Radius_Factor>3.43478</Tune_Expansion_Radius_Factor>
+		<Tune_Oscillation_Amount>0.0398551</Tune_Oscillation_Amount>
+		<Interaction_Repul_Radius>70.6522</Interaction_Repul_Radius>
+		<Interaction_Repul_Force>-0.85</Interaction_Repul_Force>
+		<Switch_connections>0</Switch_connections>
+	</Tune_Forces>
+	<Tune_Canvas_Shape>
+		<Canvas_Width>338.551</Canvas_Width>
+		<Canvas_Height>267.913</Canvas_Height>
+		<Vertical_Bow>1254.35</Vertical_Bow>
+		<Horizontal_Bow>950.127</Horizontal_Bow>
+		<Smooth_Edges>20.2174</Smooth_Edges>
+		<X_Position>-3.26087</X_Position>
+		<Y_Position>3.62319</Y_Position>
+		<Rotation>-0.652174</Rotation>
+	</Tune_Canvas_Shape>
+	<General_Settings>
+		<Kinect_Calibration_Mode>0</Kinect_Calibration_Mode>
+		<Screen_Mask_Calibration_Mode>0</Screen_Mask_Calibration_Mode>
+	</General_Settings>
+</group>
