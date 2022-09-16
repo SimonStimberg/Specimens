@@ -109,3 +109,12 @@
 ### v01.17.3
 - added Kinect "touch interaction"
 - the audience can move their hands in front of the screen and their finger positions serve as interaction points towards the system
+
+### v01.18
+- added Intestine class
+- some general restructuring: a folder structure for the source files
+- fallback Mouse Interference
+
+### v01.18.2
+- added different Spring types for the Intestine
+- reworked the Spring Class with types and added appropriate parameters to the Gui app
