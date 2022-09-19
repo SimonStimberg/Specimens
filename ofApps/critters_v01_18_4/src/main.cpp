@@ -10,10 +10,10 @@ int main( ){
 
     settings.setSize(720, 576);
 	settings.resizable = false;
-	// settings.setPosition(glm::vec2(600,0));
-	// settings.windowMode = OF_WINDOW; 	// OF_GAME_MODE;	// OF_FULLSCREEN
-	settings.windowMode = OF_FULLSCREEN;
-	settings.monitor = 1;
+	settings.setPosition(glm::vec2(600,0));
+	settings.windowMode = OF_WINDOW; 	// OF_GAME_MODE;	// OF_FULLSCREEN
+	// settings.windowMode = OF_FULLSCREEN;
+	// settings.monitor = 1;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
 
 	settings.setSize(600, 800);

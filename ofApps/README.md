@@ -118,3 +118,16 @@
 ### v01.18.2
 - added different Spring types for the Intestine
 - reworked the Spring Class with types and added appropriate parameters to the Gui app
+
+### v01.18.3
+- implemented Intestine growth
+- with new grown elements being added at the end
+
+### v01.18.4
+- to make the growth more natural, the adding of a new Intestine element (newly grown) should be added somewhere in the middle
+- tried to implement it the real way, to splice in new molecules in between of the array, turned out super complicated
+
+### v01.18.5
+- solved the "grow in the middle" problem with a work-around
+- a new element is added at the end, and the elements shift their position to the element before until the shift reaches a point in the middle
+- the look is the same as the method above but with way less hustle
