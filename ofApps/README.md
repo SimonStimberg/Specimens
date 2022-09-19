@@ -131,3 +131,11 @@
 - solved the "grow in the middle" problem with a work-around
 - a new element is added at the end, and the elements shift their position to the element before until the shift reaches a point in the middle
 - the look is the same as the method above but with way less hustle
+
+### v01.19
+- experiments with new organism forms in the class "Gland"
+- different variations of Cell combinations/alterations but nothing satisfying
+
+### v01.19.2
+- just altered the breathing Cell into a new form with an additional Spring - the rest stays the same (-> no Gland class)
+- created an own header file for the organisms header directives
