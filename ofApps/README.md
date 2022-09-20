@@ -139,3 +139,14 @@
 ### v01.19.2
 - just altered the breathing Cell into a new form with an additional Spring - the rest stays the same (-> no Gland class)
 - created an own header file for the organisms header directives
+
+### v01.20
+- implemented Cell growth
+- Springs have a disconnect function
+
+### v01.20.2
+- introduced Cell sub-types: Breathers + Pumpers
+- adjusted the behavior functions accordingly
+
+### v01.20.3
+- moved the expansion/inflation function from the Molecule class to the Cell class
