@@ -150,3 +150,30 @@
 
 ### v01.20.3
 - moved the expansion/inflation function from the Molecule class to the Cell class
+
+### v01.21
+- split up the Cell class into subTypes of Breathers and Pumpers
+- reworked the getInflation function into depending on the idle length of the springs
+- changed the synth to have an addVoice function
+- added a Voice module input for gain
+
+### v01.21.2
+- solved the problem on Voice resetting its patching once the vector of voices is resized
+- on addVoice it iterates over all Voices repatching them
+- the Voice's pitches are saved in a vector in the synth class and are restored that way
+
+### v01.21.3
+- bypassed the effect chain temporarily which was resulting in low gain
+- added a vector with valueControls for controlling all the Voices gain inputs with smoothing
+- introduced decibel scaling (hence logarithmical scaling) for controling the gain of the voices by the inflation values
+
+### v01.21.4
+- several valueControls and custom inTags for the voices
+- to control gain, cutoff and pitch
+- adjusted the getInflation scaling/mapping
+- added color change (saturation+brightness) of Cells according to Inflation
+- added again slightly Chorus + Delay to the sum to brighten up the sound
+
+### v01.21.5
+- added rhythmic modulation via an LFO that triggers an Envelope
+- inflation is mapped to LFO frequency
