@@ -391,8 +391,8 @@ glm::vec2 Molecule::gravity() {
     // steer *= (1.0 - drag);
 
 	// return glm::vec2(0.02, 0.02);
-	return glm::vec2(0.02, 0);
-    // return glm::vec2(0, 0.02);
+	// return glm::vec2(0.02, 0);
+    return glm::vec2(0, 0.02);
 }
 
 

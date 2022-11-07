@@ -177,3 +177,14 @@
 ### v01.21.5
 - added rhythmic modulation via an LFO that triggers an Envelope
 - inflation is mapped to LFO frequency
+
+### v01.22
+- started to implement Neuron signal firing
+
+### v01.22.1
+- Neuron signaling works on one Dendrite each if it is connected
+
+### v01.22.2
+- signaling works accros the Dentrites of both connected Neurons
+- there is a Signal path of Molecules stored that the signal can follow
+- only mature Neurons will connect

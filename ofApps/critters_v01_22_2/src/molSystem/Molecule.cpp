@@ -321,8 +321,8 @@ glm::vec2 Molecule::flattening() {
 //------------------------------------------------------------------
 void Molecule::searchConnection() { 
 
-	// if Me is part of a Neuron and Me only has 1 bonding (-> end Molecules of a Neuron arm)
-	if(type == NEURON  &&  bondings.size() == 1) {
+	// if Me is part of a Neuron AND Me only has 1 bonding (-> end Molecules of a Neuron arm)	AND my Neuron is mature (full grown)
+	if(type == NEURON  &&  bondings.size() == 1 && neuronPtr->mature) {		// && bondings[0]->bondings.size() < 3	-> to check if Me is not the end of a very virgin Dendrite
 
 		bool found = false;
 		debugVector2 = position;
@@ -340,7 +340,7 @@ void Molecule::searchConnection() {
 					int numBondings = systemPtr->neurons[i]->neuronMolecules[j]->bondings.size();
 					
 					// check if the Molecule is either an end Molecule of an arm (bondings = 1) or a middle joint (bondings = 3) and it is not Myself (!)
-					if ( (numBondings == 1) && systemPtr->neurons[i]->neuronMolecules[j]->position != position) {	// || numBondings == 3   -> to include middle joints
+					if ( (numBondings == 1) && systemPtr->neurons[i]->mature && systemPtr->neurons[i]->neuronMolecules[j]->position != position) {	// || numBondings == 3   -> to include middle joints
 
 						Molecule * other = systemPtr->neurons[i]->neuronMolecules.at(j);
 						glm::vec2 newForce = other->position - position;
@@ -391,8 +391,8 @@ glm::vec2 Molecule::gravity() {
     // steer *= (1.0 - drag);
 
 	// return glm::vec2(0.02, 0.02);
-	return glm::vec2(0.02, 0);
-    // return glm::vec2(0, 0.02);
+	// return glm::vec2(0.02, 0);
+    return glm::vec2(0, 0.02);
 }
 
 
