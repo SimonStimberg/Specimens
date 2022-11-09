@@ -23,7 +23,7 @@
 		<Membrane_Elasticity>-5.72464</Membrane_Elasticity>
 		<Membrane_Force_limit>1.95652</Membrane_Force_limit>
 		<Structure_Length>15.7101</Structure_Length>
-		<Structure_Elasticity>-2.10145</Structure_Elasticity>
+		<Structure_Elasticity>-4.05797</Structure_Elasticity>
 		<Structure_Force_limit>2.90942</Structure_Force_limit>
 		<Membrane_Color>228, 145, 164, 255</Membrane_Color>
 	</Tune_Intestine_Shape>

@@ -188,3 +188,29 @@
 - signaling works accros the Dentrites of both connected Neurons
 - there is a Signal path of Molecules stored that the signal can follow
 - only mature Neurons will connect
+
+### v01.23
+- added a digesting function to the Intestines
+- simply pushing the surrounding molecules into the perpendicular direction
+
+### v01.23.2
+- attempt for a more smooth digesting visualisation
+- dependent on the distance to the food in the tunnel, the displacement is made 
+- result was not significantly more smooth - but needs way more calculation
+
+### v01.23.3
+- continuation of v01.23 with the previous digestion approach
+- redesign of the molecularSystem, having a global function to add organisms defined by a type and a number of amount
+- the single add functions are adding only one instance at a specific point
+- changed the enums, since there was a global conflict
+
+### v01.23.4
+- added digestionStatus function for retrieveing the status of the digestion
+- mapped food size and color to the digestion status
+- changed the Cell to start inflation always on a fresh sine cycle
+- defined the condition for the Cell to die when it inflates to much
+
+### v01.24
+- added remove mechanism in the molecularSystem class
+- added remove function for Breather Cells
+- renamed molecules to allMolecules in molecularSystem class
