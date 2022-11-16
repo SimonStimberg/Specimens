@@ -214,3 +214,11 @@
 - added remove mechanism in the molecularSystem class
 - added remove function for Breather Cells
 - renamed molecules to allMolecules in molecularSystem class
+
+### v01.24.2
+- made Cells spawn several Neurons on death
+- added remove mechanism also to the Pumpers and Intestines
+
+### v01.24.3
+- remove mechanism also for Neurons
+- moved the inter-Neuron connections into the higher-ordered molecularSystem class
