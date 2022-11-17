@@ -222,3 +222,17 @@
 ### v01.24.3
 - remove mechanism also for Neurons
 - moved the inter-Neuron connections into the higher-ordered molecularSystem class
+
+### v01.25
+- GUI access for Organism growth + behavior (ongoing implementation)
+- easy organism spawn through num keys
+
+### v01.25.2
+- Neurons die after amount of signals, the interval shortens towards end
+- also Neurons are now shaking, when they fire a signal
+- hacky implementation to compensate the phase shift that occurs if the inflation frequency is changed
+
+### v01.25.3
+- added cycle count to the Cells
+- inflation frequency is mapped to the numbers of cycles relative to some max cycle value
+- the cell explodes after a defined maximum cycles
