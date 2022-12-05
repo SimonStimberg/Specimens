@@ -5,3 +5,5 @@
 https://github.com/SimonStimberg/CRT-critters/wiki/Generative-Ecosystem
 ##### Designing Sonifications:  
 https://github.com/SimonStimberg/CRT-critters/wiki/Sonification
+##### Working on Multi Screen Setup:
+https://github.com/SimonStimberg/CRT-critters/wiki/Multi-Screen-Solution
