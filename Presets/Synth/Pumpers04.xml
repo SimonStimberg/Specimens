@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<master_gain>-7</master_gain>
+	<BREATHERS>
+		<fine_tune_Sine-Osc>0.078125</fine_tune_Sine-Osc>
+		<Oscillator_Mix>0.5</Oscillator_Mix>
+		<Pulse_Width>0.5</Pulse_Width>
+		<PWM_amount>0.0729167</PWM_amount>
+		<PWM_speed__hz_>0.3</PWM_speed__hz_>
+		<Filter_cutoff>69</Filter_cutoff>
+		<Filter_resonance>0.352041</Filter_resonance>
+	</BREATHERS>
+	<PUMPERS>
+		<gain>-13</gain>
+		<pitch>33</pitch>
+		<pitch_env>26</pitch_env>
+		<p_env_attack>11</p_env_attack>
+		<p_env_release>60</p_env_release>
+		<p_env_dyn_amt>0.494898</p_env_dyn_amt>
+		<feedback>0.0994898</feedback>
+		<env_to_fb>0.057398</env_to_fb>
+		<attack>26</attack>
+		<hold>45</hold>
+		<release>165</release>
+		<Control_Params>
+			<Impulse_attack>22</Impulse_attack>
+			<Impulsehold>300</Impulsehold>
+			<Impulse_release>600</Impulse_release>
+			<Impulse_Amount>0.06875</Impulse_Amount>
+		</Control_Params>
+	</PUMPERS>
+</SYNTH>

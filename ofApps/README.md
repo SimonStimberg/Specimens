@@ -236,3 +236,44 @@
 - added cycle count to the Cells
 - inflation frequency is mapped to the numbers of cycles relative to some max cycle value
 - the cell explodes after a defined maximum cycles
+
+### v01.26
+- implemented multiple screens/vessels
+- the canvas tune parameters for translation was moved into the signed distance function as well 
+
+### v01.26.2
+- added individual masks for each screen 
+
+### v01.26.3
+- moved Canvas Tune Gui into the molecularSystem calls - now every Screen has its own mask
+- added anti-aliasing for FBOs
+
+### v01.26.4
+- replaced the lenght() calls in the code by squared length functions where possible (only 3. still left: 7)
+- added screen size factor array for convenience
+
+### v01.26.5
+- added bools for the deletion routine to iterate only over the organisms that are to be deleted
+- optimized more length() calls 
+
+### v01.27
+- divided the voice class into an extra class (instead of an embedded subclass of the synth class)
+- made connection from organism to a voice via a Pointer to directly control its parameters 
+- deleted all ui references from the voice class -> shall be controlled via the module inputs
+
+### v01.27.2
+- every cell has its own Voice instance -> no more synth class with a resizing vector
+- the voices are summed in a masterBus in the molSystem, then summed in the ofApp for output
+
+### v01.27.3
+- made the synth voices globally controllable via the GUI
+
+### v01.27.4
+- voices are now audioModules
+- created a Pumpers audioModule based on the sinePercussion by Nikola Pisanti
+- split the Cell Class into a separate Pumpers class
+
+### v01.27.5
+- Pumpers Highlight color on impulse
+- Pumper control impulse rate + die after impulse count
+- global FX channel with Chorus+Delay on ofApp level
