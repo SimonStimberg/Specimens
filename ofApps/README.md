@@ -277,3 +277,31 @@
 - Pumpers Highlight color on impulse
 - Pumper control impulse rate + die after impulse count
 - global FX channel with Chorus+Delay on ofApp level
+
+### vß1.27.6
+- workaround for Pumpers delay problem
+- new audioModule for Neurons
+
+### v01.27.7
+- audioModule for Intestines
+- audio disconnect at death to avoid segmentation fault error
+
+### v01.27.8
+- more complex gravity and brownian motion on particles
+- organisms are spawned at the top of the screen
+
+### v01.28
+- detune Breathers depending on SystemPressure (amount of molecules in vessel)
+
+
+### v01.28.2
+- individual sends for Chorus+Delay for each organism synth
+- discontinued!
+
+### v01.28.3
+- rotation of canvas for simulation of upright TV
+- retuned Breathers shape and breathing motion (own parameters)
+
+### v01.29.4
+- Breather inflation controlled by audioModule
+- improvements and tweaks on the Breather behavior
