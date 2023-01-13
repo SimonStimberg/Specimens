@@ -168,8 +168,8 @@ void ofApp::update() {
 void ofApp::draw(){
 
     ofPushMatrix();
-        ofTranslate(600, 0);
-        ofRotateDeg(90);
+        // ofTranslate(600, 0);
+        // ofRotateDeg(90);
         
         for (int i = 0; i < numScreens; i++) {
             int xShift = i * screenResolution.x;
@@ -253,7 +253,7 @@ void ofApp::initSynth() {
 
      //------------SETUPS AND START AUDIO-------------
     engine.listDevices();
-    engine.setDeviceID(5); // REMEMBER TO SET THIS AT THE RIGHT INDEX!!!!
+    engine.setDeviceID(4); // REMEMBER TO SET THIS AT THE RIGHT INDEX!!!!
     engine.setChannels (0, 4);
     engine.setup( 44100, 512, 3); 
 

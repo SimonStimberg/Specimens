@@ -46,7 +46,7 @@ void GuiApp::setup(){
     guiBreather.setName("Tune Breather Shape");
     guiBreather.add(tuneBreatherExpansionForce.set("Tune Expansion Force", 0.0, -10., 10.));
     guiBreather.add(tuneBreatherExpansionRadius.set("Tune Expansion Radius Factor", 25.0, 1., 80.));
-    guiBreather.add(tuneBreatherOscillationAmount.set("Tune Oscillation Amount", 0.1, 0., .2));
+    guiBreather.add(tuneBreatherOscillationAmount.set("Tune Oscillation Amount", 0.1, 0., 1.0));
     guiBreather.add(tuneJointLength.set("Joint Length", 22.0, 1., 30.));
     guiBreather.add(tuneJointElasticity.set("Joint Elasticity", -5., -10, 10));
     guiBreather.add(tuneJointLimitForce.set("Joint Force limit", 0, -10, 10));

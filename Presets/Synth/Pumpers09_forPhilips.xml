@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<PUMPERS>
+		<gain>-3</gain>
+		<pitch>41</pitch>
+		<pitch_env>45</pitch_env>
+		<p_env_attack>1</p_env_attack>
+		<p_env_release>52</p_env_release>
+		<p_env_dyn_amt>0.5</p_env_dyn_amt>
+		<feedback>0.0586735</feedback>
+		<env_to_fb>0.0382653</env_to_fb>
+		<attack>15</attack>
+		<hold>38</hold>
+		<release>83</release>
+		<Control_Params>
+			<Impulse_attack>22</Impulse_attack>
+			<Impulsehold>300</Impulsehold>
+			<Impulse_release>600</Impulse_release>
+			<Impulse_Amount>0.05625</Impulse_Amount>
+		</Control_Params>
+	</PUMPERS>
+</SYNTH>

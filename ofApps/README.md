@@ -302,6 +302,20 @@
 - rotation of canvas for simulation of upright TV
 - retuned Breathers shape and breathing motion (own parameters)
 
-### v01.29.4
+### v01.28.4
 - Breather inflation controlled by audioModule
 - improvements and tweaks on the Breather behavior
+
+### v01.28.5
+- audio effects for System collapse
+- added FX from nppatches to the SynthFX collection.
+
+### v01.29
+- implemented firefly algorithm to the Neurons
+
+### v01.29.2
+- sync algorithm for the pumpers (to half the phase)
+
+### v01.29.3
+- applied sync mechanism also between the pumpers and Neurons + Intestines
+- first implementation of "delete me if im out of the screen"

@@ -58,7 +58,7 @@
 		</Cells>
 		<Neurons>
 			<Neuron_Grow_Speed>500</Neuron_Grow_Speed>
-			<Neuron_Signal_Inteval>1500</Neuron_Signal_Inteval>
+			<Neuron_Signal_Inteval>2000</Neuron_Signal_Inteval>
 		</Neurons>
 		<Intestines>
 			<Intestine_Grow_Interval>2000</Intestine_Grow_Interval>
