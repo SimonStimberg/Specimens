@@ -19,7 +19,7 @@ void molecularSystem::setup(int width, int height) {
     std::fill_n (organismsToRemove, 5, false);
     thereAreCadavers = false;
     doNotDigest = false;
-    collapseThreshold = 1300;
+    collapseThreshold = 600;
 
     setGui();
 

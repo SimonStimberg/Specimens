@@ -42,7 +42,7 @@ void GuiApp::setup(){
     loadPreset(defaultSimulationPreset, 1);
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/HitachiTubeCalibration.xml";
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/PhilipsCalibrationVertical.xml";
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/2screens_Philips+Hitachi_01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_Philips+Hitachi_01.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 
@@ -330,7 +330,12 @@ void GuiApp::draw(){
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
     // ofSetWindowTitle("fps: " + ofToString(ofGetFrameRate()) + " | numMolecules: " + ofToString(mainPtr->molSystem->allMolecules.size()));
 
-    string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(mainPtr->molSystem->allMolecules.size());
+    int numMolecules = 0;
+    for (int i = 0; i < mainPtr->numScreens; i++) {
+        numMolecules += mainPtr->molSystem[i].allMolecules.size();
+    }
+
+    string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules);
     ofDrawBitmapString(infoTxt, 20, ofGetHeight()-50);
 
 	gui.draw();
@@ -395,7 +400,11 @@ void GuiApp::keyPressed(int key)
     }
     if (key == '5')   mainPtr->molSystem[1].addOrganisms(INTESTINE, 1);
     if (key == '6')   mainPtr->molSystem[0].addOrganisms(LIQUID,   50);
-    if (key == '7')   mainPtr->molSystem[0].addOrganisms(INTESTINE, 1);
+    if (key == '7')   {
+        for (int i = 0; i < mainPtr->numScreens; i++) {
+            mainPtr->molSystem[i].addOrganisms(INTESTINE, 1);
+        }
+    }
     if (key == '8')   mainPtr->molSystem[0].addOrganisms(BREATHER,  1);
     if (key == '9')   mainPtr->molSystem[0].addOrganisms(PUMPER,    1);
     if (key == '0')   mainPtr->molSystem[0].addOrganisms(NEURON,    1);

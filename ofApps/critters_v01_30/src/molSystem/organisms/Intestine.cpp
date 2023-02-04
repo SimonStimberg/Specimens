@@ -343,11 +343,11 @@ void Intestine::digest()
             systemPtr->doNotDigest = false;
             nextDigestion = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));    // choose the next signal timestamp 
 
-            if( floor( ofRandom(2)) == 0) {
-                systemPtr->addBreather(digestionPos.x, digestionPos.y);
-            } else {
-                systemPtr->addPumper(digestionPos.x, digestionPos.y);
-            }
+            // if( floor( ofRandom(2)) == 0) {
+            //     systemPtr->addBreather(digestionPos.x, digestionPos.y);
+            // } else {
+            //     systemPtr->addPumper(digestionPos.x, digestionPos.y);
+            // }
 
             soundCtrl.off();
 

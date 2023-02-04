@@ -37,7 +37,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 
-		static const int numScreens = 2;
+		static const int numScreens = 4;
 		glm::vec2 screenResolution;
 		ofFbo vessel[numScreens];
 

@@ -1,6 +1,6 @@
 #include "ofApp.h"
 
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;
@@ -27,7 +27,9 @@ void ofApp::setup() {
 
     // set the desired vessel sizes by shrinking the native resolution by a custom factor
     screenSizeFactor[0] = 0.8 * 0.85;          // make this screen 80% the size of the native resolution 800px -> 640px
-    screenSizeFactor[1] = 0.8;   // make the smaller screen even only 85% of the bigger screen to match the perceived size
+    screenSizeFactor[1] = 0.8 * 0.85;   // make the smaller screen even only 85% of the bigger screen to match the perceived size
+    screenSizeFactor[2] = 0.8 * 0.85;
+    screenSizeFactor[3] = 0.8;
 
 
     for (int i = 0; i < numScreens; i++) {
@@ -49,13 +51,13 @@ void ofApp::setup() {
         molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
         molSystem[i].masterBus.ch(1) >> sumBus.ch(i);       // channel2: pumpers
         molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
-        molSystem[i].masterBus.ch(3) >> sumBus.ch(i);       // channel3: intestines
+        molSystem[i].masterBus.ch(3) >> sumBus.ch(i);       // channel4: intestines
         // molSystem[i].masterBus >> gain.ch(1);
         molSystem[i].blackhole >> engine.blackhole();
 
 
 
-        molSystem[i].addOrganisms(LIQUID,    200);
+        molSystem[i].addOrganisms(LIQUID,    100);
         // molSystem[i].addOrganisms(BREATHER,  2);
         // molSystem[i].addOrganisms(PUMPER,    1);
         // molSystem[i].addOrganisms(NEURON,    3);
@@ -248,8 +250,11 @@ void ofApp::initSynth() {
     sumBus.set(1.0);
     guiPtr->masterGain >> gain;
 
-    fxBus.ch(0) >> chorus.ch(0) >> delay.ch(0) >> sumBus.ch(0);     // one FX bus per Screen
-    fxBus.ch(1) >> chorus.ch(1) >> delay.ch(1) >> sumBus.ch(1);
+
+
+    // FX CHAIN ROUTING
+    // fxBus.ch(0) >> chorus.ch(0) >> delay.ch(0) >> sumBus.ch(0);     // one FX bus per Screen
+    // fxBus.ch(1) >> chorus.ch(1) >> delay.ch(1) >> sumBus.ch(1);
 
     // delay.ch(0) >> gain.ch(0);      // for temporary stereo monitoring 
     // delay.ch(0) >> gain.ch(1);
@@ -260,11 +265,25 @@ void ofApp::initSynth() {
     // sumBus.ch(0) >> bitCrush;
 
 
-    // sumBus.ch(0) >> gain.ch(0);
-    // sumBus.ch(1) >> gain.ch(1); 
 
-    sumBus.ch(0) >> mix.in_A();
-    sumBus.ch(0) >> reverb >> mix.in_B();
+    // ALL FX BYPASS ROUTING
+
+    fxBus.ch(0) >> sumBus.ch(0);
+    fxBus.ch(1) >> sumBus.ch(1);
+    fxBus.ch(2) >> sumBus.ch(2);
+    fxBus.ch(3) >> sumBus.ch(3);
+
+    sumBus.ch(0) >> gain.ch(0);
+    sumBus.ch(1) >> gain.ch(1); 
+    sumBus.ch(2) >> gain.ch(2);
+    sumBus.ch(3) >> gain.ch(3); 
+
+
+
+    // FX SYSTEM COLLAPSE
+
+    // sumBus.ch(0) >> mix.in_A();
+    // sumBus.ch(0) >> reverb >> mix.in_B();
     mixFader >> mix.in_fade();
 
     switcher.resize(2);
@@ -284,10 +303,12 @@ void ofApp::initSynth() {
     // guiPtr->reverbDamping >> reverb.in_damping();
 
 
+
+    // MAIN OUTPUT
     gain.ch(0) >> engine.audio_out(0);
     gain.ch(1) >> engine.audio_out(1);
-    // gain.ch(0) >> engine.audio_out(2);
-    // gain.ch(0) >> engine.audio_out(3);
+    gain.ch(2) >> engine.audio_out(2);
+    gain.ch(3) >> engine.audio_out(3);
 
     // gain.ch(0) >> absolute >> envFollowerPeak >> engine.blackhole();
 
@@ -301,7 +322,7 @@ void ofApp::initSynth() {
     #else
         engine.setDeviceID(5);
     #endif
-    engine.setChannels (0, 2);
+    engine.setChannels (0, 4);
     engine.setup( 44100, 512, 3); 
 
     
@@ -315,11 +336,24 @@ void ofApp::keyPressed(int key){
 	if( key == ' ' ){
 		// molSystem.reset(true);
         // initSynth();
-        molSystem[0].addOrganisms(PUMPER, 1);
+        molSystem[0].addOrganisms(NEURON, 20);
+        molSystem[1].addOrganisms(PUMPER, 8);
+        molSystem[2].addOrganisms(BREATHER, 8);
+        molSystem[3].addOrganisms(INTESTINE, 3);
         // int allPitches[7] = {60, 63, 67, 70, 74, 80, 84};
         // synth.addVoice( allPitches[ (int)floor(ofRandom(7)) ] );
         // synth.addVoice(floor(ofRandom(60.0, 72.0)));
+
+        // for (int i = 0; i < numScreens; i++) {
+        //     molSystem[i].addOrganisms(INTESTINE, 1);
+        // }
+
 	}
+    if (key == '1')   molSystem[0].addOrganisms(NEURON,    1);
+    if (key == '2')   molSystem[1].addOrganisms(PUMPER,    1);
+    if (key == '3')   molSystem[2].addOrganisms(BREATHER,  1);
+    if (key == '4')   molSystem[3].addOrganisms(INTESTINE, 1);
+    
     if( key == 'r' ){
 		molSystem[0].reset(false);
 	}
@@ -366,6 +400,27 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     // molSystem.addIntestine(x - ofGetWidth()*0.5, y - ofGetHeight()*0.5);
+
+    int screenIdx = floor(x / screenResolution.x);
+    float scalingFactor = vessel[screenIdx].getWidth() / screenResolution.x;
+        // float scalingFactor = 1.0;
+    float xScaled = (x - screenResolution.x * 0.5 ) * scalingFactor - vessel[screenIdx].getWidth() * screenIdx;     // vessel[i].getWidth()
+    float yScaled = (y - screenResolution.y * 0.5 ) * scalingFactor;
+
+    
+
+    float probability[4] = {0.25, 0.5, 0.9, 1.0};
+    float dice = ofRandom(1.);
+
+    if (dice < probability[0]) {
+        molSystem[screenIdx].addBreather(xScaled, yScaled);
+    } else if (dice < probability[1]) {
+        molSystem[screenIdx].addPumper(xScaled, yScaled);
+    } else if (dice < probability[2]) {
+        molSystem[screenIdx].addNeuron(xScaled, yScaled);
+    } else {
+        molSystem[screenIdx].addIntestine(xScaled, yScaled);
+    }
 
 }
 
