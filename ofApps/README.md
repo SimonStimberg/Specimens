@@ -319,3 +319,31 @@
 ### v01.29.3
 - applied sync mechanism also between the pumpers and Neurons + Intestines
 - first implementation of "delete me if im out of the screen"
+
+### v01.30
+- adjustment for 4 screen setup (multiMonitorFullScreen)
+- spawing per mouse click
+
+### v01.30.2
+- added arousal + valence variables for Breather
+- interaction causes arousal (faster + greater motion), organisms calms down to silence over time
+- named Cell -> Breather class
+
+### v01.30.3
+- arousal mechanism for Pumper
+- affects impulse rate, sound velocity and contraction intension
+- organisms fall asleep after a while
+
+### v01.30.4
+- attempt for Breather sync algorithm
+- Breathers should sync their frequency in harmonic relation to others independent of fixed frequency values
+- not working satisfiable
+
+### v01.30.5
+- other Breather sync algorithm
+- Breathers stear towards the most proximate frequency corresponding to a harmonic of a (fix) base frequency 
+- (is a little bit cheating but the result is fine)
+
+### v01.30.6
+- added arousal mechanism for Neurons and Intestines
+- both differ behavior according to arousal level and calm down after a while without interaction
