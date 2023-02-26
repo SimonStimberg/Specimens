@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<BREATHERS>
+		<gain>0</gain>
+		<fine_tune_Sine-Osc>0.078125</fine_tune_Sine-Osc>
+		<Oscillator_Mix>0.52551</Oscillator_Mix>
+		<Pulse_Width>0.0765306</Pulse_Width>
+		<PWM_amount>0.352041</PWM_amount>
+		<PWM_speed__hz_>1.29406</PWM_speed__hz_>
+		<Filter_cutoff>95</Filter_cutoff>
+		<Filter_resonance>0.270408</Filter_resonance>
+	</BREATHERS>
+</SYNTH>

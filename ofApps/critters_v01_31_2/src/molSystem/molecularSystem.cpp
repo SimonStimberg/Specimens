@@ -104,11 +104,11 @@ void molecularSystem::addOrganisms(organismType type, int num) {
             float x = 0.;
             float y = 0.;
             if(type == LIQUID) {
-                y = -worldSize.y *0.5 - ofRandom(1000.);
-                x = ofRandom(-10., 10.);
+                x = -worldSize.x *0.5 - ofRandom(1000.);
+                y = ofRandom(-10., 10.);
             } else {
-                y = -worldSize.y *0.5 - 50 - ofRandom(10.);
-                x = ofRandom(-10., 10.);
+                x = -worldSize.x *0.5 - 50 - ofRandom(10.);
+                y = ofRandom(-10., 10.);
             }
 
 

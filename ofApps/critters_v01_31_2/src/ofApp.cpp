@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -303,7 +303,7 @@ void ofApp::initSynth() {
 
     // defines the audio device used for output
     #ifdef SHOW_ON_CRT
-        engine.setDeviceID(5);
+        engine.setDeviceID(4);
     #else
         engine.setDeviceID(5);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
     #endif

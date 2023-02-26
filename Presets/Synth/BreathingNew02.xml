@@ -2,7 +2,7 @@
 <SYNTH>
 	<master_gain>-3</master_gain>
 	<BREATHERS>
-		<gain>-4</gain>
+		<gain>0</gain>
 		<fine_tune_Sine-Osc>0.078125</fine_tune_Sine-Osc>
 		<Oscillator_Mix>0.5</Oscillator_Mix>
 		<Pulse_Width>0.5</Pulse_Width>

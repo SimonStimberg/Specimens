@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<master_gain>-4</master_gain>
+	<low_cut_frequency>150</low_cut_frequency>
+	<FX_CHAIN>
+		<Chorus>
+			<speed__hz_>0.589844</speed__hz_>
+			<depth__ms_>3.5</depth__ms_>
+			<delay__ms_>81</delay__ms_>
+			<dry___wet>0.401042</dry___wet>
+		</Chorus>
+		<Delay>
+			<input_gain>-9</input_gain>
+			<time>3</time>
+			<feedback>0.146614</feedback>
+			<damping>0.500912</damping>
+			<dry___wet>0.25</dry___wet>
+			<output_gain>3</output_gain>
+			<delay_time>2</delay_time>
+		</Delay>
+	</FX_CHAIN>
+</SYNTH>

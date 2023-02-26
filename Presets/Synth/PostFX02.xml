@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<POST_FX>
+		<Chorus>
+			<speed__hz_>0.589844</speed__hz_>
+			<depth__ms_>3.5</depth__ms_>
+			<delay__ms_>81</delay__ms_>
+			<dry___wet>0.401042</dry___wet>
+		</Chorus>
+		<Delay>
+			<input_gain>0</input_gain>
+			<feedback>0.145833</feedback>
+			<damping>0.5</damping>
+			<dry___wet>0.25</dry___wet>
+			<output_gain>0</output_gain>
+		</Delay>
+	</POST_FX>
+</SYNTH>

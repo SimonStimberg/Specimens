@@ -347,3 +347,28 @@
 ### v01.30.6
 - added arousal mechanism for Neurons and Intestines
 - both differ behavior according to arousal level and calm down after a while without interaction
+
+### v01.31
+- cleaned and tidied up version for Abgabe
+- orientation is back to landscape orientattion
+
+### v01.31.2
+- merged v1.31 with the changes made on MacMini for the installation setup
+- mainly a heads up display showing framerate and molecule number
+
+### v01.31.3
+- kinect re-implementation
+- matched the calibration to a TV upright orientation
+
+### v01.31.4
+- implemented TV calibration and interaction for all 4 TVs
+- mapping is done for each screen separately
+
+### v01.31.5
+- attempt to implement interaction through long term pointing
+- did not find a solution
+
+### v01.31.6
+- interaction alternative: spawning on first pointing 
+- next spawn only when all touchpoint have left the screen once
+- fixed Segmentation fault bug during deletion, as Neurons where connecting to others that were about to be deleted in the same step
