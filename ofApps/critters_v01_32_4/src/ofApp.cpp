@@ -17,8 +17,8 @@ void ofApp::setup() {
     initSynth();
 
     // sets the native resolution of the screens that are rendered to
-    screenResolution.x = 800;
-    screenResolution.y = 600;
+    screenResolution.x = 800; 
+    screenResolution.y = 600; 
 
 
     // a resizing factor to account for different CRT screen sizes 
@@ -31,7 +31,7 @@ void ofApp::setup() {
     screenSizeFactor[0] = 0.8 * 0.85;    // Sanyo Ultraschall      // make this screen 80% the size of the native resolution 800px -> 640px
     screenSizeFactor[1] = 0.8 * 0.85;   // Hitachi            // make the smaller screen even only 85% of the bigger screen to match the perceived size
     screenSizeFactor[2] = 0.8 * 0.8;   // sanyo small 
-    screenSizeFactor[3] = 0.8 * 0.95;   // Philips 
+    screenSizeFactor[3] = 0.85;   // Philips      0.8 * 0.95
 
 
     // INITIALIZE THE SCREEN BUFFERS AND THE MOLECULAR SYSTEM FOR EACH SCREEN
@@ -463,7 +463,9 @@ void ofApp::mouseReleased(int x, int y, int button){
 
     if(guiPtr->switchKinectCalibration) {
         int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-        kinectToPoints.calibrate(iScreen);        
+        kinectToPoints.calibrate(iScreen);  
+        ofLogNotice("screenNumber: " + ofToString(iScreen));
+        ofLogNotice("mousePosX: " + ofToString(ofGetMouseX()));      
     } else {
 
         // INTERACTION

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <SYNTH>
 	<master_gain>2</master_gain>
-	<low_cut_frequency>70</low_cut_frequency>
+	<low_cut_frequency>20</low_cut_frequency>
 	<compressor_threshold>-23</compressor_threshold>
 	<compressor_knee>0</compressor_knee>
 	<FX_CHAIN>

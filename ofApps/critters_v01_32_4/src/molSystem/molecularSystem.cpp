@@ -46,7 +46,7 @@ void molecularSystem::setup(int width, int height) {
 //------------------------------------------------------------------
 void molecularSystem::update() {
 
-    ofLogNotice("updating mol system");
+    // ofLogNotice("updating mol system");
 
 
     // update all organisms in the Molecular System
@@ -158,7 +158,7 @@ void molecularSystem::addOrganisms(organismType type, int num) {
 //------------------------------------------------------------------
 void molecularSystem::addRandom(float x, float y) {
 
-    ofLogNotice("adding new random organisms");
+    // ofLogNotice("adding new random organisms");
 
 
     int amount = 3;
@@ -206,7 +206,7 @@ void molecularSystem::addLiquid(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addBreather(float x, float y) {
 
-    ofLogNotice("before adding breather");
+    // ofLogNotice("before adding breather");
 
 
     int amount = 8;     // amount of Molecules the shape will consist of
@@ -219,7 +219,7 @@ void molecularSystem::addBreather(float x, float y) {
 
     breathers.push_back(c);
 
-    ofLogNotice("after adding breather");
+    // ofLogNotice("after adding breather");
 
 }
 
@@ -277,7 +277,7 @@ void molecularSystem::addIntestine(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::cleanUp() {
 
-    ofLogNotice("Deletion process begin");
+    // ofLogNotice("Deletion process begin");
 
     // masterBus.disconnectAll();
     // blackhole.disconnectAll();
@@ -398,7 +398,7 @@ void molecularSystem::cleanUp() {
     thereAreCadavers = false;
 
 
-    ofLogNotice("Deletion complete.");
+    // ofLogNotice("Deletion complete.");
     // ofLogNotice("Deletion complete. now reconnecting audio");
 
     // for(unsigned int i = 0; i < breathers.size(); i++){ 
