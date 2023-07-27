@@ -372,3 +372,7 @@
 - interaction alternative: spawning on first pointing 
 - next spawn only when all touchpoint have left the screen once
 - fixed Segmentation fault bug during deletion, as Neurons where connecting to others that were about to be deleted in the same step
+
+### v01.32.x
+- master presentation: onsite adjustments and tweaks
+- 
