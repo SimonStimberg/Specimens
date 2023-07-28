@@ -25,6 +25,7 @@ class kinectHandler{
         
         void computePoints();
         void calibrate(int sNum);
+        void calibrateLeap();
         vector<glm::vec2> getTouchPoints(int sNum) { return touchPoints[sNum]; };
         glm::vec2 getTriggerPoint(int sNum);
                 
@@ -63,6 +64,9 @@ class kinectHandler{
 
         ofxLeapMotion leap;
         vector <glm::vec2> fingerTips;
+
+        glm::vec2 refPtLeapA;
+        glm::vec2 refPtLeapB;
 
     
 };

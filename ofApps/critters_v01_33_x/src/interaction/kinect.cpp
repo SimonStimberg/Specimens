@@ -29,7 +29,7 @@ void kinectHandler::setup(vector<float> sizeFactors) {
 
     // save the vessel sizes for obtain the right scaing of the kinect data
     for(int i = 0; i < sizeFactors.size(); i ++) { 
-        if(i<3) {
+        if(i>1) {
             vesselSizes.push_back( glm::vec2(screenRes.x*sizeFactors[i], screenRes.y*sizeFactors[i]) );
         } else {
             vesselSizes.push_back( glm::vec2(720*sizeFactors[i], 576*sizeFactors[i]) );
@@ -81,8 +81,8 @@ void kinectHandler::setup(vector<float> sizeFactors) {
         leap.setReceiveBackgroundFrames(true);
 
         // leap returns data in mm - lets set a mapping to our world space.
-        leap.setMappingX(-230, 230, 0, ofGetWidth() );
-        leap.setMappingY(10, 600, ofGetHeight(), 0);
+        leap.setMappingX(-250, 250, vesselSizes[0].x, 0 );
+        leap.setMappingY(0, 500, vesselSizes[0].x, 0);
         leap.setMappingZ(-150, 150, -150, 150);
 
         if(leap.isConnected()) {
@@ -127,6 +127,11 @@ void kinectHandler::setup(vector<float> sizeFactors) {
         refPtB[i].y =  calSettings.getValue("BOTTOM"+ofToString(i), nearClip + clippingDepth);
     }
 
+    refPtLeapA.x =  calSettings.getValue("LEAP_LEFT", -300);
+    refPtLeapB.x =  calSettings.getValue("LEAP_RIGHT", 300);
+    refPtLeapA.y =  calSettings.getValue("LEAP_TOP", nearClip);;
+    refPtLeapB.y =  calSettings.getValue("LEAP_BOTTOM", nearClip + clippingDepth);
+
 
     calPointSwitch = 0;
 
@@ -162,9 +167,18 @@ void kinectHandler::update(){
                 
                 //here we convert the Leap point to an ofPoint - with mapping of coordinates
                 //if you just want the raw point - use ofxLeapMotion::getofPoint
-                pt = leap.getMappedofPoint( finger.tipPosition() );
-                if(pt.z < 1 ) {     // && pt.z > -50
-                    fingerTips.push_back(glm::vec2(pt.x, pt.y));
+                // pt = leap.getMappedofPoint( finger.tipPosition() );
+                pt = leap.getofPoint( finger.tipPosition() );
+
+                if(pt.z < 20 ) {     // && pt.z > -50
+                    
+
+                    // if so, map it to the the screen space
+                    float newY = ofMap(pt.x, refPtLeapA.x, refPtLeapB.x, vesselSizes[0].y - borderOffset, borderOffset);    // the mapping is inversed to mirror the x axis - also newX & newY are switched for upright mapping
+                    float newX = ofMap(pt.y, refPtLeapA.y, refPtLeapB.y, vesselSizes[0].x - borderOffset, borderOffset);
+
+
+                    fingerTips.push_back(glm::vec2(newX, newY));
                 }
                 
             }
@@ -403,6 +417,55 @@ void kinectHandler::calibrate(int sNum) {
 
     calSettings.saveFile("calibration.xml");
 
+}
+
+
+//--------------------------------------------------------------
+void kinectHandler::calibrateLeap() {
+
+    ofLogNotice("Calibration funciton started");
+
+    vector <Hand> hands = leap.getLeapHands();
+    if( hands.size() ){
+
+        ofPoint pt;
+
+        const Finger & finger = hands[0].fingers()[ INDEX ];
+
+        // pt = leap.getMappedofPoint( finger.tipPosition() );
+        pt = leap.getofPoint( finger.tipPosition() );
+
+
+        // assign the values to one of the two calibration points - switching points each call
+        if (calPointSwitch == 0) {
+            refPtLeapB.x =  pt.x;
+            refPtLeapB.y =  pt.y;
+
+            ofLogNotice("Top Left calibration point has been set with: " + ofToString(pt.x) + ", " + ofToString(pt.y));
+        } else {
+            refPtLeapA.x =  pt.x;
+            refPtLeapA.y =  pt.y;
+
+            ofLogNotice("Bottom Right calibration point has been set with: " + ofToString(pt.x) + ", " + ofToString(pt.y));
+        }
+
+        calPointSwitch = !calPointSwitch;   // to make sure that the next call the other calibration points gets assigned
+
+
+
+        // save the calibration points to a XML file to recall them the next app start
+        calSettings.setValue("LEAP_LEFT", refPtLeapA.x);
+        calSettings.setValue("LEAP_RIGHT", refPtLeapB.x);
+        calSettings.setValue("LEAP_TOP", refPtLeapA.y);
+        calSettings.setValue("LEAP_BOTTOM", refPtLeapB.y);
+
+        calSettings.saveFile("calibration.xml");
+
+
+        ofLogNotice("Calibration successfully done");
+
+    
+    }
 }
 
 

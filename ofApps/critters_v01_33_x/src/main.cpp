@@ -4,7 +4,7 @@
 #include "ofAppGLFWWindow.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 //========================================================================
@@ -17,16 +17,16 @@ int main( ){
 	#ifdef SHOW_ON_CRT
 
 		// this will run the app in fullscreen mode spanning over all connected monitors
-		settings.multiMonitorFullScreen = true;
+		// settings.multiMonitorFullScreen = true;
 		settings.windowMode = OF_FULLSCREEN;
-		// settings.monitor = 1;
+		settings.monitor = 2;
 	#else
 	
 		// run the app in a window on the computer screen
 		// settings.setSize(800, 600);		// the standard resolution for one screen buffer is 800x600 px
-		settings.setSize(600, 800);
+		// settings.setSize(600, 800);
 		// settings.setSize(1600, 600);		// 2 screens
-		// settings.setSize(3200, 600);		// 4 screens
+		settings.setSize(3200, 600);		// 4 screens
 		settings.windowMode = OF_WINDOW;
 		settings.resizable = false;
 		settings.setPosition(glm::vec2(600,0));	
@@ -41,7 +41,7 @@ int main( ){
 	settings.setPosition(glm::vec2(0,0));
 	settings.windowMode = OF_WINDOW;
 	settings.resizable = false;
-	settings.monitor = 0;
+	settings.monitor = 1;
 	shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);
 
 
