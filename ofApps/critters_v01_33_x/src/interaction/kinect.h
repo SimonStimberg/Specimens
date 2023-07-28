@@ -6,6 +6,7 @@
 
 #include "ofMain.h"
 #include "ofxKinect.h"
+#include "ofxLeapMotion2.h"
 #include "ofxXmlSettings.h"
 
 class kinectHandler{
@@ -59,6 +60,9 @@ class kinectHandler{
 
         ofxXmlSettings calSettings;
 
+
+        ofxLeapMotion leap;
+        vector <glm::vec2> fingerTips;
 
     
 };

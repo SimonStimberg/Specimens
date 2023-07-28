@@ -16,7 +16,7 @@ void kinectHandler::setup(vector<float> sizeFactors) {
 
 
 
-    nearClip = 650;     // set the near clipping plane in mm
+    nearClip = 300;     // set the near clipping plane in mm
     clippingDepth = 1100;   // set the clipping depth in mm (near clipping + depth = far clipping)
 
     scanYposition = 240;    // the Y position of the scanline in the kinect image - should be the center to avoid geometric distortion -> kinectHeight = 480 / 2
@@ -69,11 +69,32 @@ void kinectHandler::setup(vector<float> sizeFactors) {
         ofLogNotice("Current Tilt Angle: " + ofToString(kinect.getCurrentCameraTiltAngle()));
 
 
-        kinect.setDepthClipping(nearClip, nearClip + clippingDepth);
-        
+        kinect.setDepthClipping(nearClip, nearClip + clippingDepth);    
     
 
+
+
+        // LEAP MOTION CONFIG
+        leap.open();
+
+        // keep app receiving data from leap motion even when it's in the background
+        leap.setReceiveBackgroundFrames(true);
+
+        // leap returns data in mm - lets set a mapping to our world space.
+        leap.setMappingX(-230, 230, 0, ofGetWidth() );
+        leap.setMappingY(10, 600, ofGetHeight(), 0);
+        leap.setMappingZ(-150, 150, -150, 150);
+
+        if(leap.isConnected()) {
+            ofLogNotice("Leap Motion connected!");
+        } else {
+            ofLogNotice("Leap Motion could not connect! :(");
+        }
+
+
     ofSetLogLevel(OF_LOG_NOTICE);
+
+
 
 
     touchPoints.resize(kinect.getWidth());      // just to allocate enough memory
@@ -123,6 +144,35 @@ void kinectHandler::update(){
     if(kinect.isFrameNew()) {      
         computePoints();
     }
+
+
+
+    vector <Hand> hands = leap.getLeapHands();
+    if( leap.isFrameNew() && hands.size() ){
+    
+        fingerTips.clear();
+        
+        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+        
+        for(int i = 0; i < hands.size(); i++){
+            for(int j = 0; j < 5; j++){
+                ofPoint pt;
+                
+                const Finger & finger = hands[i].fingers()[ fingerTypes[j] ];
+                
+                //here we convert the Leap point to an ofPoint - with mapping of coordinates
+                //if you just want the raw point - use ofxLeapMotion::getofPoint
+                pt = leap.getMappedofPoint( finger.tipPosition() );
+                if(pt.z < 1 ) {     // && pt.z > -50
+                    fingerTips.push_back(glm::vec2(pt.x, pt.y));
+                }
+                
+            }
+        }
+    }
+      
+	//IMPORTANT! - tell ofxLeapMotion that the frame is no longer new.
+	leap.markFrameAsOld();
 
 }
 
@@ -270,6 +320,13 @@ void kinectHandler::drawKinect(int sNum){   // (screen number) draw only the tou
         
     ofPopMatrix();
 
+
+    // draw Leap Motion debug
+    ofSetColor(255, 255, 0);
+    for(int i = 0; i < fingerTips.size(); i++) {
+        ofDrawCircle(fingerTips[i], 12); 
+    }   
+
 }
 
 
@@ -351,4 +408,5 @@ void kinectHandler::calibrate(int sNum) {
 
 void kinectHandler::exit() {
     kinect.close();	
+    leap.close();
 }
