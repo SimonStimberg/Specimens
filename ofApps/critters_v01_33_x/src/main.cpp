@@ -17,7 +17,7 @@ int main( ){
 	#ifdef SHOW_ON_CRT
 
 		// this will run the app in fullscreen mode spanning over all connected monitors
-		// settings.multiMonitorFullScreen = true;
+		settings.multiMonitorFullScreen = true;
 		settings.windowMode = OF_FULLSCREEN;
 		settings.monitor = 2;
 	#else

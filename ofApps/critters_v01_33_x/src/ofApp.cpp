@@ -411,15 +411,20 @@ void ofApp::reconnectAudio(){
 void ofApp::keyPressed(int key){  
     
     if( key == OF_KEY_RETURN && guiPtr->switchKinectCalibration ){
-        int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-        kinectToPoints.calibrate(iScreen);        
+        int iScreen = floor(ofGetMouseX() / screenResolution.x);
+        
+        if (iScreen % 2 == 0) {
+            kinectToPoints.calibrateKinect(iScreen);       
+        } else {
+            kinectToPoints.calibrateLeap(iScreen);         
+        }
     }
     if( key == ' ' ) {
         ofToggleFullscreen();
     }
 
     if( key == 'c' && guiPtr->switchKinectCalibration ){
-        kinectToPoints.calibrateLeap();        
+        // kinectToPoints.calibrateLeap();        
     }
 
 
@@ -467,7 +472,11 @@ void ofApp::mouseReleased(int x, int y, int button){
 
     if(guiPtr->switchKinectCalibration) {
         int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-        kinectToPoints.calibrate(iScreen);  
+        if (iScreen % 2 == 0) {
+            kinectToPoints.calibrateKinect(iScreen);       
+        } else {
+            kinectToPoints.calibrateLeap(iScreen);         
+        }
         ofLogNotice("screenNumber: " + ofToString(iScreen));
         ofLogNotice("mousePosX: " + ofToString(ofGetMouseX()));      
     } else {

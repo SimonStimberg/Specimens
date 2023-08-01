@@ -23,9 +23,10 @@ class kinectHandler{
         void drawCalibrationAids(int sNum);
         void exit();
         
-        void computePoints();
-        void calibrate(int sNum);
-        void calibrateLeap();
+        void computeKinectPoints();
+        void computeLeapPoints();
+        void calibrateKinect(int sNum);
+        void calibrateLeap(int sNum);
         vector<glm::vec2> getTouchPoints(int sNum) { return touchPoints[sNum]; };
         glm::vec2 getTriggerPoint(int sNum);
                 

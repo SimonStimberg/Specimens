@@ -29,11 +29,11 @@ void kinectHandler::setup(vector<float> sizeFactors) {
 
     // save the vessel sizes for obtain the right scaing of the kinect data
     for(int i = 0; i < sizeFactors.size(); i ++) { 
-        if(i>1) {
+        // if(i>1) {
             vesselSizes.push_back( glm::vec2(screenRes.x*sizeFactors[i], screenRes.y*sizeFactors[i]) );
-        } else {
-            vesselSizes.push_back( glm::vec2(720*sizeFactors[i], 576*sizeFactors[i]) );
-        }
+        // } else {
+        //     vesselSizes.push_back( glm::vec2(720*sizeFactors[i], 576*sizeFactors[i]) );
+        // }
     }
 
     refPtA.assign(numScreens, glm::vec2(0,0));  // reference point A for calibration
@@ -41,9 +41,8 @@ void kinectHandler::setup(vector<float> sizeFactors) {
 
 
 
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    
-    
+    // INITIALIZE KINECT AND LEAP MOTION
+    ofSetLogLevel(OF_LOG_VERBOSE);   
 
         // ofSleepMillis(100);
         
@@ -147,57 +146,26 @@ void kinectHandler::update(){
     kinect.update();
     
     if(kinect.isFrameNew()) {      
-        computePoints();
+        computeKinectPoints();
+    }
+
+    if( leap.isFrameNew()) {
+        computeLeapPoints();        
+	    leap.markFrameAsOld();  //IMPORTANT! - tell ofxLeapMotion that the frame is no longer new.
     }
 
 
 
-    vector <Hand> hands = leap.getLeapHands();
-    if( leap.isFrameNew() && hands.size() ){
-    
-        fingerTips.clear();
-        
-        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
-        
-        for(int i = 0; i < hands.size(); i++){
-            for(int j = 0; j < 5; j++){
-                ofPoint pt;
-                
-                const Finger & finger = hands[i].fingers()[ fingerTypes[j] ];
-                
-                //here we convert the Leap point to an ofPoint - with mapping of coordinates
-                //if you just want the raw point - use ofxLeapMotion::getofPoint
-                // pt = leap.getMappedofPoint( finger.tipPosition() );
-                pt = leap.getofPoint( finger.tipPosition() );
-
-                if(pt.z < 20 ) {     // && pt.z > -50
-                    
-
-                    // if so, map it to the the screen space
-                    float newY = ofMap(pt.x, refPtLeapA.x, refPtLeapB.x, vesselSizes[0].y - borderOffset, borderOffset);    // the mapping is inversed to mirror the x axis - also newX & newY are switched for upright mapping
-                    float newX = ofMap(pt.y, refPtLeapA.y, refPtLeapB.y, vesselSizes[0].x - borderOffset, borderOffset);
-
-
-                    fingerTips.push_back(glm::vec2(newX, newY));
-                }
-                
-            }
-        }
-    }
-      
-	//IMPORTANT! - tell ofxLeapMotion that the frame is no longer new.
-	leap.markFrameAsOld();
 
 }
 
 
 //--------------------------------------------------------------
-void kinectHandler::computePoints() {
+void kinectHandler::computeKinectPoints() {
 
-    for (int i = 0; i < numScreens; i ++) {
+    for (int i = 0; i < numScreens; i +=2) {
         touchPoints[i].clear();
         mappedPoints[i].clear();
-
     }
 
     // ofLogNotice("touchPoints: " + ofToString(touchPoints.size()));
@@ -214,7 +182,7 @@ void kinectHandler::computePoints() {
         ofPoint probe = kinect.getWorldCoordinateAt(x, scanYposition);
 
         // do the check for every screen
-        for(int v = 0; v < numScreens; v++) {
+        for(int v = 0; v < numScreens; v+=2) {
 
             // check if the kinect point is within the bounds of the specific screen 
             if (probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && probe.z > refPtA[v].y-borderOffset && probe.z < refPtB[v].y+borderOffset ) {      // probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && 
@@ -266,17 +234,75 @@ void kinectHandler::computePoints() {
 
 
 //--------------------------------------------------------------
+void kinectHandler::computeLeapPoints() {
+
+
+    vector <Hand> hands = leap.getLeapHands();
+    if( hands.size() ){
+
+
+        for (int i = 1; i < numScreens; i+=2) {
+            touchPoints[i].clear();
+        }
+        
+        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+
+        
+        for(int i = 0; i < hands.size(); i++){
+            for(int j = 0; j < 5; j++){
+                ofPoint pt;
+                
+                const Finger & finger = hands[i].fingers()[ fingerTypes[j] ];
+                
+                //here we convert the Leap point to an ofPoint - with mapping of coordinates
+                //if you just want the raw point - use ofxLeapMotion::getofPoint
+                // pt = leap.getMappedofPoint( finger.tipPosition() );
+                pt = leap.getofPoint( finger.tipPosition() );
+
+
+                for(int v = 1; v < numScreens; v+=2) { 
+
+                    // check if the kinect point is within the bounds of the specific screen 
+                    if (pt.z < 20   &&   pt.x > refPtB[v].x-borderOffset*2 && pt.x < refPtA[v].x+borderOffset*2 && pt.y > refPtA[v].y-borderOffset && pt.y < refPtB[v].y+borderOffset ) {   
+
+                        // if so, map it to the the screen space
+                        float newY = ofMap(pt.x, refPtA[v].x, refPtB[v].x, vesselSizes[v].y - borderOffset, borderOffset);    // the mapping is inversed to mirror the x axis - also newX & newY are switched for upright mapping
+                        float newX = ofMap(pt.y, refPtA[v].y, refPtB[v].y, vesselSizes[v].x - borderOffset, borderOffset);
+
+                                            // shift points to make them relative to the center of the canvas
+                        newX -= vesselSizes[v].x * 0.5;
+                        newY -= vesselSizes[v].y * 0.5;  
+
+
+                        // fingerTips.push_back(glm::vec2(newX, newY));
+                        touchPoints[v].push_back(glm::vec2(newX, newY));
+
+                    }
+
+                }
+
+                
+            }
+        }
+    }
+      
+
+}
+
+
+
+//--------------------------------------------------------------
 glm::vec2 kinectHandler::getTriggerPoint(int sNum) {
 
     glm::vec2 triggerPoint(0, 0);
 
-    if(touchPoints[sNum].size() > 0 && !triggered[sNum]) {
-        triggerPoint = touchPoints[sNum][0];
-        triggered[sNum] = true;
-        triggerTimestamp[sNum] = ofGetElapsedTimeMillis();
-    } else if (touchPoints[sNum].size() == 0 && triggered[sNum] && ofGetElapsedTimeMillis() > triggerTimestamp[sNum] + 300 ) {
-        triggered[sNum] = false;
-    }
+    // if(touchPoints[sNum].size() > 0 && !triggered[sNum]) {
+    //     triggerPoint = touchPoints[sNum][0];
+    //     triggered[sNum] = true;
+    //     triggerTimestamp[sNum] = ofGetElapsedTimeMillis();
+    // } else if (touchPoints[sNum].size() == 0 && triggered[sNum] && ofGetElapsedTimeMillis() > triggerTimestamp[sNum] + 300 ) {
+    //     triggered[sNum] = false;
+    // }
 
     return triggerPoint;
 
@@ -308,14 +334,15 @@ void kinectHandler::drawKinect(int sNum){   // (screen number) draw only the tou
     int screenResX = 0;
     int screenResY = 0;
 
-    if(sNum < 3) {
+    if(sNum < 4) {
         screenResX = 800;
         screenResY = 600;
 
-    } else {
-        screenResX = 720;
-        screenResY = 576;
-    }
+    } 
+    // else {
+    //     screenResX = 720;
+    //     screenResY = 576;
+    // }
 
     ofPushMatrix();
         ofTranslate(vesselSizes[sNum].x*0.5, vesselSizes[sNum].y*0.5);
@@ -336,10 +363,10 @@ void kinectHandler::drawKinect(int sNum){   // (screen number) draw only the tou
 
 
     // draw Leap Motion debug
-    ofSetColor(255, 255, 0);
-    for(int i = 0; i < fingerTips.size(); i++) {
-        ofDrawCircle(fingerTips[i], 12); 
-    }   
+    // ofSetColor(255, 255, 0);
+    // for(int i = 0; i < fingerTips.size(); i++) {
+    //     ofDrawCircle(fingerTips[i], 12); 
+    // }   
 
 }
 
@@ -362,7 +389,7 @@ void kinectHandler::drawCalibrationAids(int sNum){
 
 
 //--------------------------------------------------------------
-void kinectHandler::calibrate(int sNum) {
+void kinectHandler::calibrateKinect(int sNum) {
 
     kinect.update();
 
@@ -420,8 +447,9 @@ void kinectHandler::calibrate(int sNum) {
 }
 
 
+
 //--------------------------------------------------------------
-void kinectHandler::calibrateLeap() {
+void kinectHandler::calibrateLeap(int sNum) {
 
     ofLogNotice("Calibration funciton started");
 
@@ -438,13 +466,13 @@ void kinectHandler::calibrateLeap() {
 
         // assign the values to one of the two calibration points - switching points each call
         if (calPointSwitch == 0) {
-            refPtLeapB.x =  pt.x;
-            refPtLeapB.y =  pt.y;
+            refPtB[sNum].x =  pt.x;
+            refPtB[sNum].y =  pt.y;
 
             ofLogNotice("Top Left calibration point has been set with: " + ofToString(pt.x) + ", " + ofToString(pt.y));
         } else {
-            refPtLeapA.x =  pt.x;
-            refPtLeapA.y =  pt.y;
+            refPtA[sNum].x =  pt.x;
+            refPtA[sNum].y =  pt.y;
 
             ofLogNotice("Bottom Right calibration point has been set with: " + ofToString(pt.x) + ", " + ofToString(pt.y));
         }
@@ -454,10 +482,15 @@ void kinectHandler::calibrateLeap() {
 
 
         // save the calibration points to a XML file to recall them the next app start
-        calSettings.setValue("LEAP_LEFT", refPtLeapA.x);
-        calSettings.setValue("LEAP_RIGHT", refPtLeapB.x);
-        calSettings.setValue("LEAP_TOP", refPtLeapA.y);
-        calSettings.setValue("LEAP_BOTTOM", refPtLeapB.y);
+        calSettings.setValue("LEFT"+ofToString(sNum), refPtA[sNum].x);
+        calSettings.setValue("RIGHT"+ofToString(sNum), refPtB[sNum].x);
+        calSettings.setValue("TOP"+ofToString(sNum), refPtA[sNum].y);
+        calSettings.setValue("BOTTOM"+ofToString(sNum), refPtB[sNum].y);
+
+        // calSettings.setValue("LEAP_LEFT", refPtA[sNum].x);
+        // calSettings.setValue("LEAP_RIGHT", refPtB[sNum].x);
+        // calSettings.setValue("LEAP_TOP", refPtA[sNum].y);
+        // calSettings.setValue("LEAP_BOTTOM", refPtB[sNum].y);
 
         calSettings.saveFile("calibration.xml");
 
