@@ -307,6 +307,7 @@ void Breather::inflate() {
 
         // get the control oscillation from the LFO in the audioModule
         float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., -0.2, 1.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
+        // float oscillate = 0.4;
 
         // oscillate *= guiPtr->tuneBreatherOscillationAmount;
 

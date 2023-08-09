@@ -64,7 +64,8 @@ void ofApp::setup() {
         // compressor[i].ch(0) >> sumBus.ch(i);
         // compressor[i].ch(1) >> fxBus.ch(i);
     
-        molSystem[i].blackhole >> engine.blackhole();  
+        // molSystem[i].blackhole >> engine.blackhole();  
+        // molSystem[i].blackhole >> gain.ch(3);
 
 
         // add organisms or liquid (free floating particles) to the Molecular System
@@ -84,7 +85,7 @@ void ofApp::setup() {
     kinectToPoints.setup(screenSizeFactor);
 
 
-    ofLogNotice("Gain 12dB: " + ofToString(dB(12)));
+    ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
 }
 
@@ -373,13 +374,14 @@ void ofApp::initSynth() {
 
     // defines the audio device used for output
     #ifdef SHOW_ON_CRT
-        engine.setDeviceID(6);
+        engine.setDeviceID(4);
     #else
         engine.setDeviceID(5);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
     #endif
     // engine.setChannels (0, 2);  // two channel setup
     engine.setChannels (0, 4);  // four channel setup
     engine.setup( 44100, 512, 3); 
+    // engine.setup( 48000, 2048, 8); 
   
 
 }

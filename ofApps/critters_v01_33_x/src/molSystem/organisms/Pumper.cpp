@@ -378,6 +378,7 @@ void Pumper::adaptArousal(float amount)
 {
     arousal += (amount / (float)cellMolecules.size()) * 0.5;
     arousal = ofClamp(arousal, 0.0, 1.0);
+    // arousal = 1.0;
 
 }
 

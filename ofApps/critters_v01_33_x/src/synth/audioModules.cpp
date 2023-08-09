@@ -97,13 +97,18 @@ void audioModule::Breather::setup(int pitch){
     breathRate >> controlLFO.in_freq();
     0.95 >> meterGate.in_threshold();
 
+    muteAmp.set(0.000000000001f);
+    0.000000000001f >> muteEnv.in_velocity();
+
 }
 
 void audioModule::Breather::startBreathing() { 
 
     // start the lfo
-    controlLFO.out_sine() >> controlAmp >> intoVoid;
-    controlLFO.out_sine() >> meterGate >> intoVoid;
+    // controlLFO.out_sine() >> controlAmp >> intoVoid;
+    controlLFO.out_sine() >> controlAmp >> muteAmp >> amp.in_mod();
+    // controlLFO.out_sine() >> meterGate >> intoVoid;
+    controlLFO.out_sine() >> meterGate >> muteEnv >> amp.in_mod();
 
 }
 

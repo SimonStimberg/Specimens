@@ -168,7 +168,7 @@ void molecularSystem::addRandom(float x, float y) {
         x += ofRandom(-15., 15.);
         y += ofRandom(-15., 15.);
 
-        float probability[4] = {0.2, 0.4, 0.9, 1.0};   // the probability for the different organism types
+        float probability[4] = {1.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
         float dice = ofRandom(1.);
 
         if (dice < probability[0]) {

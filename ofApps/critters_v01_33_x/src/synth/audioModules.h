@@ -77,9 +77,12 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::Amp                   gain;
 
             pdsp::LFO                   controlLFO;
-            pdsp::Amp                   controlAmp;
+            pdsp::Amp                   controlAmp;            
             pdsp::ToGateTrigger         meterGate;
             pdsp::PatchNode             intoVoid;
+
+            pdsp::Amp                   muteAmp;
+            pdsp::AHR                   muteEnv;
 
             int  count    = 0;
             bool newPhase = false;        
