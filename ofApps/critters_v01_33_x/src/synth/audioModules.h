@@ -147,6 +147,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::AHR               ghostEnv;
 
             pdsp::Amp               meterAmp;
+            pdsp::Amp               muteAmp;
             
     }; // end Pumper class -------------------------------------------------------
 

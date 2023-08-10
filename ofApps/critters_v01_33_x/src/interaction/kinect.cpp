@@ -296,13 +296,13 @@ glm::vec2 kinectHandler::getTriggerPoint(int sNum) {
 
     glm::vec2 triggerPoint(0, 0);
 
-    // if(touchPoints[sNum].size() > 0 && !triggered[sNum]) {
-    //     triggerPoint = touchPoints[sNum][0];
-    //     triggered[sNum] = true;
-    //     triggerTimestamp[sNum] = ofGetElapsedTimeMillis();
-    // } else if (touchPoints[sNum].size() == 0 && triggered[sNum] && ofGetElapsedTimeMillis() > triggerTimestamp[sNum] + 300 ) {
-    //     triggered[sNum] = false;
-    // }
+    if(touchPoints[sNum].size() > 0 && !triggered[sNum]) {
+        triggerPoint = touchPoints[sNum][0];
+        triggered[sNum] = true;
+        triggerTimestamp[sNum] = ofGetElapsedTimeMillis();
+    } else if (touchPoints[sNum].size() == 0 && triggered[sNum] && ofGetElapsedTimeMillis() > triggerTimestamp[sNum] + 300 ) {
+        triggered[sNum] = false;
+    }
 
     return triggerPoint;
 

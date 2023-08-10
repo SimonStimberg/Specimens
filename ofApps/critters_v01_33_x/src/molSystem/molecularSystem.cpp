@@ -168,7 +168,7 @@ void molecularSystem::addRandom(float x, float y) {
         x += ofRandom(-15., 15.);
         y += ofRandom(-15., 15.);
 
-        float probability[4] = {1.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
+        float probability[4] = {0.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
         float dice = ofRandom(1.);
 
         if (dice < probability[0]) {
@@ -215,7 +215,7 @@ void molecularSystem::addBreather(float x, float y) {
     c->set(amount, x, y);
 
     c->audioModule >> masterBus.ch(0);          // route the audio of the organism to the corresponding stem of that orgainsm type
-    c->audioModule.out_void() >> blackhole; 
+    // c->audioModule.out_void() >> blackhole; 
 
     breathers.push_back(c);
 
@@ -233,7 +233,7 @@ void molecularSystem::addPumper(float x, float y) {
     c->set(amount, x, y);
 
     c->audioModule >> masterBus.ch(1);
-    c->audioModule.out_void() >> blackhole;
+    // c->audioModule.out_void() >> blackhole;
 
     pumpers.push_back(c);
 

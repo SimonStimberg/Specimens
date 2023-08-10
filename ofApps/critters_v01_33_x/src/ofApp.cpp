@@ -380,8 +380,8 @@ void ofApp::initSynth() {
     #endif
     // engine.setChannels (0, 2);  // two channel setup
     engine.setChannels (0, 4);  // four channel setup
-    engine.setup( 44100, 512, 3); 
-    // engine.setup( 48000, 2048, 8); 
+    // engine.setup( 44100, 512, 3); 
+    engine.setup( 44100, 2048, 8); 
   
 
 }

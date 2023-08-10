@@ -207,6 +207,7 @@ void audioModule::Pumper::initiate(){
     ghostEnv.set(10.0, 100.0, 500.0, 1.0);
     triggers >> ghostEnv * 0.01 >> delaySignal; 
 
+    muteAmp.set(0.000000000001f);
  
 }   
 
@@ -214,9 +215,11 @@ void audioModule::Pumper::initiate(){
 void audioModule::Pumper::startImpulse(){
 
     // initialize the impulse LFO
-    impulseLFO.out_trig() >> controlEnv >> intoVoid;  // the control envelope has to be patched to a blackhole in order to being processed by the DSP
+    // impulseLFO.out_trig() >> controlEnv >> intoVoid;  // the control envelope has to be patched to a blackhole in order to being processed by the DSP
+    // impulseLFO.out_phase() >> meterAmp >> intoVoid;
+    impulseLFO.out_trig() >> controlEnv >> muteAmp >> amp.in_mod();
+    impulseLFO.out_phase() >> meterAmp >> muteAmp;
     impulseLFO.out_trig() >> triggers;  // trigger the sound
-    impulseLFO.out_phase() >> meterAmp >> intoVoid;
 
 }
 
