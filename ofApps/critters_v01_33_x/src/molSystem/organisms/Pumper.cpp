@@ -20,7 +20,8 @@ Pumper::Pumper(molecularSystem *system)
 void Pumper::set(int num, int x, int y)
 {
 
-    maxGrowth = ofRandom(13, 15);
+    // maxGrowth = ofRandom(13, 15);
+    maxGrowth = 9;
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
     nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
@@ -194,10 +195,10 @@ void Pumper::draw()
     }
     ofEndShape();
 
-    // for (unsigned int i = 0; i < springs.size(); i++)
-    // {
-    //     // springs[i]->draw();
-    // }
+    for (unsigned int i = 0; i < springs.size(); i++)
+    {
+        springs[i]->draw();
+    }
     // for (unsigned int i = 0; i < cellMolecules.size(); i++)
     // {
     //     cellMolecules[i]->draw();
@@ -224,7 +225,7 @@ void Pumper::grow()
 
         // disconnect and reconnect the last Spring in the circle
         springs[springs.size()-1]->disconnect();
-        springs[springs.size()-1]->connect(mA, last);
+        springs[springs.size()-1]->connect(last, mA);
 
         Spring *s = new Spring(systemPtr);
         s->connect(mA, first);

@@ -22,8 +22,7 @@ Breather::Breather(molecularSystem *system, cellType myType)
 void Breather::set(int num, int x, int y)
 {
 
-    // maxGrowth = floor(ofRandom(17, 21));
-    maxGrowth = 18;
+    maxGrowth = floor(ofRandom(17, 21));
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
     nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
@@ -37,6 +36,7 @@ void Breather::set(int num, int x, int y)
 
     arousal = 0.0;
     valence = 0.0;
+    pressure = 1.0;
     
 
     for (int i = 0; i < num; i++)
@@ -104,6 +104,7 @@ void Breather::update()
 
     grow();
     updatePosition();
+    
     if(mature) syncFrequency();
     inflate();
 
@@ -111,6 +112,8 @@ void Breather::update()
     {
         springs[i]->update();
     }
+
+    applyPressure();
 
     for (unsigned int i = 0; i < cellMolecules.size(); i++)
     {
@@ -128,10 +131,10 @@ void Breather::update()
 
 
 
-    float newLevel  = ofMap(getInflation(), 0., 1., -36.0, 0.0, true);
+    float newLevel  = ofMap(pressure, 1., 4., -36.0, 0.0, true);
     ampCtrl.set(dB(newLevel));
 
-    float newCutoff = ofMap(getInflation(), 0., 1., -30., 30.);
+    float newCutoff = ofMap(pressure, 1., 4., -30., 30.);
     filterCutoff.set(newCutoff);
 
 
@@ -193,11 +196,11 @@ void Breather::draw()
 
     if(mature) {
         float brtnss = col.getBrightness();
-        brtnss = ofMap( getInflation(), 0.0, 1.0, brtnss, 255.0 );
+        brtnss = ofMap( pressure, 1.0, 4.0, brtnss, 255.0 );
         col.setBrightness(brtnss);
 
         float sat = col.getSaturation();
-        sat = ofMap( getInflation(), 0.0, 1.0, sat, 15.0 );
+        sat = ofMap( pressure, 1.0, 4.0, sat, 15.0 );
         col.setSaturation(sat);
     }
 
@@ -228,7 +231,7 @@ void Breather::draw()
 
     // for (unsigned int i = 0; i < springs.size(); i++)
     // {
-    //     // springs[i]->draw();
+    //     springs[i]->draw();
     // }
     for (unsigned int i = 0; i < cellMolecules.size(); i++)
     {
@@ -255,7 +258,7 @@ void Breather::grow()
 
         // disconnect and reconnect the last Spring in the circle
         springs[springs.size()-1]->disconnect();
-        springs[springs.size()-1]->connect(mA, last);
+        springs[springs.size()-1]->connect(last, mA);
 
         Spring *s = new Spring(systemPtr);
         s->connect(mA, first);
@@ -290,23 +293,25 @@ void Breather::grow()
 //------------------------------------------------------------------
 void Breather::inflate() {
 
+    pressure = 1.0;
+
 	
 	if (mature == true && guiPtr->switchOscillation ) {
 
 		// get the position of the center of the cell aka the average position
-		glm::vec2 cellCenter(0,0);
-		for (int i = 0; i < cellMolecules.size(); i++) { 
-			// Molecule * other = cellMolecules.at(i);
-			cellCenter += cellMolecules[i]->position;	// sum the positions of all cells
-		}
-		cellCenter /= cellMolecules.size(); 	// get the average / dividing by the total amount
+		// glm::vec2 cellCenter(0,0);
+		// for (int i = 0; i < cellMolecules.size(); i++) { 
+		// 	// Molecule * other = cellMolecules.at(i);
+		// 	cellCenter += cellMolecules[i]->position;	// sum the positions of all cells
+		// }
+		// cellCenter /= cellMolecules.size(); 	// get the average / dividing by the total amount
 
-        dbgCellCenter = cellCenter;     // for debug visualisation of the expansion Radius
+        // dbgCellCenter = cellCenter;     // for debug visualisation of the expansion Radius
 
 
 
         // get the control oscillation from the LFO in the audioModule
-        float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., -0.2, 1.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
+        float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., 1., 4.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
         // float oscillate = 0.4;
 
         // oscillate *= guiPtr->tuneBreatherOscillationAmount;
@@ -315,36 +320,99 @@ void Breather::inflate() {
         float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
         oscillate *= oscAmount;
 
+        pressure = oscillate;
 
 
-        for (int i = 0; i < cellMolecules.size(); i++) {
+
+        // for (int i = 0; i < cellMolecules.size(); i++) {
         
 
 
-            // calculate the vector towards the cell center for each molecule
-            glm::vec2 desiredPos = cellCenter - cellMolecules[i]->position;     
-            float length = glm::length(desiredPos);		// can be optimized with length2 -> no squareroot calculation!
+        //     // calculate the vector towards the cell center for each molecule
+        //     glm::vec2 desiredPos = cellCenter - cellMolecules[i]->position;     
+        //     float length = glm::length(desiredPos);		// can be optimized with length2 -> no squareroot calculation!
             
-            // the max radius around the cell center towards all molecules will strive
-            float expansionRadius = guiPtr->tuneBreatherExpansionRadius;
-            // map the length towards the radius -> if closer to the center, more force / if already closer to the yielded expansion radius, the force will be less
-            length = ofMap(length, 0.0, expansionRadius, 1.0, 0.0, true);       // ok, CAN'T be optimized via length2 because the ratios are then squared as well :'((
+        //     // the max radius around the cell center towards all molecules will strive
+        //     float expansionRadius = guiPtr->tuneBreatherExpansionRadius;
+        //     // map the length towards the radius -> if closer to the center, more force / if already closer to the yielded expansion radius, the force will be less
+        //     length = ofMap(length, 0.0, expansionRadius, 1.0, 0.0, true);       // ok, CAN'T be optimized via length2 because the ratios are then squared as well :'((
 
-            // define the force (negative to steer away from the center)
-            glm::vec2 expansionForce = glm::normalize(desiredPos) * -1.0 * length;
-            expansionForce *= powf(2, guiPtr->tuneBreatherExpansionForce);   // the force can be tuned
+        //     // define the force (negative to steer away from the center)
+        //     glm::vec2 expansionForce = glm::normalize(desiredPos) * -1.0 * length;
+        //     expansionForce *= powf(2, guiPtr->tuneBreatherExpansionForce);   // the force can be tuned
             
 
-            // multiply force by the oscillation
-            expansionForce *= oscillate;
+        //     // multiply force by the oscillation
+        //     expansionForce *= oscillate;
 
-            // finally apply force
-            cellMolecules[i]->addForce(expansionForce);
+        //     // finally apply force
+        //     cellMolecules[i]->addForce(expansionForce);
 
-            // ofLogNotice(ofToString(expansionForce));
-        }
+        //     // ofLogNotice(ofToString(expansionForce));
+        // }
 
 	}
+
+    pressure *= guiPtr->tunePressureTest;
+
+}
+
+
+
+//------------------------------------------------------------------
+void Breather::applyPressure()
+{
+    
+    volume = calculateVolume();
+
+
+    // float pressure = 2.0;
+    // float pressure = guiPtr->tunePressureTest;
+
+
+    // pressure = getPressure() * guiPtr->tunePressureTest;
+
+    // calculating the pressure force
+    // by the paper of Maciej Matyka (How To Implement a Pressure Soft Body Model)
+    for (int i = 1; i < springs.size(); i++) { 
+
+        float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
+
+        glm::vec2 pressureForce = springs[i]->normal * pressureValue;
+
+        ofLogNotice("my normal is: " + ofToString(springs[i]->normal));
+        ofLogNotice("pressure value: " + ofToString(pressureValue));
+        ofLogNotice("pressure Force: " + ofToString(pressureForce));
+
+        springs[i]->moleculeA->addForce(pressureForce);
+        springs[i]->moleculeB->addForce(pressureForce);
+
+    }
+    
+
+}
+
+
+//------------------------------------------------------------------
+float Breather::calculateVolume()
+{
+
+    float newVolume = 0.0;
+
+    // Calculate Volume of the organizm (Gauss Theorem)
+    // implementation inspired by Maciej Matyka
+    for (int i = 1; i < springs.size(); i++) { 
+
+        float x1 = springs[i]->moleculeA->position.x;
+        float x2 = springs[i]->moleculeB->position.x;
+
+        newVolume += 0.5 * abs(x1 - x2) * abs(springs[i]->normal.x) * springs[i]->currentLength;
+
+    }
+
+    ofLogNotice("my volume is: " + ofToString(newVolume));
+
+    return newVolume;
 
 }
 

@@ -88,6 +88,9 @@ void GuiApp::setSimulationGUI() {
 
     guiTune.add(switchConnections.set("Switch connections", false));
 
+    guiTune.add(tunePressureTest.set("Pressure Test", 1.0, 0.0, 4.0));
+    
+
     gui.add(guiTune);
     gui.getGroup("Tune Forces").minimize();
 

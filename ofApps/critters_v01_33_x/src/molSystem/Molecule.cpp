@@ -258,7 +258,7 @@ glm::vec2 Molecule::flattening() {
 
 	glm::vec2 flatteningForce(0,0);
 	
-	if (bondings.size() == 2) {			// if the middle joint of the Neurons is included (bondings >= 2) the Neurons tend to have a X shape. Without flattening of the middle joint they tend to a Y shape
+	if ( (type == moleculeType::NEURON || type == moleculeType::INTESTINE) && bondings.size() == 2) {			// if the middle joint of the Neurons is included (bondings >= 2) the Neurons tend to have a X shape. Without flattening of the middle joint they tend to a Y shape
 
 		// calculate average position of all Molecules that this Molecule is connected to - hence, the flattest position possible between Molecules
 		glm::vec2 targetPosition(0,0);

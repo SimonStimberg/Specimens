@@ -27,13 +27,16 @@ class Breather{
         void draw();
 
         void grow();
-        void inflate();
+        void applyPressure();
         void syncFrequency();
         void die();
 
         void  adaptArousal(float amount);
         void  adaptValence();
         void  updatePosition();
+        void  inflate();
+        
+        float calculateVolume();
         float getInflation();
         float getVelocity();
 
@@ -44,6 +47,8 @@ class Breather{
         vector <Spring *> springs;
 
         glm::vec2 position;
+        float volume;
+        float pressure;
         float frequency;
         float initFrequency;
 

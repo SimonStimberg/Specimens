@@ -59,6 +59,8 @@ class GuiApp: public ofBaseApp {
 		ofParameter<bool> switchKinectCalibration;
 		ofParameter<bool> switchScreenMask;
 
+		ofParameter<float> tunePressureTest;
+
 
 		// BREATHER SHAPE
 		ofParameterGroup guiBreather;

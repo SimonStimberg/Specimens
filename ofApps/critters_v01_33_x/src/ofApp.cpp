@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-#define SHOW_ON_CRT
+// #define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -103,26 +103,27 @@ void ofApp::update() {
     // ofLogNotice("Touchpoints Scrn 1: " + ofToString(kinectToPoints.getTouchPoints(1)));
     // ofLogNotice("Touchpoints Scrn 2: " + ofToString(kinectToPoints.getTouchPoints(2)));
     // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
+
     // USE THIS FOR MOUSE INTERACTION   
-    // vector <glm::vec2> mousePos;
-    // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+    vector <glm::vec2> mousePos;
+    mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
     for (int i = 0; i < numScreens; i++) {
         
-        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
-        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
+        float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
+        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
 
         // set mouse position (or kinect output) as intrusion points for interaction
-        // molSystem[i].setIntrusionPoints(mousePos);
+        molSystem[i].setIntrusionPoints(mousePos);
 
         
 
-        molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
-        glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
+        // molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+        // glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+        // if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
         
         molSystem[i].update();
 
@@ -205,8 +206,8 @@ void ofApp::draw(){
 
         #ifndef SHOW_ON_CRT
             // simulate upright orientation of the CRT screens when in window mode
-            ofTranslate(600, 0);
-            ofRotateDeg(90);
+            // ofTranslate(600, 0);
+            // ofRotateDeg(90);
         #endif
 
         // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution

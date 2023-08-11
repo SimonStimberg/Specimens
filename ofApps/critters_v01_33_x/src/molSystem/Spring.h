@@ -34,9 +34,11 @@ class Spring {
 
         Molecule * moleculeA;
         Molecule * moleculeB;
-        float length;
+        float restLength;
+        float currentLength;
         float k;    // stiffness constant
         float stretch;
+        glm::vec2 normal;
 
         springType type;
         bool removeMe = false;

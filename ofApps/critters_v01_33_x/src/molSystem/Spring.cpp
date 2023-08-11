@@ -31,9 +31,11 @@ Spring::Spring(molecularSystem *system, springType myType)
 //------------------------------------------------------------------
 void Spring::setup()
 {
-    length = 30.0;
+    restLength = 30.0;
+    currentLength = restLength;
     k = 0.005;
     stretch = 0.0;  
+    normal = glm::vec2(0, 0);
 }
 
 
@@ -71,25 +73,25 @@ void Spring::update()
         
         if (type == DFLT) {
 
-            length = guiPtr->tuneSpringLength;
+            restLength = guiPtr->tuneSpringLength;
             tuneElasticity = guiPtr->tuneSpringElasticity;
             tuneFrcLimit = guiPtr->tuneSpringLimitForce;
 
         } else if (type == JOINT) {
 
-            length = guiPtr->tuneJointLength;
+            restLength = guiPtr->tuneJointLength;
             tuneElasticity = guiPtr->tuneJointElasticity;
             tuneFrcLimit = guiPtr->tuneJointLimitForce;
 
         } else if (type == MEMBRANE) {
 
-            length = guiPtr->tuneMembraneLength;
+            restLength = guiPtr->tuneMembraneLength;
             tuneElasticity = guiPtr->tuneMembraneElasticity;
             tuneFrcLimit = guiPtr->tuneMembraneLimitForce;
 
         } else if (type == STRUCTURE) {
 
-            length = guiPtr->tuneStructureLength;
+            restLength = guiPtr->tuneStructureLength;
             tuneElasticity = guiPtr->tuneStructureElasticity;
             tuneFrcLimit = guiPtr->tuneStructureLimitForce;
 
@@ -103,7 +105,9 @@ void Spring::update()
 
         glm::vec2 force = moleculeA->position - moleculeB->position;
 
-        stretch = glm::length(force) - length;    // Calculate the displacement between distance and rest length.
+        currentLength = glm::length(force);
+
+        stretch = currentLength - restLength;    // Calculate the displacement between current lenght (distance of points) and rest length.
 
         force = glm::normalize(force);
         force *= -1 * k * stretch;
@@ -115,6 +119,11 @@ void Spring::update()
         force *= -1;
         moleculeB->addForce(force);
 
+
+        // normal calculation by Maciej Matyka
+        normal.x = -(moleculeA->position.y - moleculeB->position.y) / currentLength;
+        normal.y =  (moleculeA->position.x - moleculeB->position.x) / currentLength;
+
     }
 
 }
@@ -124,8 +133,13 @@ void Spring::draw()
 {
     if (moleculeA != NULL && moleculeB != NULL) {
 
-        ofSetLineWidth(3);
+        ofSetLineWidth(2);
+        ofSetColor(ofColor::seaGreen);
         ofDrawLine(moleculeA->position, moleculeB->position);
+
+        ofSetColor(ofColor::indianRed);
+        glm::vec2 midPos = (moleculeA->position + moleculeB->position) * 0.5;
+        ofDrawLine(midPos, midPos + normal * 10);
     }
 }
 
