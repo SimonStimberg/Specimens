@@ -40,6 +40,20 @@ void molecularSystem::setup(int width, int height) {
     intestines.reserve(25);
 
 
+    // initialize the bin structure
+    k = 5;                      // "binPower" -> means that every bin is the size of 2^k   e.g.: k=5  ->  2^5=32
+    int	binSize = 1 << k;		// << means "left shift operator" - this shifts the left value in bit representation by the number of digits defined by the right value
+							    // this is equal to multiplying the left with 2^rightValue ->   1 << 4   =   1 * 2^5   =   1 * 32   ->  binSize = 32
+
+	xBins = (int) ceilf((float) width / (float) binSize);
+	yBins = (int) ceilf((float) height / (float) binSize);
+	bins.resize(xBins * yBins);
+
+    ofLogNotice(ofToString(bins.size()) + " bins created!");
+    ofLogNotice("bin size: " + ofToString(binSize));
+
+
+
 }
 
 
@@ -47,6 +61,8 @@ void molecularSystem::setup(int width, int height) {
 void molecularSystem::update() {
 
     // ofLogNotice("updating mol system");
+
+    updateBins();
 
 
     // update all organisms in the Molecular System
@@ -277,6 +293,36 @@ void molecularSystem::addIntestine(float x, float y) {
     n->audioModule >> masterBus.ch(3);
 
     intestines.push_back(n);
+
+}
+
+
+
+// CLEARS AND REASSIGNS THE MOLECULES TO THE BINS
+//------------------------------------------------------------------
+void molecularSystem::updateBins() {			
+	
+	// clear all bins
+	for(int i = 0; i < bins.size(); i++) {
+		bins[i].clear();
+	}
+
+	// iterate over all molecules
+	// and assign them to the bins based on their position
+	unsigned xBin, yBin, bin;
+	for(int i = 0; i < allMolecules.size(); i++) {
+		Molecule * m = allMolecules[i];
+        float x = m->position.x + worldSize.x*0.5;
+        float y = m->position.y + worldSize.y*0.5;
+		xBin = ((unsigned) x) >> k;		// a fancy (and maybe more performant) way to write  (int)floor(position.x / binSize)		
+		yBin = ((unsigned) y) >> k;		// >> "right shift operator" is the equivalent to dividing the left value by 2^rightValue
+											// ->   a >> b   =  a/(2^b)
+											// value will be "floored" -> like converting a resulting float to int, everything after the comma will be dismissed
+		
+		bin = yBin * xBins + xBin;				// get the position in the array
+		if(xBin < xBins && yBin < yBins)		// just make sure the calculated bin position is within the bounds of the existing array
+			bins[bin].push_back(m);
+	}
 
 }
 

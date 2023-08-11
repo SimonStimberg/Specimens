@@ -27,6 +27,7 @@ class molecularSystem{
         void update();
         void draw();
 
+        void updateBins();
         vector <float> getCellInflation();
         vector <int> getCellSizes();
         float getSystemPressure();
@@ -56,6 +57,10 @@ class molecularSystem{
         vector <Molecule *> allMolecules;       
         vector <Spring *>   allSprings;
         vector <Spring *>   neuronConnections;
+
+        // bin structure
+        vector< vector<Molecule *> > bins;
+        int k, xBins, yBins;
 
 
         vector <glm::vec2> intrusionPoints;     // interaction points by mouse position or Kinect data

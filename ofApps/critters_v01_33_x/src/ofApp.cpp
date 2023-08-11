@@ -496,6 +496,7 @@ void ofApp::mouseReleased(int x, int y, int button){
         int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
         molSystem[screenID].addRandom(xScaled, yScaled);
+        // molSystem[screenID].addLiquid(xScaled, yScaled);
 
         // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
         // float dice = ofRandom(1.);
