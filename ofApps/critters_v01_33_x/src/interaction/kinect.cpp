@@ -185,7 +185,7 @@ void kinectHandler::computeKinectPoints() {
         for(int v = 0; v < numScreens; v+=2) {
 
             // check if the kinect point is within the bounds of the specific screen 
-            if (probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && probe.z > refPtA[v].y-borderOffset && probe.z < refPtB[v].y+borderOffset ) {      // probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && 
+            if (probe.x > refPtB[v].x-borderOffset*2 && probe.x < refPtA[v].x+borderOffset*2 && probe.z > refPtA[v].y-borderOffset && probe.z < refPtB[v].y+borderOffset ) {      // probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && 
             // if (probe.x > refPtA[v].x-borderOffset && probe.x < refPtB[v].x+borderOffset && probe.z > refPtA[v].y-borderOffset && probe.z < refPtB[v].y+borderOffset ) {      // probe.x > refPtB[v].x-borderOffset && probe.x < refPtA[v].x+borderOffset && 
 
                 // if so, map it to the the screen space

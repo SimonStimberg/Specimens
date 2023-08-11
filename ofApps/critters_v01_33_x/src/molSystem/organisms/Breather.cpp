@@ -130,11 +130,11 @@ void Breather::update()
     pdsp::f2p(frequency) >> audioModule.in_pitch();     // update frequency
 
 
-
-    float newLevel  = ofMap(pressure, 1., 4., -36.0, 0.0, true);
+    // the input mapping values are arbitrary and derived from observation of the system
+    float newLevel  = ofMap(pressure, 0., 7., -36.0, 0.0, true);
     ampCtrl.set(dB(newLevel));
 
-    float newCutoff = ofMap(pressure, 1., 4., -30., 30.);
+    float newCutoff = ofMap(pressure, 0., 7., -30., 30.);
     filterCutoff.set(newCutoff);
 
 
@@ -196,11 +196,11 @@ void Breather::draw()
 
     if(mature) {
         float brtnss = col.getBrightness();
-        brtnss = ofMap( pressure, 1.0, 4.0, brtnss, 255.0 );
+        brtnss = ofMap( pressure, 0.0, 7.0, brtnss, 255.0 );
         col.setBrightness(brtnss);
 
         float sat = col.getSaturation();
-        sat = ofMap( pressure, 1.0, 4.0, sat, 15.0 );
+        sat = ofMap( pressure, 0.0, 7.0, sat, 15.0 );
         col.setSaturation(sat);
     }
 
@@ -289,29 +289,19 @@ void Breather::grow()
 }
 
 
+
 // INFLATE 
 //------------------------------------------------------------------
 void Breather::inflate() {
 
-    pressure = 1.0;
+    pressure = 1.0; // standard pressure level
 
 	
 	if (mature == true && guiPtr->switchOscillation ) {
 
-		// get the position of the center of the cell aka the average position
-		// glm::vec2 cellCenter(0,0);
-		// for (int i = 0; i < cellMolecules.size(); i++) { 
-		// 	// Molecule * other = cellMolecules.at(i);
-		// 	cellCenter += cellMolecules[i]->position;	// sum the positions of all cells
-		// }
-		// cellCenter /= cellMolecules.size(); 	// get the average / dividing by the total amount
-
-        // dbgCellCenter = cellCenter;     // for debug visualisation of the expansion Radius
-
-
 
         // get the control oscillation from the LFO in the audioModule
-        float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., 1., 4.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
+        float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., -0.5, 5.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
         // float oscillate = 0.4;
 
         // oscillate *= guiPtr->tuneBreatherOscillationAmount;
@@ -324,46 +314,23 @@ void Breather::inflate() {
 
 
 
-        // for (int i = 0; i < cellMolecules.size(); i++) {
-        
-
-
-        //     // calculate the vector towards the cell center for each molecule
-        //     glm::vec2 desiredPos = cellCenter - cellMolecules[i]->position;     
-        //     float length = glm::length(desiredPos);		// can be optimized with length2 -> no squareroot calculation!
-            
-        //     // the max radius around the cell center towards all molecules will strive
-        //     float expansionRadius = guiPtr->tuneBreatherExpansionRadius;
-        //     // map the length towards the radius -> if closer to the center, more force / if already closer to the yielded expansion radius, the force will be less
-        //     length = ofMap(length, 0.0, expansionRadius, 1.0, 0.0, true);       // ok, CAN'T be optimized via length2 because the ratios are then squared as well :'((
-
-        //     // define the force (negative to steer away from the center)
-        //     glm::vec2 expansionForce = glm::normalize(desiredPos) * -1.0 * length;
-        //     expansionForce *= powf(2, guiPtr->tuneBreatherExpansionForce);   // the force can be tuned
-            
-
-        //     // multiply force by the oscillation
-        //     expansionForce *= oscillate;
-
-        //     // finally apply force
-        //     cellMolecules[i]->addForce(expansionForce);
-
-        //     // ofLogNotice(ofToString(expansionForce));
-        // }
 
 	}
 
     pressure *= guiPtr->tunePressureTest;
 
+    // ofLogNotice("pressure: " + ofToString(pressure));
+
 }
 
 
 
+// CALCULATE AND APPLY (GAS) PRESSURE FORCE
 //------------------------------------------------------------------
 void Breather::applyPressure()
 {
     
-    volume = calculateVolume();
+    float volume = calculateVolume();
 
 
     // float pressure = 2.0;
@@ -380,9 +347,9 @@ void Breather::applyPressure()
 
         glm::vec2 pressureForce = springs[i]->normal * pressureValue;
 
-        ofLogNotice("my normal is: " + ofToString(springs[i]->normal));
-        ofLogNotice("pressure value: " + ofToString(pressureValue));
-        ofLogNotice("pressure Force: " + ofToString(pressureForce));
+        // ofLogNotice("my normal is: " + ofToString(springs[i]->normal));
+        // ofLogNotice("pressure value: " + ofToString(pressureValue));
+        // ofLogNotice("pressure Force: " + ofToString(pressureForce));
 
         springs[i]->moleculeA->addForce(pressureForce);
         springs[i]->moleculeB->addForce(pressureForce);
@@ -393,6 +360,7 @@ void Breather::applyPressure()
 }
 
 
+// CALCULATE VOLUME OF ORGANISM
 //------------------------------------------------------------------
 float Breather::calculateVolume()
 {
@@ -410,7 +378,7 @@ float Breather::calculateVolume()
 
     }
 
-    ofLogNotice("my volume is: " + ofToString(newVolume));
+    // ofLogNotice("my volume is: " + ofToString(newVolume));
 
     return newVolume;
 
@@ -499,7 +467,7 @@ void Breather::die()
 
     ofLogNotice("before dying breather: disconnect all");
 
-    audioModule.disconnectAll();
+    // audioModule.disconnectAll();
     
 
     isDead = true;      // mark itself to be removed

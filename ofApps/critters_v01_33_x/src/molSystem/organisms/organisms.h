@@ -47,7 +47,6 @@ class Breather{
         vector <Spring *> springs;
 
         glm::vec2 position;
-        float volume;
         float pressure;
         float frequency;
         float initFrequency;
@@ -102,12 +101,14 @@ class Pumper{
 
         void grow();
         void contract();
+        void applyPressure();
         void die();
         void sync();
 
         void  adaptArousal(float amount);
         void  adaptValence(); 
         void  updatePosition();
+        float calculateVolume();
         float getInflation();
 
 
@@ -117,6 +118,7 @@ class Pumper{
         vector <Spring *> springs;
 
         glm::vec2 position;
+        float pressure;
 
         int nextGrowth;
         int maxGrowth;

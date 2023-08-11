@@ -20,8 +20,8 @@ Pumper::Pumper(molecularSystem *system)
 void Pumper::set(int num, int x, int y)
 {
 
-    // maxGrowth = ofRandom(13, 15);
-    maxGrowth = 9;
+    maxGrowth = ofRandom(13, 15);
+    // maxGrowth = 15;
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
     nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
@@ -35,6 +35,8 @@ void Pumper::set(int num, int x, int y)
 
     arousal = 0.0;
     valence = 0.0;
+
+    pressure = 1.0;
     
 
     for (int i = 0; i < num; i++)
@@ -101,6 +103,8 @@ void Pumper::update()
     {
         springs[i]->update();
     }
+
+    applyPressure();
 
     for (unsigned int i = 0; i < cellMolecules.size(); i++)
     {
@@ -195,10 +199,10 @@ void Pumper::draw()
     }
     ofEndShape();
 
-    for (unsigned int i = 0; i < springs.size(); i++)
-    {
-        springs[i]->draw();
-    }
+    // for (unsigned int i = 0; i < springs.size(); i++)
+    // {
+    //     springs[i]->draw();
+    // }
     // for (unsigned int i = 0; i < cellMolecules.size(); i++)
     // {
     //     cellMolecules[i]->draw();
@@ -210,7 +214,6 @@ void Pumper::draw()
 //------------------------------------------------------------------
 void Pumper::grow()
 {
-    // int maxGrowth = (subType == BREATHER) ? 19 : 13;
 
     if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {
 
@@ -253,48 +256,84 @@ void Pumper::grow()
 //------------------------------------------------------------------
 void Pumper::contract() {
 
+    
+    pressure = 1.0;
 	
 	if (mature == true && guiPtr->switchOscillation ) {
 
-		// get the position of the center of the cell aka the average position
-		glm::vec2 cellCenter(0,0);
-		for (int i = 0; i < cellMolecules.size(); i++) { 
-			// Molecule * other = cellMolecules.at(i);
-			cellCenter += cellMolecules[i]->position;	// sum the positions of all cells
-		}
-		cellCenter /= cellMolecules.size(); 	// get the average / dividing by the total amount
 
-
-       
-        float oscillate = -audioModule.impulseOut() * guiPtr->pmprImpulseAmt;
+        // float oscillate = -audioModule.impulseOut() * guiPtr->pmprImpulseAmt;
+        // float oscillate = ofMap(audioModule.impulseOut(), 0., 1., -2. 1.)
+        float oscillate = audioModule.impulseOut() * 2.2;       // get the impulse envelope from the audioModule (values from 0. to 1.) factor them by certain amount
 
         // map the oscillator amount to the arousal level
         float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
         oscillate *= oscAmount;     // apply the amount to the oscillation
 
 
+        pressure = 1. - oscillate;      // substract the impulse value from the idle pressure (which is 1.)
 
-        for (int i = 0; i < cellMolecules.size(); i++) {  
-
-            // steer towards the average position
-            glm::vec2 desiredPos = cellCenter - cellMolecules[i]->position;
-            // expansionForce = desiredPos - velocity;		// ????? velocity???
-        
-            float length = glm::length(desiredPos);		// can be optimized with length2 -> no squareroot calculation!        
-            float expansionRadius = cellMolecules.size() * guiPtr->tuneExpansionRadius;
-            
-            length = ofMap(length, 0.0, expansionRadius, 1.0, 0.0, true);       // ok, CAN'T be optimized via length2 because the ratios are then squared as well :'((
-
-
-            glm::vec2 expansionForce = glm::normalize(desiredPos) * -1.0 * length;
-            expansionForce *= powf(2, guiPtr->tuneExpansionForce);
-            expansionForce *= oscillate;
-
-            cellMolecules[i]->addForce(expansionForce);
-
-        }
 
 	}
+
+
+    pressure *= guiPtr->tunePressureTest;
+
+    // ofLogNotice("pressure: " + ofToString(pressure));
+
+}
+
+
+
+// CALCULATE AND APPLY (GAS) PRESSURE FORCE
+//------------------------------------------------------------------
+void Pumper::applyPressure()
+{
+    
+    float volume = calculateVolume();
+
+
+    // calculating the pressure force
+    // by the paper of Maciej Matyka (How To Implement a Pressure Soft Body Model)
+    for (int i = 0; i < springs.size(); i++) { 
+
+        float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
+
+        glm::vec2 pressureForce = springs[i]->normal * pressureValue;
+
+        // ofLogNotice("my normal is: " + ofToString(springs[i]->normal));
+        // ofLogNotice("pressure value: " + ofToString(pressureValue));
+        // ofLogNotice("pressure Force: " + ofToString(pressureForce));
+
+        springs[i]->moleculeA->addForce(pressureForce);
+        springs[i]->moleculeB->addForce(pressureForce);
+
+    } 
+
+}
+
+
+// CALCULATE VOLUME OF ORGANISM
+//------------------------------------------------------------------
+float Pumper::calculateVolume()
+{
+
+    float newVolume = 0.0;
+
+    // Calculate Volume of the organizm (Gauss Theorem)
+    // implementation of the concept of Maciej Matyka
+    for (int i = 0; i < springs.size(); i++) { 
+
+        float x1 = springs[i]->moleculeA->position.x;
+        float x2 = springs[i]->moleculeB->position.x;
+
+        newVolume += 0.5 * abs(x1 - x2) * abs(springs[i]->normal.x) * springs[i]->currentLength;
+
+    }
+
+    // ofLogNotice("my volume is: " + ofToString(newVolume));
+
+    return newVolume;
 
 }
 

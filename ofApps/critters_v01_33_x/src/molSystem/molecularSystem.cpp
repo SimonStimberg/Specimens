@@ -160,25 +160,34 @@ void molecularSystem::addRandom(float x, float y) {
 
     // ofLogNotice("adding new random organisms");
 
+    // check if spawning position is within the vessel
+    Molecule * m = new Molecule(this);
+    m->reset(0,0,0,0);
+    float sdf = m->signedDistanceField(glm::vec2(x, y));
 
-    int amount = 1;
 
-    for(unsigned int i = 0; i < amount; i++){ 
+    if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
 
-        x += ofRandom(-15., 15.);
-        y += ofRandom(-15., 15.);
+        int amount = 3;
 
-        float probability[4] = {1.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
-        float dice = ofRandom(1.);
+        for(unsigned int i = 0; i < amount; i++){ 
 
-        if (dice < probability[0]) {
-            addBreather(x, y);
-        } else if (dice < probability[1]) {
-            addPumper(x, y);
-        } else if (dice < probability[2]) {
-            addNeuron(x, y);
-        } else {
-            addIntestine(x, y);
+            x += ofRandom(-15., 15.);
+            y += ofRandom(-15., 15.);
+
+            float probability[4] = {0.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
+            float dice = ofRandom(1.);
+
+            if (dice < probability[0]) {
+                addBreather(x, y);
+            } else if (dice < probability[1]) {
+                addPumper(x, y);
+            } else if (dice < probability[2]) {
+                addNeuron(x, y);
+            } else {
+                addIntestine(x, y);
+            }
+
         }
 
     }

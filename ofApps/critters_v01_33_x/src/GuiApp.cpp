@@ -25,20 +25,20 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/KinectInteraction01.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/Pressure02.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 
     // LOAD DEFAULT SYNTH PRESETS FOR EACH ORGANISM TYPE
     string defaultSynthPreset = "../../../../Presets/Synth/BreathingNew02.xml";
     loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/Pumpers11.xml";
+        defaultSynthPreset = "../../../../Presets/Synth/PressurePumpers01.xml";
     loadPreset(defaultSynthPreset, 2);
         defaultSynthPreset = "../../../../Presets/Synth/NeuronsUnderWater01.xml";
     loadPreset(defaultSynthPreset, 2);
@@ -88,7 +88,7 @@ void GuiApp::setSimulationGUI() {
 
     guiTune.add(switchConnections.set("Switch connections", false));
 
-    guiTune.add(tunePressureTest.set("Pressure Test", 1.0, 0.0, 4.0));
+    guiTune.add(tunePressureTest.set("Pressure Test", 1.0, -5.0, 4.0));
     
 
     gui.add(guiTune);

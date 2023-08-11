@@ -133,13 +133,12 @@ void Spring::draw()
 {
     if (moleculeA != NULL && moleculeB != NULL) {
 
-        ofSetLineWidth(2);
-        ofSetColor(ofColor::seaGreen);
         ofDrawLine(moleculeA->position, moleculeB->position);
 
-        ofSetColor(ofColor::indianRed);
-        glm::vec2 midPos = (moleculeA->position + moleculeB->position) * 0.5;
-        ofDrawLine(midPos, midPos + normal * 10);
+        // // draw the Normal - for debug visualization only
+        // ofSetColor(ofColor::indianRed);
+        // glm::vec2 midPos = (moleculeA->position + moleculeB->position) * 0.5;
+        // ofDrawLine(midPos, midPos + normal * 10);
     }
 }
 

@@ -179,6 +179,7 @@ void Neuron::draw()
     // }
     
     ofSetColor(ofColor::darkSlateGrey);
+    ofSetLineWidth(3);
     for (unsigned int i = 0; i < connections.size(); i++)
     {
         connections[i]->draw();

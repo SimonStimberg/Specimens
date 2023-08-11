@@ -4,20 +4,20 @@
 		<Friction>0.96029</Friction>
 		<Repulsion_Radius>27</Repulsion_Radius>
 		<Tune_Repulsion_Force>-1.44928</Tune_Repulsion_Force>
-		<Flattening_min_Thresh>2</Flattening_min_Thresh>
+		<Flattening_min_Thresh>2.78623</Flattening_min_Thresh>
 		<Flattening_Distance>11.9275</Flattening_Distance>
 		<Tune_Flattening_Force_Limit>-3.76812</Tune_Flattening_Force_Limit>
-		<Spring_Length>9.09058</Spring_Length>
-		<Tune_Spring_Elasticity>-0.724638</Tune_Spring_Elasticity>
-		<Tune_Spring_Force_limit>2.97101</Tune_Spring_Force_limit>
+		<Spring_Length>6.98913</Spring_Length>
+		<Tune_Spring_Elasticity>-2.02899</Tune_Spring_Elasticity>
+		<Tune_Spring_Force_limit>5.28986</Tune_Spring_Force_limit>
 		<Switch_breathing>1</Switch_breathing>
 		<Tune_Expansion_Force>3.18841</Tune_Expansion_Force>
 		<Tune_Expansion_Radius_Factor>3.43478</Tune_Expansion_Radius_Factor>
 		<Tune_Oscillation_Amount>0.0398551</Tune_Oscillation_Amount>
-		<Interaction_Repul_Radius>54.3478</Interaction_Repul_Radius>
-		<Interaction_Repul_Force>-0.543478</Interaction_Repul_Force>
+		<Interaction_Repul_Radius>64.3478</Interaction_Repul_Radius>
+		<Interaction_Repul_Force>-1.043478</Interaction_Repul_Force>
 		<Switch_connections>1</Switch_connections>
-		<Pressure_Test>1.98551</Pressure_Test>
+		<Pressure_Test>1.68116</Pressure_Test>
 	</Tune_Forces>
 	<Tune_Breather_Shape>
 		<Tune_Expansion_Force>0.0688408</Tune_Expansion_Force>

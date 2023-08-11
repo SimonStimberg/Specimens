@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -31,7 +31,7 @@ void ofApp::setup() {
     screenSizeFactor[0] = 0.8 * 0.85;    // Sanyo Ultraschall      // make this screen 80% the size of the native resolution 800px -> 640px
     screenSizeFactor[1] = 0.8 * 0.85;   // Hitachi            // make the smaller screen even only 85% of the bigger screen to match the perceived size
     screenSizeFactor[2] = 0.8 * 0.8;   // sanyo small 
-    screenSizeFactor[3] = 0.85;   // Philips      0.8 * 0.95
+    screenSizeFactor[3] = 0.8 * 0.9;   // Philips      0.8 * 0.95
 
 
     // INITIALIZE THE SCREEN BUFFERS AND THE MOLECULAR SYSTEM FOR EACH SCREEN
@@ -105,25 +105,25 @@ void ofApp::update() {
     // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
 
     // USE THIS FOR MOUSE INTERACTION   
-    vector <glm::vec2> mousePos;
-    mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+    // vector <glm::vec2> mousePos;
+    // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
     for (int i = 0; i < numScreens; i++) {
         
-        float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
-        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
+        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
+        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
 
-        // set mouse position (or kinect output) as intrusion points for interaction
-        molSystem[i].setIntrusionPoints(mousePos);
+        // // set mouse position (or kinect output) as intrusion points for interaction
+        // molSystem[i].setIntrusionPoints(mousePos);
 
         
 
-        // molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
-        // glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        // if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
+        molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+        glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
         
         molSystem[i].update();
 
