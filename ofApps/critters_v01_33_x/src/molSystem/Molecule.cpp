@@ -195,7 +195,9 @@ glm::vec2 Molecule::repulsion() {
         if( distance > 0 && distance < threshold*threshold ){	// check also for > 0 because if its 0 then its checking against itself (because we do not exclude itself from the moleculeSystem pointer)
 			
 			distance = sqrt(distance);
-			newForce = glm::normalize(newForce);
+			newForce /= distance;	// is the same as  newForce = glm::normalize(newForce)
+									// but glm::normalize() does another sqrt() calculation !!!!!
+									// which we can spare by using the calculated distance in the step before
 			newForce *= ofMap(distance, 0.0, threshold, 1.0, 0.0);	// inverse the force -> the closer the molecules are together the stronger the repulsion
 			// newForce *= ofMap(distance, 0.0, threshold*threshold, 1.0, 0.0);
 
@@ -227,7 +229,8 @@ glm::vec2 Molecule::interference() {
 			if( distance > 0 && distance < threshold*threshold ){	// check also for > 0 because if its 0 then its checking against itself (because we do not exclude itself from the moleculeSystem pointer)
 
 				distance = sqrt(distance);
-				newForce = glm::normalize(newForce);
+				// newForce = glm::normalize(newForce);
+				newForce /= distance;
 				distance = ofMap(distance, 0.0, threshold, 1.0, 0.0);	// inverse the force -> the closer the molecules are together the stronger the repulsion
 				newForce *= distance;
 
@@ -277,7 +280,8 @@ glm::vec2 Molecule::flattening() {
 
 			// toDo make force relative to distance to target position
 			distance = sqrt(distance);
-			flatteningForce = glm::normalize(flatteningForce);
+			// flatteningForce = glm::normalize(flatteningForce);
+			flatteningForce /= distance;
 			flatteningForce *= ofMap(distance, thresholdDistance, thresholdDistance + guiPtr->tuneFlatDistance, 0.0, 1.0, true);	
 			
 		} else {
