@@ -15,6 +15,9 @@ void molecularSystem::setup(int width, int height) {
     worldSize.x = width;
     worldSize.y = height;
 
+    // ofLogNotice("width: " + ofToString(width));
+    // ofLogNotice("height: " + ofToString(height));
+
     flush = false;
     flushTimestamp = 0;
     debugView = false;

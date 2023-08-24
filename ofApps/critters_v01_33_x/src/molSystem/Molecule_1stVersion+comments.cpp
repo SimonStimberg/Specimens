@@ -169,97 +169,118 @@ glm::vec2 Molecule::repulsion() {
 
 
     glm::vec2 repulsionForce(0,0);
-	float threshold = guiPtr->tuneRepulsionThresh;
 
-	// float radius = systemPtr->worldSize.y*0.5 - 100;
-	float radius = threshold;
 
-	vector<Molecule *> neighbors = getNeighbors(position.x, position.y, radius);
+	float threshold = guiPtr->tuneRepulsionThresh;		// repulsion radius
 
-	// for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
-	for (int i = 0; i < neighbors.size(); i++) {
+	float radius = threshold * 2;
+
+
+		int k = systemPtr->k;
+		int xBins =systemPtr->xBins;
+		int yBins =systemPtr->yBins;
+
+		float targetX = position.x + systemPtr->worldSize.x*0.5;
+		float targetY = position.y + systemPtr->worldSize.y*0.5;
+
+
+
+		// ofLogNotice("pos Y: " + ofToString(position.y));
+
+		// declare the window of pixels in which should be looked for
+		float minX = targetX - radius;
+		float minY = targetY - radius;
+		float maxX = targetX + radius;
+		float maxY = targetY + radius;
+		if(minX < 0)		// maintain boundaries
+			minX = 0;
+		if(minY < 0)
+			minY = 0;
+
+		// translates this into the window of bins it should be looked in 
+		unsigned minXBin = ((unsigned) minX) >> k;
+		unsigned minYBin = ((unsigned) minY) >> k;
+		unsigned maxXBin = ((unsigned) maxX) >> k;
+		unsigned maxYBin = ((unsigned) maxY) >> k;
 		
-		// Molecule * other = systemPtr->allMolecules[i];
-		Molecule * other = neighbors[i];
-        glm::vec2 newForce = other->position - position;
-        float distance = glm::length2(newForce);
-		
+		maxXBin++;	// add one more -> maybe to account for the "flooring" in the previous step
+		maxYBin++;
+		if(maxXBin > xBins)		// maintain boundaries
+			maxXBin = xBins;
+		if(maxYBin > yBins)
+			maxYBin = yBins;
 
 
-		// don't (or only very slightly) apply the repulsion force, if the checked Molecule is one connected with me via a bonding 
-		float bondingEnergy = 1.0;
-		if(bondings.size() > 0) {	//   && breatherPtr != NULL
-			for (int j = 0; j < bondings.size(); j++) { 
-				if(other->position == bondings[j]->position) {
-					// threshold *= 0.5;
-					bondingEnergy = 0.1;
-					break;
-				}
-			}
-		}
-		threshold *= bondingEnergy;
+		// ofLogNotice("num bins to watch: " + ofToString( (maxXBin-minXBin) * (maxYBin-minYBin) ) );
 
 
-        if( distance > 0 && distance < threshold*threshold ){	// check also for > 0 because if its 0 then its checking against itself (because we do not exclude itself from the moleculeSystem pointer)
+	// int countMols = 0;
+
+	// iterate over the window of bins 
+	for(int y = minYBin; y < maxYBin; y++) {
+		for(int x = minXBin; x < maxXBin; x++) {
+
+
+			vector<Molecule *>& curBin = systemPtr->bins[y * xBins + x];		// get the current bin from the window of bins
+
+			// countMols += curBin.size();
+
+
+			// ofLogNotice("num Molecules in bin: " + ofToString(curBin.size()));
 			
-			distance = sqrt(distance);
-			newForce /= distance;	// is the same as  newForce = glm::normalize(newForce)
-									// but glm::normalize() does another sqrt() calculation !!!!!
-									// which we can spare by using the calculated distance in the step before
-			newForce *= ofMap(distance, 0.0, threshold, 1.0, 0.0);	// inverse the force -> the closer the molecules are together the stronger the repulsion
-			// newForce *= ofMap(distance, 0.0, threshold*threshold, 1.0, 0.0);
+			for(int i = 0; i < curBin.size(); i++) {		// iterate over that bin and do the force calculation against every particle thats in there (repulse it from the given position...)
 
-			repulsionForce += -newForce * powf(2, guiPtr->tuneRepulsionForce) * bondingEnergy;
+			// }
+
+
+
+	// ofLogNotice("Molecules in surrounding: " + ofToString(countMols));
+
+
+
+
+			// for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
+				
+				Molecule * other = curBin[i];
+				// Molecule * other = systemPtr->allMolecules[i];
+				glm::vec2 newForce = other->position - position;
+				float distance = glm::length2(newForce);
+				
+
+
+				// don't (or only very slightly) apply the repulsion force, if the checked Molecule is one connected with me via a bonding 
+				float bondingEnergy = 1.0;
+				if(bondings.size() > 0) {	//   && breatherPtr != NULL
+					for (int j = 0; j < bondings.size(); j++) { 
+						if(other->position == bondings[j]->position) {
+							// threshold *= 0.5;
+							bondingEnergy = 0.1;
+							break;
+						}
+					}
+				}
+				threshold *= bondingEnergy;
+
+
+				if( distance > 0 && distance < threshold*threshold ){	// check also for > 0 because if its 0 then its checking against itself (because we do not exclude itself from the moleculeSystem pointer)
+					
+					distance = sqrt(distance);
+					newForce /= distance;	// is the same as  newForce = glm::normalize(newForce)
+											// but glm::normalize() does another sqrt() calculation !!!!!
+											// which we can spare by using the calculated distance in the step before
+					newForce *= ofMap(distance, 0.0, threshold, 1.0, 0.0);	// inverse the force -> the closer the molecules are together the stronger the repulsion
+					// newForce *= ofMap(distance, 0.0, threshold*threshold, 1.0, 0.0);
+
+					repulsionForce += -newForce * powf(2, guiPtr->tuneRepulsionForce) * bondingEnergy;
+				}
+
+			}
+
 		}
 	}
 
 
     return repulsionForce;
-}
-
-
-// vector<BinnedParticle*> BinnedParticleSystem::getNeighbors(float x, float y, float radius) {
-// 	vector<BinnedParticle*> region = getRegion(
-// 		(int) (x - radius),
-// 		(int) (y - radius),
-// 		(int) (x + radius),
-// 		(int) (y + radius));
-
-// vector<Molecule *> Molecule::getRegion(unsigned minX, unsigned minY, unsigned maxX, unsigned maxY) {
-vector<Molecule *> Molecule::getNeighbors(float x, float y, float radius) {
-
-	x += systemPtr->worldSize.x*0.5;
-	y += systemPtr->worldSize.y*0.5;
-
-	unsigned minX = (int) (x - radius);
-	unsigned minY = (int) (y - radius);
-	unsigned maxX = (int) (x + radius);
-	unsigned maxY = (int) (y + radius);
-	int k = systemPtr->k;
-	int xBins = systemPtr->xBins;
-	int yBins = systemPtr->yBins;
-
-	vector<Molecule *> region;
-	back_insert_iterator< vector<Molecule *> > back = back_inserter(region);
-
-	unsigned minXBin = minX >> k;
-	unsigned maxXBin = maxX >> k;
-	unsigned minYBin = minY >> k;
-	unsigned maxYBin = maxY >> k;
-	maxXBin++;
-	maxYBin++;
-	if(maxXBin > xBins)
-		maxXBin = xBins;
-	if(maxYBin > yBins)
-		maxYBin = yBins;
-	for(int y = minYBin; y < maxYBin; y++) {
-		for(int x = minXBin; x < maxXBin; x++) {
-			// vector<Molecule*>& cur = bins[y * xBins + x];
-			vector<Molecule *>& curBin = systemPtr->bins[y * xBins + x];
-			copy(curBin.begin(), curBin.end(), back);
-		}
-	}
-	return region;
 }
 
 

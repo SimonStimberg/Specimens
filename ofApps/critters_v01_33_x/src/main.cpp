@@ -4,7 +4,7 @@
 #include "ofAppGLFWWindow.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-#define SHOW_ON_CRT
+// #define SHOW_ON_CRT
 
 
 //========================================================================

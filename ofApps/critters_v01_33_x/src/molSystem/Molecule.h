@@ -47,6 +47,8 @@ class Molecule {
         void removeBonding(Molecule * bondedMolecule);
         void searchConnection();
 
+        vector<Molecule *> getNeighbors(float x, float y, float radius);
+
         // helper functions for calculating a signed distance field (to describe the screen shape)
         float signedDistanceField( glm::vec2 p);
         float sdCircle( glm::vec2 p);
