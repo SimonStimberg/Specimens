@@ -169,21 +169,21 @@ glm::vec2 Molecule::repulsion() {
 
 
     glm::vec2 repulsionForce(0,0);
-	float threshold = guiPtr->tuneRepulsionThresh;
 
-	// float radius = systemPtr->worldSize.y*0.5 - 100;
-	float radius = threshold;
+	float radius = guiPtr->tuneRepulsionThresh;
+	// float radius = systemPtr->worldSize.x;
+	
+	vector<Molecule *> neighbors = systemPtr->getNeighbors(position.x, position.y, radius);
 
-	// vector<Molecule *> neighbors = getNeighbors(position.x, position.y, radius);
-
-	for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
-	// for (int i = 0; i < neighbors.size(); i++) {
+	// for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
+	for (int i = 0; i < neighbors.size(); i++) {
 		
-		Molecule * other = systemPtr->allMolecules[i];
-		// Molecule * other = neighbors[i];
+		// Molecule * other = systemPtr->allMolecules[i];
+		Molecule * other = neighbors[i];
         glm::vec2 newForce = other->position - position;
         float distance = glm::length2(newForce);
-		
+		float threshold = radius;
+		// float threshold = guiPtr->tuneRepulsionThresh;
 
 
 		// don't (or only very slightly) apply the repulsion force, if the checked Molecule is one connected with me via a bonding 
@@ -215,69 +215,6 @@ glm::vec2 Molecule::repulsion() {
 
 
     return repulsionForce;
-}
-
-
-// vector<BinnedParticle*> BinnedParticleSystem::getNeighbors(float x, float y, float radius) {
-// 	vector<BinnedParticle*> region = getRegion(
-// 		(int) (x - radius),
-// 		(int) (y - radius),
-// 		(int) (x + radius),
-// 		(int) (y + radius));
-
-// vector<Molecule *> Molecule::getRegion(unsigned minX, unsigned minY, unsigned maxX, unsigned maxY) {
-vector<Molecule *> Molecule::getNeighbors(float x, float y, float radius) {
-
-	x += systemPtr->worldSize.x*0.5;
-	y += systemPtr->worldSize.y*0.5;
-
-	// unsigned minX = (int) (x - radius);
-	// unsigned minY = (int) (y - radius);
-	// unsigned maxX = (int) (x + radius);
-	// unsigned maxY = (int) (y + radius);
-	int k = systemPtr->k;
-	int binSize = systemPtr->binSize;
-	int xBins = systemPtr->xBins;
-	int yBins = systemPtr->yBins;
-
-	float minX = x - radius;
-	float minY = y - radius;
-	float maxX = x + radius;
-	float maxY = y + radius;
-
-	int minXBin = (int)floor(minX / (float)binSize);
-	int maxXBin = (int)floor(maxX / (float)binSize);
-	int minYBin = (int)floor(minY / (float)binSize);
-	int maxYBin = (int)floor(maxY / (float)binSize);
-
-	minXBin = (int)ofClamp(minXBin, 0, xBins-1);
-	maxXBin = (int)ofClamp(maxXBin, 0, xBins-1);
-	minYBin = (int)ofClamp(minYBin, 0, yBins-1);
-	maxYBin = (int)ofClamp(maxYBin, 0, yBins-1);
-	
-
-	// unsigned minXBin = minX >> k;
-	// unsigned maxXBin = maxX >> k;
-	// unsigned minYBin = minY >> k;
-	// unsigned maxYBin = maxY >> k;
-	// maxXBin++;
-	// maxYBin++;
-	// if(maxXBin > xBins)
-	// 	maxXBin = xBins;
-	// if(maxYBin > yBins)
-	// 	maxYBin = yBins;
-
-	vector<Molecule *> region;
-	back_insert_iterator< vector<Molecule *> > back = back_inserter(region);
-
-	for(int y = minYBin; y <= maxYBin; y++) {
-		for(int x = minXBin; x <= maxXBin; x++) {
-			// vector<Molecule*>& cur = bins[y * xBins + x];
-			vector<Molecule *>& curBin = systemPtr->bins[y * xBins + x];
-			copy(curBin.begin(), curBin.end(), back);
-		}
-	}
-	return region;
 }
 
 
@@ -425,29 +362,46 @@ void Molecule::searchConnection() {
 		debugVector2 = position;
 		// debugVector2 = glm::vec2(0, 0);
 
+		float searchRadius = guiPtr->tuneRepulsionThresh + 5;	// the search radius is the repulsion radius plus a little extra
+		vector<Molecule *> neighbors = systemPtr->getNeighbors(position.x, position.y, searchRadius);
+
 		// check against all Neurons in the system
-		for (int i = 0; i < systemPtr->neurons.size(); i++) {
+		// for (int i = 0; i < systemPtr->neurons.size(); i++) {
+
+		// check against my neighbors
+		for (int i = 0; i < neighbors.size(); i++) {
+
+
+			// check if the neighboring Molecule is part of a Neuron AND if its parent Neuron is not the same as mine AND check if my Neuron hasnt gone over the canvas into the abyss (is about to die)
+			if (neighbors[i]->type == moleculeType::NEURON && neighbors[i]->neuronPtr != neuronPtr && neuronPtr->position.x < systemPtr->worldSize.x) {
+
 
 			// excluding my own Neuron AND make sure neither my Neuron nor the other is over the edge of the screen (and therefore about to be deleted -> SEGMEMTATION FAULT!)
-			if (systemPtr->neurons[i] != neuronPtr && neuronPtr->position.x < systemPtr->worldSize.x && systemPtr->neurons[i]->position.x < systemPtr->worldSize.x) {
+			// if (systemPtr->neurons[i] != neuronPtr && neuronPtr->position.x < systemPtr->worldSize.x && systemPtr->neurons[i]->position.x < systemPtr->worldSize.x) {
 
 				// check against all Molecules in that Neuron
-				for (int j = 0; j < systemPtr->neurons[i]->neuronMolecules.size(); j++) {
+				// for (int j = 0; j < systemPtr->neurons[i]->neuronMolecules.size(); j++) {
+				
 
-					int numBondings = systemPtr->neurons[i]->neuronMolecules[j]->bondings.size();
+				// check if the neighboring Molecule's parent Neuron has not gone into the abyss (is going to die) AND if the neighbor is an end Molecule of an arm (bondings = 1) AND its parent Neuron is mature AND if its not me! (has the same position)
+				if (neighbors[i]->neuronPtr->position.x < systemPtr->worldSize.x && neighbors[i]->bondings.size() == 1 && neighbors[i]->neuronPtr->mature && neighbors[i]->position != position) {
+
+					// int numBondings = systemPtr->neurons[i]->neuronMolecules[j]->bondings.size();
 					
 					// check if the Molecule is either an end Molecule of an arm (bondings = 1) or a middle joint (bondings = 3) and it is not Myself (!)
-					if ( (numBondings == 1) && systemPtr->neurons[i]->mature && systemPtr->neurons[i]->neuronMolecules[j]->position != position) {	// || numBondings == 3   -> to include middle joints
+					// if ( (numBondings == 1) && systemPtr->neurons[i]->mature && systemPtr->neurons[i]->neuronMolecules[j]->position != position) {	// || numBondings == 3   -> to include middle joints
 
-						Molecule * other = systemPtr->neurons[i]->neuronMolecules.at(j);
+						// Molecule * other = systemPtr->neurons[i]->neuronMolecules.at(j);
+						Molecule * other = neighbors[i];
 						glm::vec2 newForce = other->position - position;
 						float distance = glm::length2(newForce);					
 						// float thresholdRadius = (numBondings == 3) ? 25.0 : 35.0;
-						float thresholdRadius = guiPtr->tuneRepulsionThresh + 5;
-						thresholdRadius *= thresholdRadius;
+						// float thresholdRadius = guiPtr->tuneRepulsionThresh + 5;
+						float threshold = searchRadius;
+						threshold *= threshold;
 
 						// if this is all true and the other Molecule is within a closer reach -> connect us!
-						if(distance < thresholdRadius && !found) {
+						if(distance < threshold && !found) {
 
 							debugVector2 = other->position;
 							found = true;
@@ -455,7 +409,7 @@ void Molecule::searchConnection() {
 							break;			
 
 						} 
-					}
+					// }
 				}
 			}
 

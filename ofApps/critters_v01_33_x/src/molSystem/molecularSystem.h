@@ -27,7 +27,10 @@ class molecularSystem{
         void update();
         void draw();
 
+        // bin system
         void updateBins();
+        vector<Molecule *> getNeighbors(float x, float y, float radius);
+
         vector <float> getCellInflation();
         vector <int> getCellSizes();
         float getSystemPressure();

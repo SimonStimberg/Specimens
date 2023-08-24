@@ -340,6 +340,69 @@ void molecularSystem::updateBins() {
 }
 
 
+// RETURN A VECTOR OF POINTERS TO THE MOLECULES IN THE SURROUNDING BINS
+//------------------------------------------------------------------
+vector<Molecule *> molecularSystem::getNeighbors(float x, float y, float radius) {
+
+	// shift the Molecule position (-canvasWidth*0.5, canvasWidth*0.5) to correspond to the bin system's position space (0, canvasWidth)
+	x += worldSize.x*0.5;	
+	y += worldSize.y*0.5;
+
+	// unsigned minX = (int) (x - radius);
+	// unsigned minY = (int) (y - radius);
+	// unsigned maxX = (int) (x + radius);
+	// unsigned maxY = (int) (y + radius);
+	// int k = systemPtr->k;
+	// int binSize = systemPtr->binSize;
+	// int xBins = systemPtr->xBins;
+	// int yBins = systemPtr->yBins;
+
+	// calculate the min and max positions to look for neighbors in space, depending on the given radius 
+	float minX = x - radius;
+	float minY = y - radius;
+	float maxX = x + radius;
+	float maxY = y + radius;
+
+	// get the indices of the corresponding bins, defining the min and max range to look in
+	int minXBin = (int)floor(minX / (float)binSize);
+	int maxXBin = (int)floor(maxX / (float)binSize);
+	int minYBin = (int)floor(minY / (float)binSize);
+	int maxYBin = (int)floor(maxY / (float)binSize);
+
+	// clamp the indices to correspond to the real existing bins!
+	// (if Molecules are outside the canvas, they are still sorted into the closest border bins)
+	minXBin = (int)ofClamp(minXBin, 0, xBins-1);	// because the index of the latest bin is xBins-1 
+	maxXBin = (int)ofClamp(maxXBin, 0, xBins-1);
+	minYBin = (int)ofClamp(minYBin, 0, yBins-1);
+	maxYBin = (int)ofClamp(maxYBin, 0, yBins-1);
+	
+
+	// unsigned minXBin = minX >> k;
+	// unsigned maxXBin = maxX >> k;
+	// unsigned minYBin = minY >> k;
+	// unsigned maxYBin = maxY >> k;
+	// maxXBin++;
+	// maxYBin++;
+	// if(maxXBin > xBins)
+	// 	maxXBin = xBins;
+	// if(maxYBin > yBins)
+	// 	maxYBin = yBins;
+
+	vector<Molecule *> region;
+	back_insert_iterator< vector<Molecule *> > back = back_inserter(region);		// back_inserter method adapted from McCormicks approach
+
+	// iterate over that window of bins, starting with the minimum Bin towards the maximum Bin
+	// <= maxBin   to include the maxBin (-> if min and max are the same, search at least in this one)
+	for(int y = minYBin; y <= maxYBin; y++) {
+		for(int x = minXBin; x <= maxXBin; x++) {
+			vector<Molecule *>& curBin = bins[y * xBins + x];	// get the bin at that specific index
+			copy(curBin.begin(), curBin.end(), back);						// back inserting approach adopted form McCormick
+		}
+	}
+	return region;
+}
+
+
 
 // REMOVE DEAD ORGANISMS
 //------------------------------------------------------------------
