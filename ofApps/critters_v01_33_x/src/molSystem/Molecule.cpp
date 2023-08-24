@@ -174,13 +174,13 @@ glm::vec2 Molecule::repulsion() {
 	// float radius = systemPtr->worldSize.y*0.5 - 100;
 	float radius = threshold;
 
-	vector<Molecule *> neighbors = getNeighbors(position.x, position.y, radius);
+	// vector<Molecule *> neighbors = getNeighbors(position.x, position.y, radius);
 
-	// for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
-	for (int i = 0; i < neighbors.size(); i++) {
+	for (int i = 0; i < systemPtr->allMolecules.size(); i++) {
+	// for (int i = 0; i < neighbors.size(); i++) {
 		
-		// Molecule * other = systemPtr->allMolecules[i];
-		Molecule * other = neighbors[i];
+		Molecule * other = systemPtr->allMolecules[i];
+		// Molecule * other = neighbors[i];
         glm::vec2 newForce = other->position - position;
         float distance = glm::length2(newForce);
 		
@@ -231,29 +231,47 @@ vector<Molecule *> Molecule::getNeighbors(float x, float y, float radius) {
 	x += systemPtr->worldSize.x*0.5;
 	y += systemPtr->worldSize.y*0.5;
 
-	unsigned minX = (int) (x - radius);
-	unsigned minY = (int) (y - radius);
-	unsigned maxX = (int) (x + radius);
-	unsigned maxY = (int) (y + radius);
+	// unsigned minX = (int) (x - radius);
+	// unsigned minY = (int) (y - radius);
+	// unsigned maxX = (int) (x + radius);
+	// unsigned maxY = (int) (y + radius);
 	int k = systemPtr->k;
+	int binSize = systemPtr->binSize;
 	int xBins = systemPtr->xBins;
 	int yBins = systemPtr->yBins;
+
+	float minX = x - radius;
+	float minY = y - radius;
+	float maxX = x + radius;
+	float maxY = y + radius;
+
+	int minXBin = (int)floor(minX / (float)binSize);
+	int maxXBin = (int)floor(maxX / (float)binSize);
+	int minYBin = (int)floor(minY / (float)binSize);
+	int maxYBin = (int)floor(maxY / (float)binSize);
+
+	minXBin = (int)ofClamp(minXBin, 0, xBins-1);
+	maxXBin = (int)ofClamp(maxXBin, 0, xBins-1);
+	minYBin = (int)ofClamp(minYBin, 0, yBins-1);
+	maxYBin = (int)ofClamp(maxYBin, 0, yBins-1);
+	
+
+	// unsigned minXBin = minX >> k;
+	// unsigned maxXBin = maxX >> k;
+	// unsigned minYBin = minY >> k;
+	// unsigned maxYBin = maxY >> k;
+	// maxXBin++;
+	// maxYBin++;
+	// if(maxXBin > xBins)
+	// 	maxXBin = xBins;
+	// if(maxYBin > yBins)
+	// 	maxYBin = yBins;
 
 	vector<Molecule *> region;
 	back_insert_iterator< vector<Molecule *> > back = back_inserter(region);
 
-	unsigned minXBin = minX >> k;
-	unsigned maxXBin = maxX >> k;
-	unsigned minYBin = minY >> k;
-	unsigned maxYBin = maxY >> k;
-	maxXBin++;
-	maxYBin++;
-	if(maxXBin > xBins)
-		maxXBin = xBins;
-	if(maxYBin > yBins)
-		maxYBin = yBins;
-	for(int y = minYBin; y < maxYBin; y++) {
-		for(int x = minXBin; x < maxXBin; x++) {
+	for(int y = minYBin; y <= maxYBin; y++) {
+		for(int x = minXBin; x <= maxXBin; x++) {
 			// vector<Molecule*>& cur = bins[y * xBins + x];
 			vector<Molecule *>& curBin = systemPtr->bins[y * xBins + x];
 			copy(curBin.begin(), curBin.end(), back);

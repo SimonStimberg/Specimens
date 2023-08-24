@@ -45,8 +45,10 @@ void molecularSystem::setup(int width, int height) {
 
     // initialize the bin structure
     k = 5;                      // "binPower" -> means that every bin is the size of 2^k   e.g.: k=5  ->  2^5=32
-    int	binSize = 1 << k;		// << means "left shift operator" - this shifts the left value in bit representation by the number of digits defined by the right value
+    // int	binSize = 1 << k;		// << means "left shift operator" - this shifts the left value in bit representation by the number of digits defined by the right value
 							    // this is equal to multiplying the left with 2^rightValue ->   1 << 4   =   1 * 2^5   =   1 * 32   ->  binSize = 32
+
+    binSize = 32;
 
 	xBins = (int) ceilf((float) width / (float) binSize);
 	yBins = (int) ceilf((float) height / (float) binSize);
@@ -312,15 +314,23 @@ void molecularSystem::updateBins() {
 
 	// iterate over all molecules
 	// and assign them to the bins based on their position
-	unsigned xBin, yBin, bin;
+	// unsigned xBin, yBin, bin;
+    int xBin, yBin, bin;
 	for(int i = 0; i < allMolecules.size(); i++) {
 		Molecule * m = allMolecules[i];
         float x = m->position.x + worldSize.x*0.5;
         float y = m->position.y + worldSize.y*0.5;
-		xBin = ((unsigned) x) >> k;		// a fancy (and maybe more performant) way to write  (int)floor(position.x / binSize)		
-		yBin = ((unsigned) y) >> k;		// >> "right shift operator" is the equivalent to dividing the left value by 2^rightValue
+		// xBin = ((unsigned) x) >> k;		// a fancy (and maybe more performant) way to write  (int)floor(position.x / binSize)		
+		// yBin = ((unsigned) y) >> k;		// >> "right shift operator" is the equivalent to dividing the left value by 2^rightValue
 											// ->   a >> b   =  a/(2^b)
 											// value will be "floored" -> like converting a resulting float to int, everything after the comma will be dismissed
+
+        xBin = (int)floor(x / (float)binSize);
+        yBin = (int)floor(y / (float)binSize);
+
+        xBin = (int)ofClamp(xBin, 0, xBins-1);       // stay in bounds of the existing bins - even if the position is outside of the canvas
+        yBin = (int)ofClamp(yBin, 0, yBins-1);
+        
 		
 		bin = yBin * xBins + xBin;				// get the position in the array
 		if(xBin < xBins && yBin < yBins)		// just make sure the calculated bin position is within the bounds of the existing array

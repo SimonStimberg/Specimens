@@ -60,7 +60,7 @@ class molecularSystem{
 
         // bin structure
         vector< vector<Molecule *> > bins;
-        int k, xBins, yBins;
+        int k, xBins, yBins, binSize;
 
 
         vector <glm::vec2> intrusionPoints;     // interaction points by mouse position or Kinect data
