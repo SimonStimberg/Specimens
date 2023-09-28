@@ -87,12 +87,27 @@ void ofApp::setup() {
 
     ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
+    // #ifdef SHOW_ON_CRT
+        ofHideCursor();     // hide mouse cursor
+    // #endif
+
 }
 
 
 
 //--------------------------------------------------------------
 void ofApp::update() {
+
+    // ofHideCursor();
+
+    if (mouseDown) {
+        // ofLogNotice("still pressed");
+        if (ofGetElapsedTimeMillis() > mouseDownTime + 5000 ) {
+            ofLogNotice("shutdown please");
+            ofSystem("sudo -S shutdown -h now < ~/masterpw.txt");
+            ofExit();
+        }
+    }
 
 
     // USE THIS FOR KINECT INTERACTION
@@ -219,7 +234,7 @@ void ofApp::draw(){
 
         
 
-        #ifdef SHOW_ON_CRT
+        #ifndef SHOW_ON_CRT
             int numMolecules = 0;
             int itrPts = 0;
             for (int i = 0; i < numScreens; i++) {
@@ -235,9 +250,9 @@ void ofApp::draw(){
         #endif
 
 
-        ofSetColor(ofColor::aliceBlue);
-        ofFill();
-        ofDrawCircle(ofGetMouseX(), ofGetMouseY(), 4.);
+        // ofSetColor(ofColor::aliceBlue);
+        // ofFill();
+        // ofDrawCircle(ofGetMouseX(), ofGetMouseY(), 4.);
 
     ofPopMatrix();
 
@@ -445,6 +460,11 @@ void ofApp::keyPressed(int key){
 
     }
 
+    if( key == 'm' ) { 
+        // ofLogNotice("system shutdown please");
+        // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
+    }
+
 
   
 }
@@ -467,6 +487,12 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 
+    if (!mouseDown) {
+        mouseDown = true;
+        mouseDownTime = ofGetElapsedTimeMillis();
+        ofLogNotice("first press");
+    } 
+
 }
 
 //--------------------------------------------------------------
@@ -488,30 +514,37 @@ void ofApp::mouseReleased(int x, int y, int button){
         // SPAWN A RANDOM ORGANISM ON MOUSE CLICK
         // the same will happen if a person's finger will rest at one position for a longer time
 
-        int screenIdx = floor(x / screenResolution.x);
-        float scalingFactor = vessel[screenIdx].getWidth() / screenResolution.x;
-        float xScaled = (x - screenResolution.x * 0.5 ) * scalingFactor - vessel[screenIdx].getWidth() * screenIdx;     // vessel[i].getWidth()
-        float yScaled = (y - screenResolution.y * 0.5 ) * scalingFactor;
+        #ifndef SHOW_ON_CRT 
 
-        int screenID = floor(ofGetMouseX()/ screenResolution.x);
+            int screenIdx = floor(x / screenResolution.x);
+            float scalingFactor = vessel[screenIdx].getWidth() / screenResolution.x;
+            float xScaled = (x - screenResolution.x * 0.5 ) * scalingFactor - vessel[screenIdx].getWidth() * screenIdx;     // vessel[i].getWidth()
+            float yScaled = (y - screenResolution.y * 0.5 ) * scalingFactor;
 
-        molSystem[screenID].addRandom(xScaled, yScaled);
-        // molSystem[screenID].addLiquid(xScaled, yScaled);
+            int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
-        // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
-        // float dice = ofRandom(1.);
+            molSystem[screenID].addRandom(xScaled, yScaled);
+            // molSystem[screenID].addLiquid(xScaled, yScaled);
 
-        // if (dice < probability[0]) {
-        //     molSystem[screenIdx].addBreather(xScaled, yScaled);
-        // } else if (dice < probability[1]) {
-        //     molSystem[screenIdx].addPumper(xScaled, yScaled);
-        // } else if (dice < probability[2]) {
-        //     molSystem[screenIdx].addNeuron(xScaled, yScaled);
-        // } else {
-        //     molSystem[screenIdx].addIntestine(xScaled, yScaled);
-        // }
+            // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
+            // float dice = ofRandom(1.);
+
+            // if (dice < probability[0]) {
+            //     molSystem[screenIdx].addBreather(xScaled, yScaled);
+            // } else if (dice < probability[1]) {
+            //     molSystem[screenIdx].addPumper(xScaled, yScaled);
+            // } else if (dice < probability[2]) {
+            //     molSystem[screenIdx].addNeuron(xScaled, yScaled);
+            // } else {
+            //     molSystem[screenIdx].addIntestine(xScaled, yScaled);
+            // }
+
+        #endif
 
     }
+
+    mouseDown = false;
+    ofLogNotice("mouse press released");
 
 }
 

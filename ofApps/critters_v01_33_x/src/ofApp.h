@@ -73,5 +73,10 @@ class ofApp : public ofBaseApp{
 
 		// kinect class that processes the incoming data from the Kinect for interaction
 		kinectHandler kinectToPoints;
+
+
+
+		bool mouseDown = false;
+		int mouseDownTime = 0;
 		
 };

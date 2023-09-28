@@ -4,7 +4,7 @@
 #include "ofAppGLFWWindow.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 //========================================================================
@@ -41,6 +41,9 @@ int main( ){
 	settings.setPosition(glm::vec2(0,0));
 	settings.windowMode = OF_WINDOW;
 	settings.resizable = false;
+	#ifdef SHOW_ON_CRT
+		settings.visible = false;
+	#endif
 	settings.monitor = 1;
 	shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);
 
