@@ -104,7 +104,9 @@ void ofApp::update() {
         // ofLogNotice("still pressed");
         if (ofGetElapsedTimeMillis() > mouseDownTime + 5000 ) {
             ofLogNotice("shutdown please");
-            ofSystem("sudo -S shutdown -h now < ~/masterpw.txt");
+            // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
+            // ofSystem("sudo -S shutdown -h now < ./masterpw.txt");
+            ofSystem("echo \"xxx\" | sudo -S shutdown -h now");
             ofExit();
         }
     }
@@ -461,8 +463,9 @@ void ofApp::keyPressed(int key){
     }
 
     if( key == 'm' ) { 
-        // ofLogNotice("system shutdown please");
+        ofLogNotice("system shutdown please per keypress");
         // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
+
     }
 
 
