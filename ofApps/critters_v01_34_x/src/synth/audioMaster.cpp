@@ -1,5 +1,6 @@
 
 #include "audioMaster.h"
+#include "ofApp.h"
 
 
 
@@ -55,7 +56,7 @@ void audioModule::Master::setup(int screens){
 
             // MAIN OUTPUT
             // one mono channel per screen
-            gain.ch(i) >> engine.audio_out(i);
+            gain.ch(i) >> engine.audio_out(i % 2);
 
             // create the audio modules for each screen
             // the max number of modules per screen is derived from observation of the maximum number of organisms in the simulation
@@ -86,16 +87,28 @@ void audioModule::Master::setup(int screens){
     #else
         engine.setDeviceID(1);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
     #endif
-    // engine.setChannels (0, 2);  // two channel setup
-    engine.setChannels (0, screens);  // four channel setup
+    engine.setChannels (0, 2);  // two channel setup
+    // engine.setChannels (0, screens);  // four channel setup
     // engine.setup( 44100, 512, 3); 
     engine.setup( 44100, 2048, 8); 
 
 }
 
 
-audioModule::SubMaster & getSubMasterModule(int screen) {
-    return subMasterModules[screen];
+
+//------------------------------------------------------------------
+void audioModule::Master::switchDistortion(bool state, int screen) {
+    float amount = (state) ? 1.0f : 0.0f;  
+    amount >> disasterFX.distortion_ch(screen);
+}
+
+//------------------------------------------------------------------
+void audioModule::Master::setReverbAmount(float amount, int screen) {
+    amount >> disasterFX.reverb_ch(screen);
+}
+
+audioModule::SubMaster & audioModule::Master::getSubMasterModule(int screen) {
+    return subMasterModules[screen]; 
 }
 
 
@@ -118,25 +131,39 @@ void audioModule::SubMaster::init() {
 
     for (int i = 0; i < breatherModules.size(); i++) {
         breatherModules[i].setup();
-        breatherModules[i].out_signal() >> sumBus.ch(0);
+        breatherModules[i] >> sumBus.ch(0);
     }
 
     for (int i = 0; i < pumperModules.size(); i++) {
-        pumperModules[i].setup();
-        pumperModules[i].out_signal() >> sumBus.ch(1);
+        pumperModules[i].initiate();
+        pumperModules[i] >> sumBus.ch(1);
     }
 
     for (int i = 0; i < neuronModules.size(); i++) {
-        neuronModules[i].setup();
-        neuronModules[i].out_signal() >> sumBus.ch(2);
+        neuronModules[i].init();
+        neuronModules[i] >> sumBus.ch(2);
     }
 
     for (int i = 0; i < intestineModules.size(); i++) {
-        intestineModules[i].setup();
-        intestineModules[i].out_signal() >> sumBus.ch(3);
+        intestineModules[i].init();
+        intestineModules[i] >> sumBus.ch(3);
     }
 
     
+}
+
+
+
+audioModule::Breather & audioModule::SubMaster::getFreeBreatherModule() {
+
+    for (int i = 0; i < breatherModules.size(); i++) {
+        if (breatherModules[i].isFree()) {
+            return breatherModules[i];
+        }
+    }
+    ofLogNotice("no free breather module available!");
+    return breatherModules[0];
+
 }
 
 //--------------------------------------------------------------

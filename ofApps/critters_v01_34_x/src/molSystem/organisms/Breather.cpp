@@ -74,24 +74,37 @@ void Breather::set(int num, int x, int y)
     }
 
 
+
+   
+    
+}
+
+
+
+void Breather::linkAudioModule(audioModule::Breather & module)
+{
+    audioModule = &module;
+
+    audioModule->blockModule();
+
     // SETUP AUDIO MODULE
 
     frequency = ofRandom(220., 660.);
-    audioModule.setup(pdsp::f2p(frequency));
+    audioModule->setFrequency(pdsp::f2p(frequency));
     initFrequency = frequency;
 
 
-    ampCtrl >> audioModule.in_level();
+    ampCtrl >> audioModule->in_level();
     ampCtrl.enableSmoothing(50.0f);
-    filterCutoff >> audioModule.in_cutoff();
+    filterCutoff >> audioModule->in_cutoff();
     filterCutoff.enableSmoothing(50.0f);
-    detune >> audioModule.in_tune();
+    detune >> audioModule->in_tune();
     detune.enableSmoothing(50.0f);
-    0.25 >> audioModule.in_breathRate();
+    0.25 >> audioModule->in_breathRate();
 
-    1.0 >> audioModule.in_bypass();
-   
+    1.0 >> audioModule->in_bypass();
     
+
 }
 
 
@@ -127,7 +140,7 @@ void Breather::update()
     rate = ofMap(rate, 0.85, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
     frequency = ofLerp(frequency, initFrequency, rate);     // interpolate between current frequency and initial untuned frequency
     
-    pdsp::f2p(frequency) >> audioModule.in_pitch();     // update frequency
+    pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
 
     // the input mapping values are arbitrary and derived from observation of the system
@@ -140,7 +153,7 @@ void Breather::update()
 
 
     // ALTERNATE SOUND ACCORDING TO VALENCE
-    // valence * 0.25 >> audioModule.in_roughness();
+    // valence * 0.25 >> audioModule->in_roughness();
     // detune.set(valence * 0.5);
 
 
@@ -149,10 +162,10 @@ void Breather::update()
     breathRate *= breathRate;     // then square it for squared mapping
 
     breathRate = ofMap(breathRate, 0., 1., 0.25, 0.6);    // map the normalized and squared ratio to the desired frequency range
-    breathRate >> audioModule.in_breathRate();    // set the rate
+    breathRate >> audioModule->in_breathRate();    // set the rate
 
 
-    if(mature && audioModule.cycleCount() >= maxNumCycles) die();
+    if(mature && audioModule->cycleCount() >= maxNumCycles) die();
 
 
 }
@@ -281,7 +294,7 @@ void Breather::grow()
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {
             timeOfMaturity = ofGetElapsedTimef();
-            audioModule.startBreathing();
+            audioModule->startBreathing();
         }
 
     }
@@ -301,7 +314,7 @@ void Breather::inflate() {
 
 
         // get the control oscillation from the LFO in the audioModule
-        float oscillate = ofMap(audioModule.ctrlLfoOut(), -1., 1., -0.5, 5.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
+        float oscillate = ofMap(audioModule->ctrlLfoOut(), -1., 1., -0.5, 5.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
         // float oscillate = 0.4;
 
         // oscillate *= guiPtr->tuneBreatherOscillationAmount;
@@ -441,7 +454,7 @@ void Breather::syncFrequency()
 void Breather::die()
 {
 
-    0.0 >> audioModule.in_bypass();
+    0.0 >> audioModule->in_bypass();
     
     // get the position of the center of the cell aka the average position
     glm::vec2 cellCenter(0,0);
@@ -467,7 +480,7 @@ void Breather::die()
 
     ofLogNotice("before dying breather: disconnect all");
 
-    // audioModule.disconnectAll();
+    // audioModule->disconnectAll();
     
 
     isDead = true;      // mark itself to be removed

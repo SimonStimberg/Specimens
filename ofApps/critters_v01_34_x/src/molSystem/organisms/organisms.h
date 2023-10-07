@@ -23,6 +23,7 @@ class Breather{
         Breather(molecularSystem * system, cellType myType);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Breather & module);
         void update();
         void draw();
 
@@ -72,7 +73,7 @@ class Breather{
         
 
 
-        audioModule::Breather audioModule;
+        audioModule::Breather * audioModule;
         pdsp::ValueControl  ampCtrl;
         pdsp::ValueControl  filterCutoff;
         pdsp::ValueControl  detune;

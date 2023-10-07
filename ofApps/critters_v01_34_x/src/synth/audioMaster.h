@@ -23,6 +23,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             SubMaster(const SubMaster& other){}
 
             void init();
+            audioModule::Breather & getFreeBreatherModule();
 
             pdsp::ParameterAmp      sumBus;
             pdsp::ParameterAmp      blackhole;
@@ -50,6 +51,8 @@ namespace audioModule {     // all class reside within the name space audioModul
 
             void setup(int screens);
             // void initSynth();
+            void switchDistortion(bool state, int screen);
+            void setReverbAmount(float amount, int screen);
 
 
             audioModule::SubMaster & getSubMasterModule(int screen);

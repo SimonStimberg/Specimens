@@ -118,8 +118,8 @@ void ofApp::update() {
 
 
     // USE THIS FOR KINECT INTERACTION
-    kinectToPoints.update();
-    // molSystem[0].setIntrusionPoints(kinectToPoints.getTouchPoints());
+    // kinectToPoints.update();
+    ////// molSystem[0].setIntrusionPoints(kinectToPoints.getTouchPoints());
 
     // ofLogNotice("Touchpoints Scrn 0: " + ofToString(kinectToPoints.getTouchPoints(0)));
     // ofLogNotice("Touchpoints Scrn 1: " + ofToString(kinectToPoints.getTouchPoints(1)));
@@ -127,23 +127,23 @@ void ofApp::update() {
     // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
 
     // USE THIS FOR MOUSE INTERACTION   
-    // vector <glm::vec2> mousePos;
-    // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+    vector <glm::vec2> mousePos;
+    mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
     for (int i = 0; i < numScreens; i++) {
         
-        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
-        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
+        float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
+        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
 
         // // set mouse position (or kinect output) as intrusion points for interaction
-        // molSystem[i].setIntrusionPoints(mousePos);
+        molSystem[i].setIntrusionPoints(mousePos);
 
         
 
-        molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+        // molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
         glm::vec2 check = kinectToPoints.getTriggerPoint(i);
         if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
         
@@ -189,6 +189,19 @@ void ofApp::update() {
         //     pressure * pressure * 0.65 >> disasterFX.reverb_ch(i);
         //     0.0f >> disasterFX.distortion_ch(i);
         // }
+
+        
+        audioMaster.switchDistortion(molSystem[i].flush, i);
+
+        if(molSystem[i].flush) {
+            audioMaster.switchDistortion(true, i);
+        } else {
+            float pressure = molSystem[i].getSystemPressure();
+            pressure = pressure * pressure * 0.65;
+            audioMaster.setReverbAmount(pressure, i);
+            
+            audioMaster.switchDistortion(false, i);
+        }
 
 
 

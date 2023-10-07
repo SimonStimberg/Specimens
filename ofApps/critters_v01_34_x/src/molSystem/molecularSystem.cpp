@@ -244,6 +244,8 @@ void molecularSystem::addBreather(float x, float y) {
     Breather * c = new Breather(this, cellType::BREATHER);
     c->set(amount, x, y);
 
+    c->linkAudioModule(audioLink->getFreeBreatherModule());
+
     // c->audioModule >> masterBus.ch(0);          // route the audio of the organism to the corresponding stem of that orgainsm type
     // c->audioModule.out_void() >> blackhole; 
 
@@ -418,6 +420,7 @@ void molecularSystem::cleanUp() {
         vector<Breather *>::iterator itB = breathers.begin();
         for(; itB != breathers.end();){
             if( (*itB)->isDead ){
+                (*itB)->audioModule->freeModule();
                 delete *itB;
                 itB = breathers.erase(itB);
                 // ofLogNotice("Breather deleted!");

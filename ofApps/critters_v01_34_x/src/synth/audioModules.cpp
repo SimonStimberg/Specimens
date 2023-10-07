@@ -11,7 +11,7 @@
 // BREATHER AUDIOMODULE
 //------------------------------------------------------------------
 
-void audioModule::Breather::setup(int pitch){
+void audioModule::Breather::setup(){
 
 
     // INPUTS
@@ -30,6 +30,8 @@ void audioModule::Breather::setup(int pitch){
     addModuleOutput("blackhole", intoVoid ); 
 
 
+    bIsFree = true;
+
     // bypass.resize(2);
 
     // SIGNAL PATH
@@ -44,7 +46,8 @@ void audioModule::Breather::setup(int pitch){
 
 
     // DEFAULT VALUES
-    pitch >> voicePitch;
+    // pitch >> voicePitch;
+    // 0.0 >> voicePitch;
     level >> amp.in_mod();
     guiPtr->brthGain >> dBtoLin >> gain.in_mod();
     guiPtr->brthFineTune >> fineTune;
@@ -100,6 +103,10 @@ void audioModule::Breather::setup(int pitch){
     muteAmp.set(0.000000000001f);
     0.000000000001f >> muteEnv.in_velocity();
 
+}
+
+void audioModule::Breather::setFrequency(int pitch) {
+    pitch >> voicePitch;
 }
 
 void audioModule::Breather::startBreathing() { 
