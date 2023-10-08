@@ -30,7 +30,7 @@ void audioModule::Breather::setup(){
     addModuleOutput("blackhole", intoVoid ); 
 
 
-    bIsFree = true;
+    // bIsFree = true;
 
     // bypass.resize(2);
 
@@ -157,15 +157,20 @@ void audioModule::Pumper::initiate(){
     addModuleInput("velocity", velocity); 
     
     // OUTPUTS
-    addModuleOutput("signal", gain ); 
+    addModuleOutput("signal", bypass ); 
     // addModuleOutput("signal", testOut ); 
     addModuleOutput("blackhole", intoVoid ); 
 
 
+    // bIsFree = true;
+
+
     // PATCHING
 
-    osc >> amp >> delaySignal >> gain;  // main signal chain with delay to sync to the visual animation
+    osc >> amp >> delaySignal >> gain >> bypass;  // main signal chain with delay to sync to the visual animation
     
+    0.0 >> bypass.in_mod(); // mute the module by default
+
     
     triggers >> aEnv >> amp.in_mod();  
  
@@ -230,6 +235,20 @@ void audioModule::Pumper::startImpulse(){
 
 }
 
+void audioModule::Pumper::blockModule(){
+    // turn on new instance and mark as blocked
+    1.0f >> bypass.in_mod();
+    bIsFree = false; 
+}
+
+
+void audioModule::Pumper::freeModule(){
+    // reset the module and mark as free
+    countOffset += impulseCount();
+    0.0 >> bypass.in_mod();
+    bIsFree = true;
+}
+
 
 void audioModule::Pumper::enableDB( float minValue ){
     aEnv.enableDBTriggering( minValue, 0.0f);
@@ -250,7 +269,7 @@ float audioModule::Pumper::impulseOut() const {
 }
 
 float audioModule::Pumper::impulseCount() const {
-    return controlEnv.meter_triggers();
+    return controlEnv.meter_triggers() - countOffset;
 }
 
 pdsp::Patchable & audioModule::Pumper::in_trig() {
@@ -279,20 +298,22 @@ void audioModule::Neuron::init(){
 
 
     // OUTPUTS
-    addModuleOutput("output", gain );
+    addModuleOutput("output", bypass );
 
 
 
     // SIGNAL PATH
     
-    // mix >> amp >> gain;
-    mix >> filter >> amp >> gain;
-    // gain >> dBtoLin >> amp.in_mod();
+    mix >> filter >> amp >> gain >> bypass;   // bypass
+    // mix >> amp >> gain;   // bypass
+    // mix >> gain;
+
+    0.0 >> bypass.in_mod(); // mute the module by default
 
 
 
     // CONTOL PATCHING
-    // 60 >> pitch;
+    0.0 >> pitch;
     guiPtr->nronGain >> dBtoLin >> gain.in_mod();
     // guiPtr->nronPitch >> pitch;
     guiPtr->nronFineTune >> fineTune;
@@ -326,9 +347,9 @@ void audioModule::Neuron::init(){
 
 
     // FILTER STUFF
-                filterCutoff >> filter.in_cutoff(); 
+                filterCutoff >> filter.in_cutoff();  /// +++
                 // 20 >> filter.in_cutoff(); 
-                  filterReso >> filter.in_reso();
+                  filterReso >> filter.in_reso();    /// +++
                                 //    ui.filterModSpeed >> filterModLfo.in_freq();
     // filterModLfo.out_sine() >> ui.filterModAmt.ch(v) >> filter.in_cutoff();
 
@@ -341,6 +362,7 @@ void audioModule::Neuron::init(){
     signalDuration >> ampEnv.in_hold();
 
     trigger >> ampEnv >> amp.in_mod();
+    // 1.0 >> amp.in_mod();    // debug
 
     // Filter envelope
     fltrEnv.set(1.0, 1.0, 100.0);    // Attack, Hold, Release, Velocity
@@ -350,10 +372,37 @@ void audioModule::Neuron::init(){
 
 
 
-    pitchEnv.set(0.0f, 0.0f,  250.0f);
-    signalDuration * 2. >> pitchEnv.in_release();
+    // pitchEnv.set(0.0f, 0.0f,  250.0f);
+    // signalDuration * 2. >> pitchEnv.in_release();
 
-    trigger >> pitchEnv;
+    // trigger >> pitchEnv;
+
+}
+
+
+void audioModule::Neuron::blockModule(){
+    // turn on new instance and mark as blocked
+    reset();
+    1.0f >> bypass.in_mod();
+    bIsFree = false; 
+}
+
+
+void audioModule::Neuron::freeModule(){
+    // reset the module and mark as free
+    0.0 >> bypass.in_mod();
+    bIsFree = true;
+}
+
+
+void audioModule::Neuron::reset(){
+
+    // reset filter envelope, without it a bug occurs where the filter envelope is not triggered - super weird
+
+    fltrEnv.set(1.0, 1.0, 100.0);    // Attack, Hold, Release, Velocity
+    signalDuration >> fltrEnv.in_release();
+
+    trigger >> fltrEnv * guiPtr->nronFilterModAmt >> filter.in_cutoff();
 
 }
 
@@ -411,6 +460,8 @@ void audioModule::Intestine::init(){
     // mix >> filter >> amp >> gain;       
     mix * 4.0f >> saturator >> filter >> amp >> gain;       // saturator?
 
+    // 0.0 >> bypass.in_mod(); // mute the module by default
+
 
 
 
@@ -465,5 +516,23 @@ void audioModule::Intestine::init(){
     trigger >> ampEnv >> amp.in_mod();
     trigger >> lfo.in_retrig();
 
+    killSwitch >> trigger;      // to switch the filter (and the sound) off from within the audioModule
 
+
+}
+
+
+void audioModule::Intestine::blockModule(){
+    // turn on new instance and mark as blocked
+    // 1.0f >> bypass.in_mod();
+    bIsFree = false; 
+}
+
+
+void audioModule::Intestine::freeModule(){
+    // reset the module and mark as free
+    ofLogNotice("freeing intestine module");
+    killSwitch.off();       // trigger off signal -> does not take effect if the output is set to 0.0 afterwards (through bypass)
+    // 0.0f >> bypass.in_mod();     // bypas
+    bIsFree = true;
 }

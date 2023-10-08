@@ -478,7 +478,7 @@ void Breather::die()
         }
     }
 
-    ofLogNotice("before dying breather: disconnect all");
+    // ofLogNotice("before dying breather: disconnect all");
 
     // audioModule->disconnectAll();
     

@@ -70,15 +70,31 @@ void Intestine::set(int num, int x, int y)
 
     }
 
+}
 
-    audioModule.init();
+
+void Intestine::linkAudioModule(audioModule::Intestine & module)
+{
+
+    audioModule = &module;
+    audioModule->blockModule();
+
+    ofLogNotice("linking audio module to intestine");
+
+
+    // INITIALIZE AUDIO MODULE
+
+    // audioModule->init();
 
     float choosePitch[3] = {0, 7, 12};
-    pdsp::f2p(55) >> audioModule.in_pitch();
-    soundCtrl >> audioModule.in_trig();
-    pulseRate >> audioModule.in_LFOrate();
+    pdsp::f2p(55) >> audioModule->in_pitch();
+    soundCtrl >> audioModule->in_trig();
+    pulseRate >> audioModule->in_LFOrate();
     pulseRate.enableSmoothing(50.0f);
     // soundCtrl.trigger(1.0);
+
+    soundCtrl.off();
+
 
 
 }
@@ -114,12 +130,12 @@ void Intestine::update()
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
     float rate = arousal * arousal;   // use a squared curve for mapping
     rate = ofMap(rate, 0.75, 1., 0., 15., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
-    rate >> audioModule.in_cutoff();
+    rate >> audioModule->in_cutoff();
 
 
     // float frequency = ofLerp(55, 55+freqDivergence, rate);     // interpolate between current frequency and initial untuned frequency
     
-    // pdsp::f2p(frequency) >> audioModule.in_pitch();     // update frequency
+    // pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
 }
 
@@ -379,7 +395,7 @@ void Intestine::getSynced()
             float threshold = guiPtr->intestineSyncDistance;
 
             if (distance < threshold*threshold) {
-                if (other->audioModule.meter() < 0.01) {
+                if (other->audioModule->meter() < 0.01) {
 
                     if(ofGetElapsedTimeMillis() >= nextDigestion - (int)(guiPtr->intestineDigestionInterval*0.5)) nextDigestion = ofGetElapsedTimeMillis();
 
@@ -416,7 +432,9 @@ void Intestine::die()
         springs[i]->removeMe = true;    // mark the Springs to be removed
     }
 
-    // audioModule.disconnectAll();
+    // audioModule->disconnectAll();
+    // soundCtrl.off();
+    if(isDigesting) systemPtr->doNotDigest = false;     // if the Intestine is still digesting when it dies, make sure to reset the doNotDigest flag
     
 
     isDead = true;      // mark itself to be removed

@@ -65,25 +65,38 @@ void Pumper::set(int num, int x, int y)
     }
 
 
+
+    
+
+    
+    
+}
+
+
+void Pumper::linkAudioModule(audioModule::Pumper & module)
+{
+
+    audioModule = &module;
+
+    audioModule->blockModule();
+
+
     // SETUP AUDIO MODULE
 
-    audioModule.initiate();
-    trigPhase >> audioModule.in_trigPhase();
-    trig >> audioModule.in_trig();
+    // audioModule->reset();
+    trigPhase >> audioModule->in_trigPhase();
+    trig >> audioModule->in_trig();
     trig.trigger(1.0);
 
-    setPhase >> audioModule.in_phase();
-    setVelocity >> audioModule.in_velocity();
+    setPhase >> audioModule->in_phase();
+    setVelocity >> audioModule->in_velocity();
 
 
     float rates[3] = {0.25, 0.5, 1.};
     int pick = floor(ofRandom(3));
     // float impRate = ofRandom(0.25, 0.5);
-    rates[pick] >> audioModule.in_impulseRate();
-    
+    rates[pick] >> audioModule->in_impulseRate();
 
-    
-    
 }
 
 
@@ -113,8 +126,8 @@ void Pumper::update()
 
 
     // alternate the pitch slightly after each beat for variation
-    if(audioModule.impulseCount() > cycleCount) {
-        floor(ofRandom(-5, 5)) >> audioModule.in_pitch();
+    if(audioModule->impulseCount() > cycleCount) {
+        floor(ofRandom(-5, 5)) >> audioModule->in_pitch();
         cycleCount++;
     }
 
@@ -125,7 +138,7 @@ void Pumper::update()
     // impulseRate = (arousal > 0.1) ? ofMap(impulseRate, 0., 1., 0.25, 1.5) : 0.0;    // map the normalized and squared ratio to the desired frequency range
     // map the arousal level to frequency
     impulseRate = ofMap(impulseRate, 0.75, 1., 0.5, 1.5, true);  // map max arousal to 1.5 Hz and reach idle frequency at arousal level of 0.75. Idle frequency should be 0.5 Hz
-    impulseRate >> audioModule.in_impulseRate();    // set the rate
+    impulseRate >> audioModule->in_impulseRate();    // set the rate
     
     // if arousal level falls below 0.1: stop beating
     if(arousal < 0.1) {
@@ -137,7 +150,7 @@ void Pumper::update()
     setVelocity.set(ofMap(arousal, 0., 1., -9., 0.));   // dB non-linear mapping is used. also dim the sound only until -9 dB
 
 
-    if(mature && audioModule.impulseCount() >= maxNumCycles) die();
+    if(mature && audioModule->impulseCount() >= maxNumCycles) die();
    
 }
 
@@ -164,11 +177,11 @@ void Pumper::draw()
 
     if(mature) {
         float brtnss = col.getBrightness();
-        brtnss = ofMap( audioModule.impulseOut(), 0.0, 1.0, brtnss, 255.0 );
+        brtnss = ofMap( audioModule->impulseOut(), 0.0, 1.0, brtnss, 255.0 );
         col.setBrightness(brtnss);
 
         float sat = col.getSaturation();
-        sat = ofMap( audioModule.impulseOut(), 0.0, 1.0, sat, 55.0 );
+        sat = ofMap( audioModule->impulseOut(), 0.0, 1.0, sat, 55.0 );
         col.setSaturation(sat);
         // col = ofColor(255, 25, 0);
     }
@@ -243,7 +256,7 @@ void Pumper::grow()
         
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {
-            audioModule.startImpulse();
+            audioModule->startImpulse();
             timeOfMaturity = ofGetElapsedTimef();
         }
 
@@ -262,9 +275,9 @@ void Pumper::contract() {
 	if (mature == true && guiPtr->switchOscillation ) {
 
 
-        // float oscillate = -audioModule.impulseOut() * guiPtr->pmprImpulseAmt;
-        // float oscillate = ofMap(audioModule.impulseOut(), 0., 1., -2. 1.)
-        float oscillate = audioModule.impulseOut() * 2.2;       // get the impulse envelope from the audioModule (values from 0. to 1.) factor them by certain amount
+        // float oscillate = -audioModule->impulseOut() * guiPtr->pmprImpulseAmt;
+        // float oscillate = ofMap(audioModule->impulseOut(), 0., 1., -2. 1.)
+        float oscillate = audioModule->impulseOut() * 2.2;       // get the impulse envelope from the audioModule (values from 0. to 1.) factor them by certain amount
 
         // map the oscillator amount to the arousal level
         float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
@@ -352,7 +365,7 @@ void Pumper::sync()
             float threshold = guiPtr->pumperSyncDistance;
 
             if (distance < threshold*threshold && distance > 0.) {
-                if (other->audioModule.meter() < 0.01 && (audioModule.meter() > 0.6 || audioModule.meter() < 0.4)) {        // before < 0.4 || > 0.6
+                if (other->audioModule->meter() < 0.01 && (audioModule->meter() > 0.6 || audioModule->meter() < 0.4)) {        // before < 0.4 || > 0.6
 
                     setPhase.set(0.5);      // before 0.5
                     trigPhase.trigger(1.0);
@@ -398,7 +411,7 @@ void Pumper::die()
     }
 
 
-    // audioModule.disconnectAll();
+    // audioModule->disconnectAll();
     
 
     isDead = true;      // mark itself to be removed

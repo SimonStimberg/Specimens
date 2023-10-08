@@ -166,6 +166,47 @@ audioModule::Breather & audioModule::SubMaster::getFreeBreatherModule() {
 
 }
 
+
+audioModule::Pumper & audioModule::SubMaster::getFreePumperModule() {
+
+    for (int i = 0; i < pumperModules.size(); i++) {
+        if (pumperModules[i].isFree()) {
+            return pumperModules[i];
+        }
+    }
+    ofLogNotice("no free pumper module available!");
+    return pumperModules[0];
+
+}
+
+
+audioModule::Neuron & audioModule::SubMaster::getFreeNeuronModule() {
+
+    for (int i = 0; i < neuronModules.size(); i++) {
+        if (neuronModules[i].isFree()) {
+            return neuronModules[i];
+        }
+    }
+    ofLogNotice("no free neuron module available!");
+    return neuronModules[0];
+
+}
+
+
+audioModule::Intestine & audioModule::SubMaster::getFreeIntestineModule() {
+
+    for (int i = 0; i < intestineModules.size(); i++) {
+        if (intestineModules[i].isFree()) {
+            return intestineModules[i];
+        }
+    }
+    ofLogNotice("no free intestine module available!");
+    return intestineModules[0];
+
+}
+
+
+
 //--------------------------------------------------------------
 // void audioModule::Master::initSynth() {
 

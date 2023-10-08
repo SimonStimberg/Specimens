@@ -264,6 +264,8 @@ void molecularSystem::addPumper(float x, float y) {
     Pumper * c = new Pumper(this);
     c->set(amount, x, y);
 
+    c->linkAudioModule(audioLink->getFreePumperModule());
+
     // c->audioModule >> masterBus.ch(1);
     // c->audioModule.out_void() >> blackhole;
 
@@ -281,6 +283,8 @@ void molecularSystem::addNeuron(float x, float y) {
     Neuron * n = new Neuron(this);
     n->set(arms, elements, x, y);
 
+    n->linkAudioModule(audioLink->getFreeNeuronModule());
+
     // n->audioModule >> masterBus.ch(2);
 
     neurons.push_back(n);
@@ -296,6 +300,8 @@ void molecularSystem::addIntestine(float x, float y) {
 
     Intestine * n = new Intestine(this);
     n->set(elements, x, y);
+
+    n->linkAudioModule(audioLink->getFreeIntestineModule());
 
     // n->audioModule >> masterBus.ch(3);
 
@@ -434,6 +440,7 @@ void molecularSystem::cleanUp() {
         vector<Pumper *>::iterator itP = pumpers.begin();
         for(; itP != pumpers.end();){
             if( (*itP)->isDead ){
+                (*itP)->audioModule->freeModule();
                 delete *itP;
                 itP = pumpers.erase(itP);
                 // ofLogNotice("Pumper deleted!");
@@ -470,6 +477,7 @@ void molecularSystem::cleanUp() {
         vector<Neuron *>::iterator itN = neurons.begin();
         for(; itN != neurons.end();){
             if( (*itN)->isDead ){
+                (*itN)->audioModule->freeModule();
                 delete *itN;
                 itN = neurons.erase(itN);
                 // ofLogNotice("Neuron deleted!");
@@ -485,6 +493,7 @@ void molecularSystem::cleanUp() {
         vector<Intestine *>::iterator itI = intestines.begin();
         for(; itI != intestines.end();){
             if( (*itI)->isDead ){
+                (*itI)->audioModule->freeModule();
                 delete *itI;
                 itI = intestines.erase(itI);
                 // ofLogNotice("Intestine deleted!");

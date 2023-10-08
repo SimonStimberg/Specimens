@@ -517,7 +517,7 @@ void ofApp::mousePressed(int x, int y, int button){
     if (!mouseDown) {
         mouseDown = true;
         mouseDownTime = ofGetElapsedTimeMillis();
-        ofLogNotice("first press");
+        // ofLogNotice("first press");
     } 
 
 }
@@ -571,7 +571,7 @@ void ofApp::mouseReleased(int x, int y, int button){
     }
 
     mouseDown = false;
-    ofLogNotice("mouse press released");
+    // ofLogNotice("mouse press released");
 
 }
 

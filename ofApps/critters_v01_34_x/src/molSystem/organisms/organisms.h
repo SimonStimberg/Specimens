@@ -97,6 +97,7 @@ class Pumper{
         Pumper(molecularSystem * system);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Pumper & module);
         void update();
         void draw();
 
@@ -140,7 +141,7 @@ class Pumper{
         int   maxNumCycles;
 
 
-        audioModule::Pumper audioModule;
+        audioModule::Pumper * audioModule;
         pdsp::ValueControl  ampCtrl;
         pdsp::ValueControl  filterCutoff;
         pdsp::TriggerControl  trig;
@@ -167,6 +168,7 @@ class Neuron{
         Neuron(molecularSystem * system);
 
         void set(int arms, int elements, int x, int y);
+        void linkAudioModule(audioModule::Neuron & module);
         void update();
         void draw();
 
@@ -217,7 +219,7 @@ class Neuron{
         float freqDivergence;
 
 
-        audioModule::Neuron audioModule;
+        audioModule::Neuron * audioModule;
         pdsp::TriggerControl  impulse;
         // pdsp::ValueControl  signalDuration;
         
@@ -236,6 +238,7 @@ class Intestine{
         Intestine(molecularSystem * system);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Intestine & module);
         void update();
         void draw();
         
@@ -276,7 +279,7 @@ class Intestine{
         float freqDivergence;
 
 
-        audioModule::Intestine   audioModule;
+        audioModule::Intestine * audioModule;
         pdsp::TriggerControl     soundCtrl;
         pdsp::ValueControl       pulseRate;
 
