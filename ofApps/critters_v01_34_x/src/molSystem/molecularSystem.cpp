@@ -94,7 +94,14 @@ void molecularSystem::update() {
     for(unsigned int i = 0; i < intestines.size(); i++) {
 		intestines[i]->update();
 	}
+
+
+    // apply the accumulated forces for each Molecule in a separate step
+    for(unsigned int i = 0; i < allMolecules.size(); i++) {
+		allMolecules[i]->applyForces();
+	}
  
+
     // remove dead organisms
     if(thereAreCadavers) cleanUp();     
 

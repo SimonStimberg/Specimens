@@ -101,7 +101,15 @@ void Molecule::update() {
 	force += gravity();			// gravity force
 
 
-    velocity *= friction;		// apply friction (fluid resistance / drag)
+
+}
+
+
+
+//------------------------------------------------------------------
+void Molecule::applyForces() {
+
+	velocity *= friction;		// apply friction (fluid resistance / drag)
     velocity += force;			// add force to velocity
     position += velocity;		// add velocity to position
 
@@ -116,8 +124,8 @@ void Molecule::update() {
 		systemPtr->organismsToRemove[LIQUID] = true;
 		systemPtr->thereAreCadavers = true;
 	}
-}
 
+}
 
 
 //------------------------------------------------------------------

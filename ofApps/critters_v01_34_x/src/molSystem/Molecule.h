@@ -32,6 +32,7 @@ class Molecule {
 
         void reset(float x, float y, float velX, float velY);
         void update();
+        void applyForces();
         void draw();
 
         // force calculation functions
