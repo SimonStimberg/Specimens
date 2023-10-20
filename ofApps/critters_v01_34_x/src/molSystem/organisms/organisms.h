@@ -243,6 +243,7 @@ class Intestine{
         void draw();
         
         void grow();
+        void keepShape();
         void digest();
         void die();
         void getSynced();
@@ -251,6 +252,7 @@ class Intestine{
         void  adaptValence();
         void  updatePosition();
         float getDigestionStatus();
+        float minimumDistance2(glm::vec2 v, glm::vec2 w, glm::vec2 p);
         // float getInflation();
 
 

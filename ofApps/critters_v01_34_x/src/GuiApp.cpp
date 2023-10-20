@@ -25,13 +25,14 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/Pressure02.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/IntestinesLessWobbly01.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
+    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 

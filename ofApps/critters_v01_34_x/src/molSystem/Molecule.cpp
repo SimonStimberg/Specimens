@@ -148,8 +148,10 @@ void Molecule::draw() {
 
 		if (type == moleculeType::BREATHER) {
 
-			ofSetColor(208, 255, 63);
-			ofDrawCircle(position.x, position.y, 3.0);
+			// ofSetColor(208, 255, 63);
+			ofColor col = ofColor::fromHex(0x2bdbe6);
+			ofSetColor(col);
+			ofDrawCircle(position.x, position.y, 1.5);
 
 		} else if (type == moleculeType::NEURON && bondings.size() == 1) {
 

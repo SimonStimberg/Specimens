@@ -62,7 +62,7 @@ void Intestine::set(int num, int x, int y)
 
             Spring *sB = new Spring(systemPtr, MEMBRANE);
             Molecule *mB0 = intestineMolecules[ intestineMolecules.size() - 3 ];
-            sB->connect(mB, mB0);
+            sB->connect(mB0, mB);
             springs.push_back(sB);
             systemPtr->allSprings.push_back(sB);
 
@@ -118,6 +118,8 @@ void Intestine::update()
     {
         springs[i]->update();
     }
+
+    keepShape();
 
     for (unsigned int i = 0; i < intestineMolecules.size(); i++)
     {
@@ -207,10 +209,10 @@ void Intestine::draw()
 
 
 
-    // for (unsigned int i = 0; i < intestineMolecules.size(); i++)
-    // {
-    //     intestineMolecules[i]->draw();
-    // }
+    for (unsigned int i = 0; i < intestineMolecules.size(); i++)
+    {
+        intestineMolecules[i]->draw();
+    }
 }
 
 
@@ -259,7 +261,7 @@ void Intestine::grow()
             systemPtr->allSprings.push_back(sA);
 
             Spring *sB = new Spring(systemPtr, MEMBRANE);
-            sB->connect(mB, mB0);
+            sB->connect(mB0, mB);
             springs.push_back(sB);
             systemPtr->allSprings.push_back(sB);
 
@@ -285,6 +287,57 @@ void Intestine::grow()
     }
 
     if (intestineMolecules.size() >= 20) mature = true;     // from a certain length its mature to start digestion
+
+}
+
+
+
+//------------------------------------------------------------------
+void Intestine::keepShape()
+{
+    // to avoid the Intestine to twist its shape, we need to keep the distance between the opposite Molecules constant
+    // for each Membrane segment (Spring), check the distance to the opposite Molecules (two of them) and push them away if to close
+
+    // float threshold = 5.0;
+    float threshold = guiPtr->tuneRepulsionThresh * 0.2;    // the threshold around 5.0 (which is 20% of the repulsion radius) is arbitrary but turned out efficient
+    
+
+    for (int i = 0; i < springs.size(); i++) { 
+            
+        if(springs[i]->type == MEMBRANE) {
+
+            // get the ends (Molecules) of the Membrane segment
+            Molecule *segmentA = springs[i]->moleculeA;
+            Molecule *segmentB = springs[i]->moleculeB;
+
+
+            // get the opposite Molecule that will be pushed away if necessary
+            Molecule *m = segmentA->bondings[0];     // bondings[0] is always the opposite Molecule (aka the one it is connected to via a STRUCTURE spring)
+
+            float distance = minimumDistance2(segmentA->position, segmentB->position, m->position);         
+            if(distance > 0 && distance < threshold*threshold) {
+                glm::vec2 pushFrc = -springs[i]->normal;     // push into the opposite direction of the normal -> aka away from the Membrane
+                distance = sqrt(distance);                
+                pushFrc *= ofMap(distance, 0.0, threshold, 2.0, 0.0);   // map the force according to the distance (0.0 to 2.0 is arbitrary but turned out efficient)
+                m->addForce(pushFrc);
+                // future improvement: force direction should actually not be the normal, but the reflection vector according to the normal! but for the moment this is good enough
+            }
+
+
+            // do the same with the second opposite Molecule
+            m = segmentB->bondings[0];     
+
+            distance = minimumDistance2(segmentA->position, segmentB->position, m->position);         
+            if(distance > 0 && distance < threshold*threshold) {
+                glm::vec2 pushFrc = -springs[i]->normal;     
+                distance = sqrt(distance);
+                pushFrc *= ofMap(distance, 0.0, threshold, 2.0, 0.0);   
+                m->addForce(pushFrc);
+            }
+
+        }
+
+    }
 
 }
 
@@ -441,6 +494,24 @@ void Intestine::die()
     systemPtr->organismsToRemove[INTESTINE] = true;
     systemPtr->thereAreCadavers = true;
 
+}
+
+
+
+// helper function to calculate the distance between a point and a line segment
+// original code from: https://stackoverflow.com/a/1501725
+//------------------------------------------------------------------
+float Intestine::minimumDistance2(glm::vec2 v, glm::vec2 w, glm::vec2 p) {
+    // Return minimum distance between line segment vw and point p
+    const float l2 = glm::length2(v - w);  // i.e. |w-v|^2 -  avoid a sqrt
+    if (l2 == 0.0) return glm::length2(p - v);   // v == w case
+    // Consider the line extending the segment, parameterized as v + t (w - v).
+    // We find projection of point p onto the line. 
+    // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+    // We clamp t from [0,1] to handle points outside the segment vw.
+    const float t = glm::clamp( glm::dot(p - v, w - v) / l2, 0.0f, 1.0f);
+    const glm::vec2 projection = v + t * (w - v);  // Projection falls on the segment
+    return glm::length2(p - projection);
 }
 
 
