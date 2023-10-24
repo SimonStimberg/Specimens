@@ -152,6 +152,10 @@ class Pumper{
         pdsp::ValueControl  setPhase;
         pdsp::ValueControl  setVelocity;
 
+
+        int bugTrack;
+        int bugTrackSub;
+
         
 
 

@@ -124,7 +124,8 @@ float audioModule::Breather::meter_pitch() const{
 }
 
 float audioModule::Breather::ctrlLfoOut() const {
-    return controlAmp.meter_output();
+    // return controlAmp.meter_output();
+    return ofClamp(controlAmp.meter_output(), -1.0f, 1.0f);
 }
 
 int audioModule::Breather::cycleCount() {
@@ -264,7 +265,7 @@ float audioModule::Pumper::meter() const {
 }
 
 float audioModule::Pumper::impulseOut() const {
-    return controlEnv.meter_output();
+    return ofClamp(controlEnv.meter_output(), 0.0f, 1.0f);
     // return outNode.getCRValue();
 }
 

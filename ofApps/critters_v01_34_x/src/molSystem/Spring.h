@@ -9,6 +9,7 @@ enum springType{
     JOINT,
 	MEMBRANE,
 	STRUCTURE,
+    DENDRITE
 };
 
 class Spring {

@@ -104,13 +104,15 @@ void Pumper::linkAudioModule(audioModule::Pumper & module)
 //------------------------------------------------------------------
 void Pumper::update()
 {
+            
     adaptArousal(-0.01);
     adaptValence();
 
-    grow();
-    updatePosition();
+    grow();            
+    updatePosition(); 
     if(mature) sync();
     contract();
+            
 
     for (unsigned int i = 0; i < springs.size(); i++)
     {
@@ -131,8 +133,7 @@ void Pumper::update()
         cycleCount++;
     }
 
-
-
+            
     // SET THE IMPULSE RATE ACCORDING TO AROUSAL LEVEL
     float impulseRate = arousal * arousal;   // use a squared curve for mapping
     // impulseRate = (arousal > 0.1) ? ofMap(impulseRate, 0., 1., 0.25, 1.5) : 0.0;    // map the normalized and squared ratio to the desired frequency range
@@ -258,6 +259,7 @@ void Pumper::grow()
         if(mature) {
             audioModule->startImpulse();
             timeOfMaturity = ofGetElapsedTimef();
+            ofLogNotice("Pumper is mature now!");
         }
 
     }
@@ -268,6 +270,9 @@ void Pumper::grow()
 
 //------------------------------------------------------------------
 void Pumper::contract() {
+
+
+    ofLogNotice("Impulse Out is: " + ofToString(audioModule->impulseOut()));
 
     
     pressure = 1.0;
@@ -292,7 +297,7 @@ void Pumper::contract() {
 
     pressure *= guiPtr->tunePressureTest;
 
-    // ofLogNotice("pressure: " + ofToString(pressure));
+    ofLogNotice("pressure: " + ofToString(pressure));
 
 }
 
@@ -304,6 +309,7 @@ void Pumper::applyPressure()
 {
     
     float volume = calculateVolume();
+    // float volume = 160.0;
 
 
     // calculating the pressure force
@@ -313,10 +319,6 @@ void Pumper::applyPressure()
         float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
 
         glm::vec2 pressureForce = springs[i]->normal * pressureValue;
-
-        // ofLogNotice("my normal is: " + ofToString(springs[i]->normal));
-        // ofLogNotice("pressure value: " + ofToString(pressureValue));
-        // ofLogNotice("pressure Force: " + ofToString(pressureForce));
 
         springs[i]->moleculeA->addForce(pressureForce);
         springs[i]->moleculeB->addForce(pressureForce);
@@ -412,6 +414,7 @@ void Pumper::die()
 
 
     // audioModule->disconnectAll();
+    ofLogNotice("Pumper died!");
     
 
     isDead = true;      // mark itself to be removed
@@ -456,6 +459,7 @@ void Pumper::updatePosition()
         // ofLogNotice("Relieve me, I'm out of the screen!");
         die();
     }
+
 }
 
 

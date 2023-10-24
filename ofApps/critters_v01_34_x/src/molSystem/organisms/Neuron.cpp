@@ -59,7 +59,7 @@ void Neuron::set(int arms, int elements, int x, int y)
 
 
         // connect the new Molecule to the middle joint through a Spring
-        Spring *s = new Spring(systemPtr);
+        Spring *s = new Spring(systemPtr, DENDRITE);
         s->connect(neuronMolecules[0], m);
 
         springs.push_back(s);
@@ -228,7 +228,7 @@ void Neuron::grow()
             systemPtr->allMolecules.push_back(m);      // and adding a copy to the vector containing totally-all-molecules in the whole System (to be considered in the force calculations like repulsion)
 
             // connect the spring
-            Spring *s = new Spring(systemPtr);
+            Spring *s = new Spring(systemPtr, DENDRITE);
             s->connect(lastElement, m);
 
             // lastElement->addBonding(m);

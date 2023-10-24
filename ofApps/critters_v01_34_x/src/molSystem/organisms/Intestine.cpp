@@ -79,7 +79,7 @@ void Intestine::linkAudioModule(audioModule::Intestine & module)
     audioModule = &module;
     audioModule->blockModule();
 
-    ofLogNotice("linking audio module to intestine");
+    // ofLogNotice("linking audio module to intestine");
 
 
     // INITIALIZE AUDIO MODULE

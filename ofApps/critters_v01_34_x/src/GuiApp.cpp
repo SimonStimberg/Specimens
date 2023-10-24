@@ -25,7 +25,7 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/IntestinesLessWobbly01.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/NeuronIndivSprings03.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
@@ -104,6 +104,7 @@ void GuiApp::setSimulationGUI() {
     guiBreather.add(tuneJointElasticity.set("Joint Elasticity", -5., -10, 10));
     guiBreather.add(tuneJointLimitForce.set("Joint Force limit", 0, -10, 10));
     gui.add(guiBreather);
+    gui.getGroup("Tune Breather Shape").minimize();
 
 
     guiIntestine.setName("Tune Intestine Shape");
@@ -116,6 +117,13 @@ void GuiApp::setSimulationGUI() {
     guiIntestine.add(membraneColor.set("Membrane Color", ofColor(40, 40, 130), ofColor(0, 0), 255));
     gui.add(guiIntestine);
     gui.getGroup("Tune Intestine Shape").minimize();
+
+    guiNeuron.setName("Tune Neuron Shape");
+    guiNeuron.add(tuneDendriteLength.set("Dendrite Length", 22.0, 1., 30.));
+    guiNeuron.add(tuneDendriteElasticity.set("Dendrite Elasticity", -5., -10, 10));
+    guiNeuron.add(tuneDendriteLimitForce.set("Dendrite Force limit", 0, -10, 10));
+    gui.add(guiNeuron);
+    // gui.getGroup("Tune Neuron Shape").minimize();
 
 
 
