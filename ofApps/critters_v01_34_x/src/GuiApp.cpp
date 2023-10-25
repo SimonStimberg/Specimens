@@ -31,8 +31,8 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
+    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 

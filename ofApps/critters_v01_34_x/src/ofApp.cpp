@@ -93,7 +93,7 @@ void ofApp::setup() {
     ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
     #ifdef SHOW_ON_CRT
-        ofHideCursor();     // hide mouse cursor
+        // ofHideCursor();     // hide mouse cursor
     #endif
 
 }
@@ -103,7 +103,6 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
-    // ofHideCursor();
 
     if (mouseDown) {
         // ofLogNotice("still pressed");
@@ -118,8 +117,8 @@ void ofApp::update() {
 
 
     // USE THIS FOR KINECT INTERACTION
-    // kinectToPoints.update();
-    ////// molSystem[0].setIntrusionPoints(kinectToPoints.getTouchPoints());
+    kinectToPoints.update();
+    //// molSystem[0].setIntrusionPoints(kinectToPoints.getTouchPoints());
 
     // ofLogNotice("Touchpoints Scrn 0: " + ofToString(kinectToPoints.getTouchPoints(0)));
     // ofLogNotice("Touchpoints Scrn 1: " + ofToString(kinectToPoints.getTouchPoints(1)));
@@ -127,23 +126,23 @@ void ofApp::update() {
     // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
 
     // USE THIS FOR MOUSE INTERACTION   
-    vector <glm::vec2> mousePos;
-    mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+    // vector <glm::vec2> mousePos;
+    // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
     for (int i = 0; i < numScreens; i++) {
         
-        float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
-        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
+        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
+        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
 
         // // set mouse position (or kinect output) as intrusion points for interaction
-        molSystem[i].setIntrusionPoints(mousePos);
+        // molSystem[i].setIntrusionPoints(mousePos);
 
         
 
-        // molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+        molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
         glm::vec2 check = kinectToPoints.getTriggerPoint(i);
         if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
         
@@ -269,9 +268,9 @@ void ofApp::draw(){
             ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
             ofPushMatrix();
                 string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
-                // ofRotateDeg(-90);
-                // ofDrawBitmapString(infoTxt, -500, ofGetWidth()-700);
-                ofDrawBitmapString(infoTxt, 50, 50);
+                ofRotateDeg(-90);
+                ofDrawBitmapString(infoTxt, -500, ofGetWidth()-700);
+                // ofDrawBitmapString(infoTxt, 50, 50);
             ofPopMatrix();
         #endif
 

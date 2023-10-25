@@ -2,6 +2,7 @@
 #include "audioMaster.h"
 #include "ofApp.h"
 
+#define SHOW_ON_CRT
 
 
 // MASTER AUDIO MODULE
@@ -56,7 +57,8 @@ void audioModule::Master::setup(int screens){
 
             // MAIN OUTPUT
             // one mono channel per screen
-            gain.ch(i) >> engine.audio_out(i % 2);
+            // gain.ch(i) >> engine.audio_out(i % 2);
+            gain.ch(i) >> engine.audio_out(i);
 
             // create the audio modules for each screen
             // the max number of modules per screen is derived from observation of the maximum number of organisms in the simulation
@@ -87,8 +89,8 @@ void audioModule::Master::setup(int screens){
     #else
         engine.setDeviceID(1);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
     #endif
-    engine.setChannels (0, 2);  // two channel setup
-    // engine.setChannels (0, screens);  // four channel setup
+    // engine.setChannels (0, 2);  // two channel setup
+    engine.setChannels (0, screens);  // four channel setup
     // engine.setup( 44100, 512, 3); 
     engine.setup( 44100, 2048, 8); 
 
@@ -206,95 +208,3 @@ audioModule::Intestine & audioModule::SubMaster::getFreeIntestineModule() {
 }
 
 
-
-//--------------------------------------------------------------
-// void audioModule::Master::initSynth() {
-
-    // AUDIO SETUP
-
-
-
-
-
-
-
-
-
-    // FX CHAIN ROUTING
-
-    // cleanBus.ch(0) >> compressor[0].ch(0) >> sumBus.ch(0);
-    // cleanBus.ch(1) >> compressor[1].ch(0) >> sumBus.ch(1);
-    // cleanBus.ch(2) >> compressor[2].ch(0) >> sumBus.ch(2);
-    // cleanBus.ch(3) >> compressor[3].ch(0) >> sumBus.ch(3);
-
-    // fxBus.ch(0)    >> compressor[0].ch(1) >> chorus.ch(0) >> delay.ch(0) >> sumBus.ch(0);     // one FX bus per Screen
-    // fxBus.ch(1)    >> compressor[1].ch(1) >> chorus.ch(1) >> delay.ch(1) >> sumBus.ch(1);
-    // fxBus.ch(2)    >> compressor[2].ch(1) >> chorus.ch(2) >> delay.ch(2) >> sumBus.ch(2);
-    // fxBus.ch(3)    >> compressor[3].ch(1) >> chorus.ch(3) >> delay.ch(3) >> sumBus.ch(3); 
-
-
-
-
-
-    // ALL FX BYPASS ROUTING
-
-    // fxBus.ch(0) >> gain.ch(0);
-    // fxBus.ch(1) >> gain.ch(1);
-    // fxBus.ch(2) >> gain.ch(2);
-    // fxBus.ch(3) >> gain.ch(3);
-
-    
-
-    // sumBus.ch(0) >> disasterFX.ch(0) >> loCut.ch(0) >> gain.ch(0);
-    // sumBus.ch(1) >> disasterFX.ch(1) >> loCut.ch(1) >> gain.ch(1); 
-    // sumBus.ch(2) >> disasterFX.ch(2) >> loCut.ch(2) >> gain.ch(2);
-    // sumBus.ch(3) >> disasterFX.ch(3) >> loCut.ch(3) >> gain.ch(3); 
-
-
-
-    // FX SYSTEM COLLAPSE ROUTING
-
-    // mix the reverb according to the system pressure level
-    // sumBus.ch(0) >> mix.in_A();
-    // sumBus.ch(0) >> reverb >> mix.in_B(); 
-    // mixFader >> mix.in_fade();
-
-    // switch routing to the distotion chain once the system collapses
-    // switcher.resize(2);
-    // mix >> switcher.input(0);
-    // mix >> bitCrush * 4.0f >> saturator * dB(-3) >> switcher.input(1);
-
-    // switcher >> gain.ch(0); 
-    // 0.0f >> switcher.in_select();
-
-
-    // gain.ch(0) >> gain.ch(1);      // for temporary stereo monitoring if the simulation runs with one screen only
-
-
-
-    // MAIN OUTPUT
-    // one mono channel per screen
-    // gain.ch(0) >> engine.audio_out(0);
-    // gain.ch(1) >> engine.audio_out(1);
-    // gain.ch(2) >> engine.audio_out(2);
-    // gain.ch(3) >> engine.audio_out(3);
-
-
-        
-
-    //  //------------SETUPS AND START AUDIO-------------
-    // engine.listDevices();
-
-    // // defines the audio device used for output
-    // #ifdef SHOW_ON_CRT
-    //     engine.setDeviceID(4);
-    // #else
-    //     engine.setDeviceID(1);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
-    // #endif
-    // // engine.setChannels (0, 2);  // two channel setup
-    // engine.setChannels (0, 4);  // four channel setup
-    // // engine.setup( 44100, 512, 3); 
-    // engine.setup( 44100, 2048, 8); 
-  
-
-// }

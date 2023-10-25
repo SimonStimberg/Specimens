@@ -112,6 +112,9 @@ void Breather::linkAudioModule(audioModule::Breather & module)
 //------------------------------------------------------------------
 void Breather::update()
 {
+
+            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather " + ofToString(this) + " is NAN!");
+
     adaptArousal(-0.01);
     adaptValence();
 
