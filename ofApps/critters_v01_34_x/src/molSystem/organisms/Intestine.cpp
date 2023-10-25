@@ -18,7 +18,7 @@ void Intestine::set(int num, int x, int y)
 {
 
     nextGrowth = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
-    mature = false;
+    mature = true;
     isDead = false;
 
     isDigesting = false;

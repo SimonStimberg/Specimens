@@ -259,7 +259,7 @@ void Pumper::grow()
         if(mature) {
             audioModule->startImpulse();
             timeOfMaturity = ofGetElapsedTimef();
-            ofLogNotice("Pumper is mature now!");
+            // ofLogNotice("Pumper is mature now!");
         }
 
     }
@@ -272,7 +272,7 @@ void Pumper::grow()
 void Pumper::contract() {
 
 
-    ofLogNotice("Impulse Out is: " + ofToString(audioModule->impulseOut()));
+    // ofLogNotice("Impulse Out is: " + ofToString(audioModule->impulseOut()));
 
     
     pressure = 1.0;
@@ -297,7 +297,7 @@ void Pumper::contract() {
 
     pressure *= guiPtr->tunePressureTest;
 
-    ofLogNotice("pressure: " + ofToString(pressure));
+    // ofLogNotice("pressure: " + ofToString(pressure));
 
 }
 

@@ -81,6 +81,9 @@ class Breather{
 
         glm::vec2 dbgCellCenter;
 
+
+        int bugTrack;
+
         
 
 

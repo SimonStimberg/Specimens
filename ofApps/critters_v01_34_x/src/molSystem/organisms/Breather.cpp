@@ -112,26 +112,42 @@ void Breather::linkAudioModule(audioModule::Breather & module)
 //------------------------------------------------------------------
 void Breather::update()
 {
+
+    // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
+            
+            if (!isnan(cellMolecules[0]->position.x)) bugTrack = 0;
+            
     adaptArousal(-0.01);
     adaptValence();
 
+            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
     grow();
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
     updatePosition();
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
     
     if(mature) syncFrequency();
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+            // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     inflate();
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
 
     for (unsigned int i = 0; i < springs.size(); i++)
     {
         springs[i]->update();
     }
-
+            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     applyPressure();
-
+            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     for (unsigned int i = 0; i < cellMolecules.size(); i++)
     {
         cellMolecules[i]->update();
     }
+
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
 
 
 
@@ -167,12 +183,18 @@ void Breather::update()
 
     if(mature && audioModule->cycleCount() >= maxNumCycles) die();
 
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+
+    
+    // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
 
 }
 
 //------------------------------------------------------------------
 void Breather::draw()
 {
+
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
 
     ofNoFill();
 
@@ -242,6 +264,9 @@ void Breather::draw()
     }
     ofEndShape();
 
+
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
+
     // for (unsigned int i = 0; i < springs.size(); i++)
     // {
     //     springs[i]->draw();
@@ -250,6 +275,8 @@ void Breather::draw()
     {
         cellMolecules[i]->draw();
     }
+
+            // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
 }
 
 
@@ -295,6 +322,7 @@ void Breather::grow()
         if(mature) {
             timeOfMaturity = ofGetElapsedTimef();
             audioModule->startBreathing();
+            ofLogNotice("Breather is mature now!");
         }
 
     }
@@ -308,6 +336,8 @@ void Breather::grow()
 void Breather::inflate() {
 
     pressure = 1.0; // standard pressure level
+
+    // ofLogNotice("Breather ctrlLfoOut: " + ofToString(audioModule->ctrlLfoOut()));
 
 	
 	if (mature == true && guiPtr->switchOscillation ) {
@@ -332,7 +362,7 @@ void Breather::inflate() {
 
     pressure *= guiPtr->tunePressureTest;
 
-    // ofLogNotice("pressure: " + ofToString(pressure));
+    // ofLogNotice("Breather pressure: " + ofToString(pressure));
 
 }
 
@@ -344,6 +374,8 @@ void Breather::applyPressure()
 {
     
     float volume = calculateVolume();
+    ofLogNotice("Volume   " + ofToString(this) + " : " + ofToString(volume));
+    // volume = 160.0f;
 
 
     // float pressure = 2.0;
@@ -357,6 +389,8 @@ void Breather::applyPressure()
     for (int i = 1; i < springs.size(); i++) { 
 
         float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
+
+        if (i == 5) ofLogNotice("pressVal " + ofToString(this) + " : " + ofToString(pressureValue));
 
         glm::vec2 pressureForce = springs[i]->normal * pressureValue;
 
