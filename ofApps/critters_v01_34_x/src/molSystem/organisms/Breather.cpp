@@ -131,17 +131,17 @@ void Breather::update()
             // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     inflate();
             // if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
-            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
+            // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
 
     for (unsigned int i = 0; i < springs.size(); i++)
     {
         springs[i]->update();
     }
             if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
-            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
+            // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     applyPressure();
             if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather is NAN! Error occured at: " + ofToString(bugTrack)); else bugTrack++;
-            ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
+            // ofLogNotice("Breather " + ofToString(this) + " outer Force: " + ofToString(cellMolecules[0]->outerForce));
     for (unsigned int i = 0; i < cellMolecules.size(); i++)
     {
         cellMolecules[i]->update();
@@ -374,7 +374,7 @@ void Breather::applyPressure()
 {
     
     float volume = calculateVolume();
-    ofLogNotice("Volume   " + ofToString(this) + " : " + ofToString(volume));
+    // ofLogNotice("Volume   " + ofToString(this) + " : " + ofToString(volume));
     // volume = 160.0f;
 
 
@@ -390,7 +390,7 @@ void Breather::applyPressure()
 
         float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
 
-        if (i == 5) ofLogNotice("pressVal " + ofToString(this) + " : " + ofToString(pressureValue));
+        // if (i == 5) ofLogNotice("pressVal " + ofToString(this) + " : " + ofToString(pressureValue));
 
         glm::vec2 pressureForce = springs[i]->normal * pressureValue;
 
@@ -451,19 +451,19 @@ void Breather::syncFrequency()
 
                 float targetFreq = 0.0;
                 if (frequency < 275) {
-                    targetFreq = 220;
+                    targetFreq = 220 + ofRandom(-2., 2.);
                 } 
                 else if (frequency < 385) {
-                    targetFreq = 330;
+                    targetFreq = 330 + ofRandom(-3., 3.);
                 }
                 else if (frequency < 495) {
-                    targetFreq = 440;
+                    targetFreq = 440 + ofRandom(-4., 4.);
                 }
                 else if (frequency < 605) {
-                    targetFreq = 550;
+                    targetFreq = 550 + ofRandom(-5., 5.);
                 }
                 else {
-                    targetFreq = 660;
+                    targetFreq = 660 + ofRandom(-6., 6.);
                 }
 
 
@@ -508,7 +508,8 @@ void Breather::die()
         for (int i = 0; i < numSpawnNeurons; i++) { 
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
-            systemPtr->addNeuron(x, y);
+            // systemPtr->addNeuron(x, y);
+            systemPtr->addOnNextFrame(NEURON, x, y);
         }
     }
 

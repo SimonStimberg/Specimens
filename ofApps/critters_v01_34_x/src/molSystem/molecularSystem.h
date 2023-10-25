@@ -45,6 +45,10 @@ class molecularSystem{
         void addIntestine(float x, float y);
         void addOrganisms(organismType type, int num);
         void addRandom(float x, float y);
+        void addControlledRandom(float x, float y);
+        
+        void addOnNextFrame(organismType type, float x, float y);
+        void addFromStack();
         
         void setGui();
         void setIntrusionPoints(vector <glm::vec2> pts) { intrusionPoints.clear(); intrusionPoints = pts; }
@@ -69,6 +73,10 @@ class molecularSystem{
 
 
         vector <glm::vec2> intrusionPoints;     // interaction points by mouse position or Kinect data
+
+
+        vector <organismType> organismsToAdd;
+        vector <glm::vec2>    positionsToAdd;
 
 
         glm::vec2 worldSize;

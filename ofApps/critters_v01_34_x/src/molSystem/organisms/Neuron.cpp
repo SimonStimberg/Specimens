@@ -451,7 +451,8 @@ void Neuron::die()
         if (position.x < systemPtr->worldSize.x) {
             float x = neuronMolecules[i]->position.x + ofRandom(-10.0, 10.0);   // add some randomness to create more dynamic while spawning
             float y = neuronMolecules[i]->position.y + ofRandom(-10.0, 10.0);
-            systemPtr->addLiquid(x, y);
+            // systemPtr->addLiquid(x, y);
+            systemPtr->addOnNextFrame(LIQUID, x, y);
         }
     }
     

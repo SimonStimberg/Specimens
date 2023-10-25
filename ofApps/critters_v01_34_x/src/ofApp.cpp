@@ -477,6 +477,7 @@ void ofApp::keyPressed(int key){
     if (key == '3')   molSystem[0].addOrganisms(NEURON,    5);
     if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  5);
     if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
+    if (key == '9')   molSystem[1].addBreather(ofRandom(-100, 100), ofRandom(-100, 100));
     if (key == '0')   molSystem[1].addIntestine(ofRandom(-10, 10), ofRandom(-10, 10));
 
 
@@ -551,7 +552,8 @@ void ofApp::mouseReleased(int x, int y, int button){
 
             int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
-            molSystem[screenID].addRandom(xScaled, yScaled);
+            // molSystem[screenID].addRandom(xScaled, yScaled);
+            molSystem[screenID].addControlledRandom(xScaled, yScaled);
             // molSystem[screenID].addLiquid(xScaled, yScaled);
 
             // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
