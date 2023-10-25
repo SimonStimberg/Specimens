@@ -221,7 +221,7 @@ void Intestine::draw()
 void Intestine::grow()
 {
 
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && intestineMolecules.size() < maxElements * 2 && !isDigesting) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && intestineMolecules.size() < maxElements * 2 && !isDigesting && arousal > 0.4) {
 
         
         int insertionPoint = floor( ofRandom(1, intestineMolecules.size() * 0.5 -1) ) * 2;      // pick a random position for the insertion of the new element but exclude the first and the last element and be aware to pick an even number, as there are always 2 Molecules because of the two membranes
@@ -348,7 +348,7 @@ void Intestine::digest()
 {
     
     // only digest if the time has come to
-    if ( ofGetElapsedTimeMillis() >= nextDigestion && mature && !isDigesting && arousal > 0.1 && !systemPtr->doNotDigest) {
+    if ( ofGetElapsedTimeMillis() >= nextDigestion && mature && !isDigesting && arousal > 0.3 && !systemPtr->doNotDigest) {
 
         isDigesting = true;
         systemPtr->doNotDigest = true;
@@ -420,9 +420,11 @@ void Intestine::digest()
             nextDigestion = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));    // choose the next signal timestamp 
 
             if( floor( ofRandom(2)) == 0) {
-                systemPtr->addBreather(digestionPos.x, digestionPos.y);
+                // systemPtr->addBreather(digestionPos.x, digestionPos.y);
+                systemPtr->addOnNextFrame(BREATHER, digestionPos.x, digestionPos.y);
             } else {
-                systemPtr->addPumper(digestionPos.x, digestionPos.y);
+                // systemPtr->addPumper(digestionPos.x, digestionPos.y);
+                systemPtr->addOnNextFrame(PUMPER, digestionPos.x, digestionPos.y);
             }
 
             // systemPtr->addLiquid(digestionPos.x, digestionPos.y);

@@ -65,6 +65,8 @@ void molecularSystem::setup(int width, int height) {
 //------------------------------------------------------------------
 void molecularSystem::update() {
 
+    addFromStack();
+
     // ofLogNotice("updating mol system");
 
     updateBins();
@@ -220,6 +222,19 @@ void molecularSystem::addRandom(float x, float y) {
 
     }
 
+}
+
+
+//------------------------------------------------------------------
+void molecularSystem::addControlledRandom(float x, float y) {
+
+    int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
+
+    if( amountOrganisms < 9) {
+        addRandom(x, y);
+    } else if (intestines.size() < 3) {
+        addIntestine(x, y);
+    }
 
 }
 
@@ -313,6 +328,42 @@ void molecularSystem::addIntestine(float x, float y) {
     // n->audioModule >> masterBus.ch(3);
 
     intestines.push_back(n);
+
+}
+
+
+
+//------------------------------------------------------------------
+void molecularSystem::addOnNextFrame(organismType type, float x, float y) {
+
+    organismsToAdd.push_back(type);
+    positionsToAdd.push_back(glm::vec2(x, y));
+
+}
+
+
+
+//------------------------------------------------------------------
+void molecularSystem::addFromStack() {
+
+    if(organismsToAdd.size() > 0 && organismsToAdd.size() == positionsToAdd.size()) {
+
+        // ofLogNotice("adding from stack");
+    
+        for(unsigned int i = 0; i < organismsToAdd.size(); i++){ 
+    
+            if (organismsToAdd[i] == LIQUID)    addLiquid(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == BREATHER)  addBreather(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == PUMPER)    addPumper(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == NEURON)    addNeuron(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == INTESTINE) addIntestine(positionsToAdd[i].x, positionsToAdd[i].y);
+    
+        }
+    
+        organismsToAdd.clear();
+        positionsToAdd.clear();
+
+    }
 
 }
 

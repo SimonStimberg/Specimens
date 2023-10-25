@@ -410,7 +410,8 @@ void Pumper::die()
         for (int i = 0; i < numSpawnNeurons; i++) { 
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
-            systemPtr->addNeuron(x, y);
+            // systemPtr->addNeuron(x, y);
+            systemPtr->addOnNextFrame(NEURON, x, y);
         }
     }
 

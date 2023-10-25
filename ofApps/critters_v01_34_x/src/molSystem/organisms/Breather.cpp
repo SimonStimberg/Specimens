@@ -420,19 +420,19 @@ void Breather::syncFrequency()
 
                 float targetFreq = 0.0;
                 if (frequency < 275) {
-                    targetFreq = 220;
+                    targetFreq = 220 + ofRandom(-2., 2.);
                 } 
                 else if (frequency < 385) {
-                    targetFreq = 330;
+                    targetFreq = 330 + ofRandom(-3., 3.);
                 }
                 else if (frequency < 495) {
-                    targetFreq = 440;
+                    targetFreq = 440 + ofRandom(-4., 4.);
                 }
                 else if (frequency < 605) {
-                    targetFreq = 550;
+                    targetFreq = 550 + ofRandom(-5., 5.);
                 }
                 else {
-                    targetFreq = 660;
+                    targetFreq = 660 + ofRandom(-6., 6.);
                 }
 
 
@@ -477,7 +477,8 @@ void Breather::die()
         for (int i = 0; i < numSpawnNeurons; i++) { 
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
-            systemPtr->addNeuron(x, y);
+            // systemPtr->addNeuron(x, y);
+            systemPtr->addOnNextFrame(NEURON, x, y);
         }
     }
 

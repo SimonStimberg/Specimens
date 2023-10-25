@@ -144,7 +144,7 @@ void ofApp::update() {
 
         molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
         glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
+        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
         
         molSystem[i].update();
 
@@ -325,131 +325,6 @@ void ofApp::setTVmask() {
 
 
 
-// //--------------------------------------------------------------
-// void ofApp::initSynth() {
-
-//     // AUDIO SETUP
-
-
-
-//     // set the gain for each bus
-//     fxBus.set(1.0);
-//     cleanBus.set(1.0);
-//     sumBus.set(1.0);
-//     // guiPtr->masterGain >> gain;
-
-//     guiPtr->lowCutFreq >> loCut.in_freq();  // low cut frequency
-//     compressor.resize(4);
-//     for(int i = 0; i < compressor.size(); i++) {
-//         compressor[i].stereoLink(false);
-//         guiPtr->compThreshold >> compressor[i].in_threshold();
-//         guiPtr->compKnee      >> compressor[i].in_knee();
-//     }
-
-
-
-//     // FX CHAIN ROUTING
-
-//     cleanBus.ch(0) >> compressor[0].ch(0) >> sumBus.ch(0);
-//     cleanBus.ch(1) >> compressor[1].ch(0) >> sumBus.ch(1);
-//     cleanBus.ch(2) >> compressor[2].ch(0) >> sumBus.ch(2);
-//     cleanBus.ch(3) >> compressor[3].ch(0) >> sumBus.ch(3);
-
-//     fxBus.ch(0)    >> compressor[0].ch(1) >> chorus.ch(0) >> delay.ch(0) >> sumBus.ch(0);     // one FX bus per Screen
-//     fxBus.ch(1)    >> compressor[1].ch(1) >> chorus.ch(1) >> delay.ch(1) >> sumBus.ch(1);
-//     fxBus.ch(2)    >> compressor[2].ch(1) >> chorus.ch(2) >> delay.ch(2) >> sumBus.ch(2);
-//     fxBus.ch(3)    >> compressor[3].ch(1) >> chorus.ch(3) >> delay.ch(3) >> sumBus.ch(3); 
-
-
-
-
-
-//     // ALL FX BYPASS ROUTING
-
-//     // fxBus.ch(0) >> gain.ch(0);
-//     // fxBus.ch(1) >> gain.ch(1);
-//     // fxBus.ch(2) >> gain.ch(2);
-//     // fxBus.ch(3) >> gain.ch(3);
-
-    
-
-//     sumBus.ch(0) >> disasterFX.ch(0) >> loCut.ch(0) >> gain.ch(0);
-//     sumBus.ch(1) >> disasterFX.ch(1) >> loCut.ch(1) >> gain.ch(1); 
-//     sumBus.ch(2) >> disasterFX.ch(2) >> loCut.ch(2) >> gain.ch(2);
-//     sumBus.ch(3) >> disasterFX.ch(3) >> loCut.ch(3) >> gain.ch(3); 
-
-
-
-//     // FX SYSTEM COLLAPSE ROUTING
-
-//     // mix the reverb according to the system pressure level
-//     // sumBus.ch(0) >> mix.in_A();
-//     // sumBus.ch(0) >> reverb >> mix.in_B(); 
-//     // mixFader >> mix.in_fade();
-
-//     // switch routing to the distotion chain once the system collapses
-//     // switcher.resize(2);
-//     // mix >> switcher.input(0);
-//     // mix >> bitCrush * 4.0f >> saturator * dB(-3) >> switcher.input(1);
-
-//     // switcher >> gain.ch(0); 
-//     // 0.0f >> switcher.in_select();
-
-
-//     // gain.ch(0) >> gain.ch(1);      // for temporary stereo monitoring if the simulation runs with one screen only
-
-
-
-//     // MAIN OUTPUT
-//     // one mono channel per screen
-//     gain.ch(0) >> engine.audio_out(0);
-//     gain.ch(1) >> engine.audio_out(1);
-//     gain.ch(2) >> engine.audio_out(2);
-//     gain.ch(3) >> engine.audio_out(3);
-
-
-        
-
-//      //------------SETUPS AND START AUDIO-------------
-//     engine.listDevices();
-
-//     // defines the audio device used for output
-//     #ifdef SHOW_ON_CRT
-//         engine.setDeviceID(4);
-//     #else
-//         engine.setDeviceID(1);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
-//     #endif
-//     // engine.setChannels (0, 2);  // two channel setup
-//     engine.setChannels (0, 4);  // four channel setup
-//     // engine.setup( 44100, 512, 3); 
-//     engine.setup( 44100, 2048, 8); 
-  
-
-// }
-
-
-// //--------------------------------------------------------------
-// void ofApp::reconnectAudio(){  
-
-//       for (int i = 0; i < numScreens; i++) {
-
-   
-
-//         // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
-//         // the Molecular System creates stems for each organism type
-//         molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
-//         molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
-//         molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
-//         molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
-
-//         molSystem[i].blackhole >> engine.blackhole();  
-
-//       }
-
-// }
-
-
-
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){  
     
@@ -549,7 +424,8 @@ void ofApp::mouseReleased(int x, int y, int button){
 
             int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
-            molSystem[screenID].addRandom(xScaled, yScaled);
+            // molSystem[screenID].addRandom(xScaled, yScaled);
+            molSystem[screenID].addControlledRandom(xScaled, yScaled);
             // molSystem[screenID].addLiquid(xScaled, yScaled);
 
             // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
