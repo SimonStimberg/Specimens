@@ -86,11 +86,12 @@ void audioModule::Master::setup(int screens){
     // defines the audio device used for output
     #ifdef SHOW_ON_CRT
         engine.setDeviceID(4);
+        engine.setChannels (0, screens);  // four channel setup
     #else
         engine.setDeviceID(1);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
+        engine.setChannels (0, 2);  // two channel setup
     #endif
-    // engine.setChannels (0, 2);  // two channel setup
-    engine.setChannels (0, screens);  // four channel setup
+     
     // engine.setup( 44100, 512, 3); 
     engine.setup( 44100, 2048, 8); 
 

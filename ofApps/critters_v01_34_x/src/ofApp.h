@@ -1,7 +1,5 @@
 #pragma once
 
-// #define SHOW_ON_CRT
-
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxPDSP.h"

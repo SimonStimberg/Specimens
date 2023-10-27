@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -93,7 +93,7 @@ void ofApp::setup() {
     ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
     #ifdef SHOW_ON_CRT
-        // ofHideCursor();     // hide mouse cursor
+        ofHideCursor();     // hide mouse cursor
     #endif
 
 }

@@ -233,7 +233,15 @@ void molecularSystem::addControlledRandom(float x, float y) {
     if( amountOrganisms < 9) {
         addRandom(x, y);
     } else if (intestines.size() < 3) {
-        addIntestine(x, y);
+
+        // check if spawning position is within the vessel
+        Molecule * m = new Molecule(this);
+        m->reset(0,0,0,0);
+        float sdf = m->signedDistanceField(glm::vec2(x, y));
+
+        if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
+            addIntestine(x, y);
+        }
     }
 
 }

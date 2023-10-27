@@ -25,13 +25,13 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/NeuronIndivSprings03.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/lab30_01.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_lab30_01.xml";
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
