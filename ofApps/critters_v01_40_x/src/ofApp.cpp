@@ -358,8 +358,10 @@ void ofApp::keyPressed(int key){
     if (key == '1')   molSystem[0].addOrganisms(BREATHER,  5);
     if (key == '2')   molSystem[0].addOrganisms(PUMPER,    5);
     if (key == '3')   molSystem[0].addOrganisms(NEURON,    5);
-    if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  5);
+    if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  3); molSystem[0].addOrganisms(LIQUID,  10);
     if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
+
+    if (key == '0')   molSystem[0].addControlledRandom(0, 0);
 
 
     // if( key == 'x' ) { 

@@ -17,12 +17,12 @@ Intestine::Intestine(molecularSystem *system)
 void Intestine::set(int num, int x, int y)
 {
 
-    nextGrowth = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+    nextGrowth = ofGetElapsedTimeMillis() + 500 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
     mature = false;
     isDead = false;
 
     isDigesting = false;
-    nextDigestion = ofGetElapsedTimeMillis() + 3000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
+    nextDigestion = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
     digestionPos = glm::vec2(0, 0);
     maxElements = 80;
 
@@ -339,6 +339,23 @@ void Intestine::keepShape()
         }
 
     }
+
+    // curling or wursting force
+    // for (int i = 0; i < intestineMolecules.size(); i++) { 
+
+    //     int targetSegment = 4;
+
+    //     if (i + (targetSegment * 2) < intestineMolecules.size()) {
+    //         Molecule *me = intestineMolecules[i];
+    //         Molecule *other = intestineMolecules[i+(targetSegment*2)];
+
+    //         glm::vec2 newForce = other->position - me->position;
+    //         newForce = glm::normalize(newForce);
+    //         newForce *= 0.5;
+    //         me->addForce(newForce);
+    //     }
+
+    // }
 
 }
 

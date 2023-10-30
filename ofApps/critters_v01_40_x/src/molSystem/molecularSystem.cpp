@@ -165,13 +165,16 @@ void molecularSystem::addOrganisms(organismType type, int num) {
 
             float x = 0.;
             float y = 0.;
-            if(type == LIQUID) {
-                x = -worldSize.x *0.5 - ofRandom(1000.);
-                y = ofRandom(-10., 10.);
-            } else {
-                x = -worldSize.x *0.5 - 50 - ofRandom(10.);
-                y = ofRandom(-10., 10.);
-            }
+            // if(type == LIQUID) {
+            //     x = -worldSize.x *0.5 - ofRandom(1000.);
+            //     y = ofRandom(-10., 10.);
+            // } else {
+            //     x = -worldSize.x *0.5 - 50 - ofRandom(10.);
+            //     y = ofRandom(-10., 10.);
+            // }
+
+            x = ofRandom(-50., 50.);
+            y = ofRandom(-20., 20.);
 
 
             if (type == LIQUID)    addLiquid(x, y);
@@ -233,21 +236,28 @@ void molecularSystem::addRandom(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addControlledRandom(float x, float y) {
 
-    int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
+    // int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
 
-    if( amountOrganisms < 9) {
-        addRandom(x, y);
-    } else if (intestines.size() < 3) {
+    // if( amountOrganisms < 9) {
+    //     addRandom(x, y);
+    // } else if (intestines.size() < 3) {
 
-        // check if spawning position is within the vessel
-        Molecule * m = new Molecule(this);
-        m->reset(0,0,0,0);
-        float sdf = m->signedDistanceField(glm::vec2(x, y));
+    //     // check if spawning position is within the vessel
+    //     Molecule * m = new Molecule(this);
+    //     m->reset(0,0,0,0);
+    //     float sdf = m->signedDistanceField(glm::vec2(x, y));
 
-        if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
-            addIntestine(x, y);
-        }
-    }
+    //     if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
+    //         addIntestine(x, y);
+    //     }
+    // }
+
+    addOrganisms(LIQUID, 10);
+    addOrganisms(INTESTINE, 3);
+    addOrganisms(BREATHER, 2);
+    addOrganisms(PUMPER, 3);
+    addOrganisms(NEURON, 7);
+    
 
 }
 
@@ -330,7 +340,7 @@ void molecularSystem::addNeuron(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addIntestine(float x, float y) {
 
-    int elements = 5;
+    int elements = 8;
 
 
     Intestine * n = new Intestine(this);

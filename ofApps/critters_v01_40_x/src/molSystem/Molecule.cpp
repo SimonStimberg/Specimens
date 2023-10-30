@@ -323,10 +323,14 @@ glm::vec2 Molecule::gravity() {
     
     glm::vec2 gravityForce;
 
+	glm::vec2 brownianMotion(0,0);
+
 
 	// add some very slight horizontal movement to simulate Brownian Molecular Motion
-	float brownianMotion = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.005;
+	brownianMotion.x = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.007;
+	brownianMotion.y = ofSignedNoise(uniqueVal, position.y * 0.006, ofGetElapsedTimef()*0.2) * 0.007;
 	float gravity = 0.0;
+	
 
 	// if(type == moleculeType::LIQUID) {
 
@@ -344,8 +348,8 @@ glm::vec2 Molecule::gravity() {
 	// }
 
 
-	gravityForce.x = gravity;
-	gravityForce.y = brownianMotion;
+	gravityForce.x = brownianMotion.x + gravity;
+	gravityForce.y = brownianMotion.y;
 
 
 	return gravityForce;
@@ -499,7 +503,7 @@ float Molecule::signedDistanceField( glm::vec2 p)
 
 	float sdf = opSmoothIntersection( sdEllipse(p, r1), sdEllipse(p, r2), systemPtr->tuneEdges );
 	if(systemPtr->flush) {
-		// p.y -= 750.0;
+		// p.y -= 550.0;
 		p.x -= 1500.0;
 		sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
 	}
@@ -537,6 +541,7 @@ float Molecule::sdBox( glm::vec2 p)
 {
 	// glm::vec2 rad(175.0, 1000.0);
 	glm::vec2 rad(1000.0, 70.0);
+	// glm::vec2 rad(700.0, 500.0);
     p = abs(p)-rad;
     return max(p.x,p.y);
 }
