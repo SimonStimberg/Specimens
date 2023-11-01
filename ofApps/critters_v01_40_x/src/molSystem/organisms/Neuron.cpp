@@ -29,13 +29,16 @@ void Neuron::set(int arms, int elements, int x, int y)
 
     isSignaling = false;
     signalCounter = 0;
-    maxNumSignals = (int)ofRandom(15, 20);
+    maxNumSignals = (int)ofRandom(20, 45);
     nextSignal = ofGetElapsedTimeMillis();
 
 
+    float velX = ofRandom(-1.0, 1.0);
+    float velY = ofRandom(-1.0, 1.0);
+
     // add at first the Middle Joint Molecule
     Molecule *n = new Molecule(systemPtr, this);
-    n->reset(x, y, 0., 0.);
+    n->reset(x, y, velX, velY);
     neuronMolecules.push_back(n);
     systemPtr->allMolecules.push_back(n);
    
@@ -50,8 +53,11 @@ void Neuron::set(int arms, int elements, int x, int y)
         float xPos = x + ( radius * cos(ofDegToRad(angle)) );
         float yPos = y + ( radius * sin(ofDegToRad(angle)) );
 
+        velX = ofRandom(-1.0, 1.0);
+        velY = ofRandom(-1.0, 1.0);
+
         Molecule *m = new Molecule(systemPtr, this);
-        m->reset(xPos, yPos, 0., 0.);
+        m->reset(xPos, yPos, velX, velY);
 
         dendrites[i].push_back(m);
         neuronMolecules.push_back(m);   // add a copy to the all-molecules vector for managing purpose

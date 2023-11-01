@@ -32,7 +32,7 @@ void Breather::set(int num, int x, int y)
     phaseCompensation = 0.0;
     cycleCheck = true;
     cycleCount = 0;
-    maxNumCycles = (int)ofRandom(15, 25);
+    maxNumCycles = (int)ofRandom(25, 55);
 
     arousal = 0.7;
     valence = 0.0;
@@ -46,8 +46,11 @@ void Breather::set(int num, int x, int y)
         float xPos = x + radius * cos(ofDegToRad(angle));
         float yPos = y + radius * sin(ofDegToRad(angle));
 
+        float velX = ofRandom(-1.0, 1.0);
+        float velY = ofRandom(-1.0, 1.0);
+
         Molecule *m = new Molecule(systemPtr, this);
-        m->reset(xPos, yPos, 0., 0.);
+        m->reset(xPos, yPos, velX, velY);
 
         cellMolecules.push_back(m);
         systemPtr->allMolecules.push_back(m);

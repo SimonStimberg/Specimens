@@ -46,7 +46,7 @@ void ofApp::setup() {
 
         // anti-aliasing FBOs by multisampling! watch out: needs more performance
         ofFbo::Settings settings;
-            settings.numSamples = 16;    // also try 8, if your GPU supports it
+            settings.numSamples = 32;    // also try 8, if your GPU supports it
             settings.useDepth = false; 
             settings.width = screenResolution.x * screenSizeFactor[i];
             settings.height = screenResolution.y * screenSizeFactor[i];
@@ -254,7 +254,7 @@ void ofApp::draw(){
         for (int i = 0; i < numScreens; i++) {
             int xShift = i * screenResolution.x;
             vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
-            vessel[i].draw(xShift, 0);
+            // vessel[i].draw(xShift, 0);
 
             // ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
             // molSystem[i].draw();
@@ -355,11 +355,11 @@ void ofApp::keyPressed(int key){
     }
 
 
-    if (key == '1')   molSystem[0].addOrganisms(BREATHER,  5);
-    if (key == '2')   molSystem[0].addOrganisms(PUMPER,    5);
-    if (key == '3')   molSystem[0].addOrganisms(NEURON,    5);
-    if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  3); molSystem[0].addOrganisms(LIQUID,  10);
-    if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
+    // if (key == '1')   molSystem[0].addOrganisms(BREATHER,  5);
+    // if (key == '2')   molSystem[0].addOrganisms(PUMPER,    5);
+    // if (key == '3')   molSystem[0].addOrganisms(NEURON,    5);
+    // if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  3);
+    // if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
 
     if (key == '0')   molSystem[0].addControlledRandom(0, 0);
 

@@ -156,15 +156,15 @@ void molecularSystem::draw() {
 
 
 //------------------------------------------------------------------
-void molecularSystem::addOrganisms(organismType type, int num) {
+void molecularSystem::addOrganisms(organismType type, int num, float x, float y) {
 
     if (num > 0) {
 
         for(unsigned int i = 0; i < num; i++){ 
 
 
-            float x = 0.;
-            float y = 0.;
+            // float x = 0.;
+            // float y = 0.;
             // if(type == LIQUID) {
             //     x = -worldSize.x *0.5 - ofRandom(1000.);
             //     y = ofRandom(-10., 10.);
@@ -173,15 +173,19 @@ void molecularSystem::addOrganisms(organismType type, int num) {
             //     y = ofRandom(-10., 10.);
             // }
 
-            x = ofRandom(-50., 50.);
-            y = ofRandom(-20., 20.);
+            // float xPos = x + ofRandom(-50., 50.);
+            // float yPos = y + ofRandom(-20., 20.);
+            float xPos = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
+            // float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
+            float yPos = -worldSize.y * 0.6;
 
 
-            if (type == LIQUID)    addLiquid(x, y);
-            if (type == BREATHER)  addBreather(x, y);
-            if (type == PUMPER)    addPumper(x, y);
-            if (type == NEURON)    addNeuron(x, y);
-            if (type == INTESTINE) addIntestine(x, y);
+
+            if (type == LIQUID)    addLiquid(xPos, yPos);
+            if (type == BREATHER)  addBreather(xPos, yPos);
+            if (type == PUMPER)    addPumper(xPos, yPos);
+            if (type == NEURON)    addNeuron(xPos, yPos);
+            if (type == INTESTINE) addIntestine(xPos, yPos);
 
         }
     }
@@ -202,28 +206,35 @@ void molecularSystem::addRandom(float x, float y) {
 
     if(sdf <= -5.0 ) {     // -20 -> keep a border of 20px for safety
 
-        int amount = 3;
+        int amount = 1;
 
         for(unsigned int i = 0; i < amount; i++){ 
 
-            x += ofRandom(-15., 15.);
-            y += ofRandom(-15., 15.);
+            x += ofRandom(-50., 50.);
+            y += ofRandom(-20., 20.);
 
             float probability[5] = {0.2, 0.4, 0.9, 1.1, 1.7};   // the probability for the different organism types      Breather: 0.2
             float dice = ofRandom(probability[4]);
 
             if (dice < probability[0]) {
-                addBreather(x, y);
+                // addBreather(x, y);
+                addOnNextFrame(BREATHER, x, y);
             } else if (dice < probability[1]) {
-                addPumper(x, y);
+                // addPumper(x, y);
+                addOnNextFrame(PUMPER, x, y);
             } else if (dice < probability[2]) {
-                addNeuron(x, y);
+                // addNeuron(x, y);
+                addOnNextFrame(NEURON, x, y);
             } else if (dice < probability[3]) {
-                addIntestine(x, y);
+                // addIntestine(x, y);
+                addOnNextFrame(INTESTINE, x, y);
             } else {
-                addLiquid(x, y);
-                addLiquid(x + 2.0, y - 1.0);
-                addLiquid(x + 2.0, y + 1.0);
+                // addLiquid(x, y);
+                // addLiquid(x + 2.0, y - 1.0);
+                // addLiquid(x + 2.0, y + 1.0);
+                addOnNextFrame(LIQUID, x, y);
+                addOnNextFrame(LIQUID, x + 2.0, y - 1.0);
+                addOnNextFrame(LIQUID, x + 2.0, y + 1.0);
             }
 
         }
@@ -252,11 +263,55 @@ void molecularSystem::addControlledRandom(float x, float y) {
     //     }
     // }
 
-    addOrganisms(LIQUID, 10);
-    addOrganisms(INTESTINE, 3);
-    addOrganisms(BREATHER, 2);
-    addOrganisms(PUMPER, 3);
-    addOrganisms(NEURON, 7);
+
+    int amount = 1;
+    float xOffset = 100.;
+
+    for(unsigned int i = 0; i < amount; i++){ 
+
+        float x = ofRandom(-worldSize.x * 0.1, worldSize.x * 0.1);
+        // float y = ofRandom(0., worldSize.y - 80.0) - worldSize.y * 0.5;
+
+        // float x = 0.;
+        float y = 0.;
+
+
+        int organsims[5] {10, 2, 3, 7, 3};
+        int total = 25;
+
+        while (total > 0) {
+            int pick = floor(ofRandom(5));
+            if (organsims[pick] > 0) {
+                organsims[pick] -= 1;
+                total -= 1;
+                if (pick == 0) {
+                    addOrganisms(LIQUID, 1, x, y);
+                } else if (pick == 1) {
+                    addOrganisms(BREATHER, 1, x, y);
+                } else if (pick == 2) {
+                    addOrganisms(PUMPER, 1, x, y); 
+                } else if (pick == 3) {
+                    addOrganisms(NEURON, 1, x, y);
+                } else if (pick == 4) {
+                    addOrganisms(INTESTINE, 1, x, y);
+                }
+            }
+        }
+
+
+    
+        // addOrganisms(LIQUID,    10, x, y);        
+        // addOrganisms(BREATHER,  2,  x, y);
+        // addOrganisms(PUMPER,    3,  x, y);
+        // addOrganisms(NEURON,    7,  x, y);
+        // addOrganisms(INTESTINE, 4,  x, y);
+        
+        // for(unsigned int i = 0; i < 25; i++){ 
+        //     addRandom(x, y);
+
+        // }
+        
+    }
     
 
 }
@@ -270,7 +325,8 @@ void molecularSystem::addLiquid(float x, float y) {
     float velX = ofRandom(-1.0, 1.0);
     float velY = ofRandom(-1.0, 1.0);
 
-    m->reset(x, y, 0.0, 0.0);
+    // m->reset(x, y, 0.0, 0.0);
+    m->reset(x, y, velX, velY);
     liquid.push_back(m);
     
     allMolecules.push_back(m);
@@ -680,10 +736,10 @@ void molecularSystem::setGui() {
 
     // gui.add(tuneCanvasWidth.set("Canvas Width",  worldSize.x*0.75, worldSize.x*0.25, worldSize.x*2.0));
     // gui.add(tuneCanvasHeight.set("Canvas Height", worldSize.y*0.75, worldSize.y*0.25, worldSize.y*2.0));
-    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 700, 1100));
+    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 700, 2400));
     gui.add(tuneCanvasHeight.set("Canvas Height", 100, 50, 150));
     gui.add(tuneVerticalBow.set("Vertical Bow", 1760, 1500, 3000));
-    gui.add(tuneHorizontalBow.set("Horizontal Bow", 1740, 1500, 3000));
+    gui.add(tuneHorizontalBow.set("Horizontal Bow", 1740, 1500, 3400));
     gui.add(tuneEdges.set("Smooth Edges", 25, 0, 60));
     gui.add(tuneXpos.set("X Position", 0.0, -50.0, 50.0));
     gui.add(tuneYpos.set("Y Position", 0.0, -50.0, 50.0));

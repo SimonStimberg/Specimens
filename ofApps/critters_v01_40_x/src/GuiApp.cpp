@@ -33,7 +33,7 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_04.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x1920.xml";
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
@@ -396,16 +396,16 @@ void GuiApp::keyPressed(int key)
     {
         savePreset(2);
     }
-    if (key == '5')   mainPtr->molSystem[1].addOrganisms(INTESTINE, 1);
-    if (key == '6')   mainPtr->molSystem[0].addOrganisms(LIQUID,   50);
-    if (key == '7')   {
-        for (int i = 0; i < mainPtr->numScreens; i++) {
-            mainPtr->molSystem[i].addOrganisms(INTESTINE, 1);
-        }
-    }
-    if (key == '8')   mainPtr->molSystem[0].addOrganisms(BREATHER,  1);
-    if (key == '9')   mainPtr->molSystem[0].addOrganisms(PUMPER,    1);
-    if (key == '0')   mainPtr->molSystem[0].addOrganisms(NEURON,    1);
+    // if (key == '5')   mainPtr->molSystem[1].addOrganisms(INTESTINE, 1);
+    // if (key == '6')   mainPtr->molSystem[0].addOrganisms(LIQUID,   50);
+    // if (key == '7')   {
+    //     for (int i = 0; i < mainPtr->numScreens; i++) {
+    //         mainPtr->molSystem[i].addOrganisms(INTESTINE, 1);
+    //     }
+    // }
+    // if (key == '8')   mainPtr->molSystem[0].addOrganisms(BREATHER,  1);
+    // if (key == '9')   mainPtr->molSystem[0].addOrganisms(PUMPER,    1);
+    // if (key == '0')   mainPtr->molSystem[0].addOrganisms(NEURON,    1);
 
     if( key == 'd' ){ 
         debugMode = !debugMode;

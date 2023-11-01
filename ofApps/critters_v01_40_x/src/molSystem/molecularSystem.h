@@ -43,7 +43,7 @@ class molecularSystem{
         void addPumper(float x, float y);
         void addNeuron(float x, float y);
         void addIntestine(float x, float y);
-        void addOrganisms(organismType type, int num);
+        void addOrganisms(organismType type, int num, float x, float y);
         void addRandom(float x, float y);
         void addControlledRandom(float x, float y);
         

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<group>
+	<Tune_Canvas>
+		<Shape_Tube_0>
+			<Canvas_Width>3984.</Canvas_Width>
+			<Canvas_Height>72.7941</Canvas_Height>
+			<Vertical_Bow>1500</Vertical_Bow>
+			<Horizontal_Bow>8625</Horizontal_Bow>
+			<Smooth_Edges>25</Smooth_Edges>
+			<X_Position>0</X_Position>
+			<Y_Position>0</Y_Position>
+			<Rotation>0</Rotation>
+		</Shape_Tube_0>
+	</Tune_Canvas>
+</group>

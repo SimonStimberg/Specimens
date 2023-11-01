@@ -22,9 +22,10 @@ void Intestine::set(int num, int x, int y)
     isDead = false;
 
     isDigesting = false;
-    nextDigestion = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
+    // nextDigestion = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
+    nextDigestion = ofGetElapsedTimeMillis() + (int)ofRandom(5000, 10000);
     digestionPos = glm::vec2(0, 0);
-    maxElements = 80;
+    maxElements = 120;
 
     freqDivergence = ofRandom(20.);
 
@@ -34,12 +35,18 @@ void Intestine::set(int num, int x, int y)
 
         float initThickness = 10.;
 
+        float velX = ofRandom(-1.0, 1.0);
+        float velY = ofRandom(-1.0, 1.0);
         
         Molecule *mA = new Molecule(systemPtr, this);
-        mA->reset(x + i * initThickness, y - initThickness, 0., 0.);
+        mA->reset(x + i * initThickness, y - initThickness, velX, velY);
+
+
+        velX = ofRandom(-1.0, 1.0);
+        velY = ofRandom(-1.0, 1.0);
 
         Molecule *mB = new Molecule(systemPtr, this);
-        mB->reset(x + i * initThickness, y + initThickness, 0., 0.);
+        mB->reset(x + i * initThickness, y + initThickness, velX, velY);
 
         intestineMolecules.push_back(mA);
         intestineMolecules.push_back(mB);
