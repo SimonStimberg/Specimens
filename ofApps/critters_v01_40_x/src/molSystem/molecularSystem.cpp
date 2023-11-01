@@ -19,7 +19,9 @@ void molecularSystem::setup(int width, int height) {
     // ofLogNotice("height: " + ofToString(height));
 
     flush = false;
+    drop = false;
     flushTimestamp = 0;
+    dropTimestamp = 0;
     debugView = false;
     std::fill_n (organismsToRemove, 5, false);
     thereAreCadavers = false;
@@ -60,11 +62,18 @@ void molecularSystem::setup(int width, int height) {
 
 
 
+    // int organismBuffer[5] {0, 0, 0, 0, 0};
+    // int addTotal = 0;
+
+
+
 }
 
 
 //------------------------------------------------------------------
 void molecularSystem::update() {
+
+    addTimeControlled();
 
     addFromStack();
 
@@ -121,6 +130,21 @@ void molecularSystem::update() {
         // addOrganisms(LIQUID, floor(250 * worldSize.x/800.0));
     }
 
+
+    // if(drop) {
+
+    //     bool allWithinCanvas = true;
+
+    //     for(unsigned int i = 0; i < allMolecules.size(); i++) {
+    //         if (allMolecules[i]->position.y < -worldSize.y * 0.45) {
+    //             allWithinCanvas = false;
+    //             break;
+    //         }
+    //     }
+
+    //     if(allWithinCanvas) drop = false;
+    // }
+
 }
 
 
@@ -176,8 +200,8 @@ void molecularSystem::addOrganisms(organismType type, int num, float x, float y)
             // float xPos = x + ofRandom(-50., 50.);
             // float yPos = y + ofRandom(-20., 20.);
             float xPos = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
-            // float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
-            float yPos = -worldSize.y * 0.6;
+            float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
+            // float yPos = -worldSize.y * 0.7;
 
 
 
@@ -263,6 +287,8 @@ void molecularSystem::addControlledRandom(float x, float y) {
     //     }
     // }
 
+    drop = true;
+    dropTimestamp = ofGetElapsedTimeMillis();
 
     int amount = 1;
     float xOffset = 100.;
@@ -276,8 +302,9 @@ void molecularSystem::addControlledRandom(float x, float y) {
         float y = 0.;
 
 
-        int organsims[5] {10, 2, 3, 7, 3};
-        int total = 25;
+        int organsims[5] {7,  1, 2, 5, 2}; 
+        // int organsims[5] {10, 2, 3, 7, 3}; 
+        int total = 17;
 
         while (total > 0) {
             int pick = floor(ofRandom(5));
@@ -312,7 +339,57 @@ void molecularSystem::addControlledRandom(float x, float y) {
         // }
         
     }
+
+    // organismBuffer[0] = 10;
+    // organismBuffer[1] = 2;
+    // organismBuffer[2] = 3;
+    // organismBuffer[3] = 7;
+    // organismBuffer[4] = 3;
+    // // , 2, 3, 7, 3};
+    // addTotal = 25;
     
+
+}
+
+
+
+//------------------------------------------------------------------
+void molecularSystem::addTimeControlled() {
+
+
+
+
+
+
+        // int organsims[5] {10, 2, 3, 7, 3};
+        // int total = 25;
+
+        if (addTotal > 0 && addDelayTime < ofGetElapsedTimeMillis()) {
+
+            float x = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
+            float y = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
+
+            int pick = floor(ofRandom(5));
+            if (organismBuffer[pick] > 0) {
+                organismBuffer[pick] -= 1;
+                addTotal -= 1;
+                if (pick == 0) {
+                    addOnNextFrame(LIQUID, x, y);
+                } else if (pick == 1) {
+                    addOnNextFrame(BREATHER, x, y);
+                } else if (pick == 2) {
+                    addOnNextFrame(PUMPER, x, y);
+                } else if (pick == 3) {
+                    addOnNextFrame(NEURON, x, y);
+                } else if (pick == 4) {
+                    addOnNextFrame(INTESTINE, x, y);
+                }
+            }
+
+            addDelayTime = ofGetElapsedTimeMillis() + (int)ofRandom(100);
+        }
+
+
 
 }
 
@@ -736,7 +813,7 @@ void molecularSystem::setGui() {
 
     // gui.add(tuneCanvasWidth.set("Canvas Width",  worldSize.x*0.75, worldSize.x*0.25, worldSize.x*2.0));
     // gui.add(tuneCanvasHeight.set("Canvas Height", worldSize.y*0.75, worldSize.y*0.25, worldSize.y*2.0));
-    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 700, 2400));
+    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 400, 2400));
     gui.add(tuneCanvasHeight.set("Canvas Height", 100, 50, 150));
     gui.add(tuneVerticalBow.set("Vertical Bow", 1760, 1500, 3000));
     gui.add(tuneHorizontalBow.set("Horizontal Bow", 1740, 1500, 3400));

@@ -158,6 +158,7 @@ void ofApp::update() {
         
             ofBackground(0);
             if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+            if(molSystem[i].drop && molSystem[i].dropTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
 
             // draw the Molecular System
             ofPushMatrix();

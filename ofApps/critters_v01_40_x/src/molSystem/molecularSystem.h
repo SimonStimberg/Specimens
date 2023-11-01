@@ -46,6 +46,7 @@ class molecularSystem{
         void addOrganisms(organismType type, int num, float x, float y);
         void addRandom(float x, float y);
         void addControlledRandom(float x, float y);
+        void addTimeControlled();
         
         void addOnNextFrame(organismType type, float x, float y);
         void addFromStack();
@@ -82,7 +83,9 @@ class molecularSystem{
         glm::vec2 worldSize;
 
         bool flush;
+        bool drop;
         int  flushTimestamp;
+        int  dropTimestamp;
         bool debugView;
         bool thereAreCadavers;
         bool organismsToRemove[5]; 
@@ -91,6 +94,12 @@ class molecularSystem{
         int collapseThreshold;
 
         bool freshlySpawned;
+
+
+
+        int organismBuffer[5] {0, 0, 0, 0, 0};
+        int addTotal = 0;
+        int addDelayTime = 0;
 
 
 

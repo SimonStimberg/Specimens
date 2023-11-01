@@ -338,6 +338,7 @@ glm::vec2 Molecule::gravity() {
 		// gravity = uniqueVal * 0.000001;
 		// gravity += 0.01;
 		if(systemPtr->flush) gravity += 0.07;	// add a additional drag to the bottom, once the system collapsed
+		// if(systemPtr->drop) gravity += 0.035;
 
 	// } else {
 
@@ -508,6 +509,12 @@ float Molecule::signedDistanceField( glm::vec2 p)
 		sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
 	}
 
+	// if(systemPtr->drop) {
+	// 	p.y += 550.0;
+	// 	// p.x -= 1500.0;
+	// 	sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
+	// }
+
 	return sdf;
 }
 
@@ -541,7 +548,9 @@ float Molecule::sdBox( glm::vec2 p)
 {
 	// glm::vec2 rad(175.0, 1000.0);
 	// glm::vec2 rad(1000.0, 70.0);
-	glm::vec2 rad(700.0, 500.0);
+	// glm::vec2 rad(700.0, 500.0);
+	glm::vec2 rad(systemPtr->worldSize.x*0.45, 500.0);
+
     p = abs(p)-rad;
     return max(p.x,p.y);
 }
