@@ -62,18 +62,11 @@ void molecularSystem::setup(int width, int height) {
 
 
 
-    // int organismBuffer[5] {0, 0, 0, 0, 0};
-    // int addTotal = 0;
-
-
-
 }
 
 
 //------------------------------------------------------------------
 void molecularSystem::update() {
-
-    addTimeControlled();
 
     addFromStack();
 
@@ -295,16 +288,17 @@ void molecularSystem::addControlledRandom(float x, float y) {
 
     for(unsigned int i = 0; i < amount; i++){ 
 
-        float x = ofRandom(-worldSize.x * 0.1, worldSize.x * 0.1);
+        // float x = ofRandom(-worldSize.x * 0.1, worldSize.x * 0.1);
         // float y = ofRandom(0., worldSize.y - 80.0) - worldSize.y * 0.5;
 
         // float x = 0.;
-        float y = 0.;
+        // float y = 0.;
 
 
+        // manual way of defining the organism distribution
         int organsims[5] {7,  1, 2, 5, 2}; 
         // int organsims[5] {10, 2, 3, 7, 3}; 
-        int total = 17;
+        int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
 
         while (total > 0) {
             int pick = floor(ofRandom(5));
@@ -324,74 +318,11 @@ void molecularSystem::addControlledRandom(float x, float y) {
                 }
             }
         }
-
-
-    
-        // addOrganisms(LIQUID,    10, x, y);        
-        // addOrganisms(BREATHER,  2,  x, y);
-        // addOrganisms(PUMPER,    3,  x, y);
-        // addOrganisms(NEURON,    7,  x, y);
-        // addOrganisms(INTESTINE, 4,  x, y);
-        
-        // for(unsigned int i = 0; i < 25; i++){ 
-        //     addRandom(x, y);
-
-        // }
         
     }
 
-    // organismBuffer[0] = 10;
-    // organismBuffer[1] = 2;
-    // organismBuffer[2] = 3;
-    // organismBuffer[3] = 7;
-    // organismBuffer[4] = 3;
-    // // , 2, 3, 7, 3};
-    // addTotal = 25;
-    
-
 }
 
-
-
-//------------------------------------------------------------------
-void molecularSystem::addTimeControlled() {
-
-
-
-
-
-
-        // int organsims[5] {10, 2, 3, 7, 3};
-        // int total = 25;
-
-        if (addTotal > 0 && addDelayTime < ofGetElapsedTimeMillis()) {
-
-            float x = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
-            float y = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
-
-            int pick = floor(ofRandom(5));
-            if (organismBuffer[pick] > 0) {
-                organismBuffer[pick] -= 1;
-                addTotal -= 1;
-                if (pick == 0) {
-                    addOnNextFrame(LIQUID, x, y);
-                } else if (pick == 1) {
-                    addOnNextFrame(BREATHER, x, y);
-                } else if (pick == 2) {
-                    addOnNextFrame(PUMPER, x, y);
-                } else if (pick == 3) {
-                    addOnNextFrame(NEURON, x, y);
-                } else if (pick == 4) {
-                    addOnNextFrame(INTESTINE, x, y);
-                }
-            }
-
-            addDelayTime = ofGetElapsedTimeMillis() + (int)ofRandom(100);
-        }
-
-
-
-}
 
 
 //------------------------------------------------------------------

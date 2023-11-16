@@ -509,12 +509,6 @@ float Molecule::signedDistanceField( glm::vec2 p)
 		sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
 	}
 
-	// if(systemPtr->drop) {
-	// 	p.y += 550.0;
-	// 	// p.x -= 1500.0;
-	// 	sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
-	// }
-
 	return sdf;
 }
 
