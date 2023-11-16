@@ -119,7 +119,7 @@ void Molecule::applyForces() {
 	outerForce = glm::vec2(0,0);	// reset outer force vector to zero
 
 
-	if(type == moleculeType::LIQUID && position.x > systemPtr->worldSize.x) {
+	if(type == moleculeType::LIQUID && position.y > systemPtr->worldSize.y) {
 		removeMe = true;
 		systemPtr->organismsToRemove[LIQUID] = true;
 		systemPtr->thereAreCadavers = true;

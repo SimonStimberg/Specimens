@@ -462,7 +462,7 @@ void Pumper::updatePosition()
     }
     position /= cellMolecules.size();
     
-    if (position.x > systemPtr->worldSize.x) {
+    if (position.y > systemPtr->worldSize.y) {
         // ofLogNotice("Relieve me, I'm out of the screen!");
         die();
     }

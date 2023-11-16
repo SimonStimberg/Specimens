@@ -92,5 +92,8 @@ class ofApp : public ofBaseApp{
 
 		bool bSmoothing = true;
 		bool bAntialiasing = false;
+
+		bool bRender;
+		string uniqueFileName;
 		
 };

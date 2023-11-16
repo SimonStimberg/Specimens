@@ -569,7 +569,7 @@ void Intestine::updatePosition()
     // position /= intestineMolecules.size();
     position /= 2;
 
-    if (position.x > systemPtr->worldSize.x) die();
+    if (position.y > systemPtr->worldSize.y) die();
 }
 
 

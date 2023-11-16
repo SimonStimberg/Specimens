@@ -100,6 +100,10 @@ void ofApp::setup() {
         ofHideCursor();     // hide mouse cursor
     #endif
 
+    bRender = false;
+    uniqueFileName = ofGetTimestampString("%y-%m-%d__%Hh%M");
+    // uniqueFileName = ofGetTimestampString("%y-%m-%d_%Hh%Mm%S");
+
 }
 
 
@@ -232,6 +236,9 @@ void ofApp::update() {
     // ofLogNotice("neurons: " + ofToString(molSystem[3].neurons.size()));
     // ofLogNotice("neuroconnect: " + ofToString(molSystem[3].neuronConnections.size()));
     // ofLogNotice("intestines: " + ofToString(molSystem[3].intestines.size()));
+
+
+    if(bRender && molSystem[0].allMolecules.size() <= 0) bRender = false;
     
 }
 
@@ -290,6 +297,12 @@ void ofApp::draw(){
         // ofDrawCircle(ofGetMouseX(), ofGetMouseY(), 4.);
 
     ofPopMatrix();
+
+
+    // render Simulation
+    if(bRender) {
+        ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
+    }
 
 }
 
@@ -397,7 +410,14 @@ void ofApp::keyPressed(int key){
 		bSmoothing ^= true;
 	}
 
+    if(key == 'r')
+	{
+        uniqueFileName = ofGetTimestampString("%y-%m-%d__%Hh%M");
+        bRender = true;
+        molSystem[0].addControlledRandom(0, 0);
+        // ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
 
+    }
   
 }
 
