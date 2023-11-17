@@ -428,6 +428,11 @@ void molecularSystem::addOnNextFrame(organismType type, float x, float y) {
 
 }
 
+//------------------------------------------------------------------
+void molecularSystem::addBisectedIntestine(vector<glm::vec2> positions) {
+    bisectedIntestines.push_back(positions);
+}
+
 
 
 //------------------------------------------------------------------
@@ -450,6 +455,22 @@ void molecularSystem::addFromStack() {
         organismsToAdd.clear();
         positionsToAdd.clear();
 
+    }
+
+
+    if (bisectedIntestines.size() > 0) {
+            
+            for(unsigned int i = 0; i < bisectedIntestines.size(); i++){ 
+    
+                Intestine * n = new Intestine(this);
+                n->set(bisectedIntestines[i].size() / 2, 0.0, 0.0);
+                n->copyPositions(bisectedIntestines[i]);
+                n->linkAudioModule(audioLink->getFreeIntestineModule());
+                intestines.push_back(n);
+    
+            }
+    
+            bisectedIntestines.clear();
     }
 
 }

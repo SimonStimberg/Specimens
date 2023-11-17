@@ -25,10 +25,13 @@ void Intestine::set(int num, int x, int y)
     // nextDigestion = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
     nextDigestion = ofGetElapsedTimeMillis() + (int)ofRandom(5000, 10000);
     digestionPos = glm::vec2(0, 0);
-    maxElements = 120;
+    // maxElements = 120;
+    maxElements = 100;
 
     freqDivergence = ofRandom(20.);
 
+
+    float direction = (floor(ofRandom(2)) == 0) ? -1.0 : 1.0;   // choose a random direction for the Intestine to grow
 
     for (int i = 0; i < num; i++)
     {
@@ -39,14 +42,14 @@ void Intestine::set(int num, int x, int y)
         float velY = ofRandom(-1.0, 1.0);
         
         Molecule *mA = new Molecule(systemPtr, this);
-        mA->reset(x + i * initThickness, y - initThickness, velX, velY);
+        mA->reset(x + i * initThickness * direction, y - initThickness, velX, velY);
 
 
         velX = ofRandom(-1.0, 1.0);
         velY = ofRandom(-1.0, 1.0);
 
         Molecule *mB = new Molecule(systemPtr, this);
-        mB->reset(x + i * initThickness, y + initThickness, velX, velY);
+        mB->reset(x + i * initThickness * direction, y + initThickness, velX, velY);
 
         intestineMolecules.push_back(mA);
         intestineMolecules.push_back(mB);
@@ -134,7 +137,7 @@ void Intestine::update()
         intestineMolecules[i]->update();
     }
 
-    if (intestineMolecules.size() >= maxElements) die();
+    if (intestineMolecules.size() >= maxElements) bisect();
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
@@ -489,23 +492,60 @@ void Intestine::getSynced()
 
 
 //------------------------------------------------------------------
+void Intestine::bisect()
+{
+    
+    int bisectionPoint = intestineMolecules.size() * 0.5;
+    bisectionPoint -= (bisectionPoint % 2 == 0) ? 0 : 1;   // make sure the bisection point is an even number
+
+    vector<glm::vec2> sectionA;
+    vector<glm::vec2> sectionB;
+    for (int i = 0; i < intestineMolecules.size(); i++) { 
+        if (i < bisectionPoint) {
+            sectionA.push_back(intestineMolecules[i]->position);
+        } else {
+            sectionB.push_back(intestineMolecules[i]->position);
+        }
+    }
+
+    systemPtr->addBisectedIntestine(sectionA);
+    systemPtr->addBisectedIntestine(sectionB);
+    // systemPtr->bisectIntestine(this, bisectionPoint);
+    // systemPtr->bisectIntestine(this, bisectionPoint);
+
+    die();
+
+}
+
+//------------------------------------------------------------------
+void Intestine::copyPositions(vector<glm::vec2> & positions)
+{
+    if (positions.size() == intestineMolecules.size()) {
+        for (int i = 0; i < intestineMolecules.size(); i++) {
+            intestineMolecules[i]->position = positions[i]; 
+        }
+    } else ofLogNotice("positions vector has not the same size as the Intestine");
+}
+
+
+//------------------------------------------------------------------
 void Intestine::die()
 {
     
     // get the position of the center of the cell aka the average position
     // glm::vec2 center(0,0);
-    for (int i = 0; i < intestineMolecules.size(); i++) { 
-        intestineMolecules[i]->removeMe = true;      // mark the Molecules to be removed
-        // center += intestineMolecules[i]->position;	// sum the positions of all cells
-        if (position.x < systemPtr->worldSize.x) {
-            if(i % 2 == 0) {
-                glm::vec2 spawnPos = (intestineMolecules[i]->position + intestineMolecules[i+1]->position) * 0.5;
-                spawnPos.x += ofRandom(-10.0, 10.0);
-                spawnPos.y += ofRandom(-10.0, 10.0);
-                systemPtr->addLiquid(spawnPos.x, spawnPos.y);
-            }
-        }
-    }
+    // for (int i = 0; i < intestineMolecules.size(); i++) { 
+    //     intestineMolecules[i]->removeMe = true;      // mark the Molecules to be removed
+    //     // center += intestineMolecules[i]->position;	// sum the positions of all cells
+    //     if (position.x < systemPtr->worldSize.x) {
+    //         if(i % 2 == 0) {
+    //             glm::vec2 spawnPos = (intestineMolecules[i]->position + intestineMolecules[i+1]->position) * 0.5;
+    //             spawnPos.x += ofRandom(-10.0, 10.0);
+    //             spawnPos.y += ofRandom(-10.0, 10.0);
+    //             systemPtr->addLiquid(spawnPos.x, spawnPos.y);
+    //         }
+    //     }
+    // }
     // center /= intestineMolecules.size(); 	// get the average / dividing by the total amount
 
     for (int i = 0; i < springs.size(); i++) { 

@@ -249,6 +249,8 @@ class Intestine{
         void grow();
         void keepShape();
         void digest();
+        void bisect();
+        void copyPositions(vector<glm::vec2> & positions);
         void die();
         void getSynced();
 
