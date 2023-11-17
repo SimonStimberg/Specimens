@@ -119,7 +119,7 @@ void Molecule::applyForces() {
 	outerForce = glm::vec2(0,0);	// reset outer force vector to zero
 
 
-	if(type == moleculeType::LIQUID && position.y > systemPtr->worldSize.y) {
+	if(type == moleculeType::LIQUID && (position.y > systemPtr->worldSize.y || isnan(position.x))) {
 		removeMe = true;
 		systemPtr->organismsToRemove[LIQUID] = true;
 		systemPtr->thereAreCadavers = true;
@@ -543,7 +543,7 @@ float Molecule::sdBox( glm::vec2 p)
 	// glm::vec2 rad(175.0, 1000.0);
 	// glm::vec2 rad(1000.0, 70.0);
 	// glm::vec2 rad(700.0, 500.0);
-	glm::vec2 rad(systemPtr->worldSize.x*0.45, 500.0);
+	glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
 
     p = abs(p)-rad;
     return max(p.x,p.y);

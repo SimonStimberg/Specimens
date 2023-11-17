@@ -27,7 +27,7 @@ int main( ){
 		// settings.setSize(600, 800);
 		// settings.setSize(1600, 600);		// 2 screens
 		// settings.setSize(3200, 600);		// 4 screens
-		settings.setSize(960, 168);		// strip
+		settings.setSize(2016, 168);		// strip
 		settings.windowMode = OF_WINDOW;
 		settings.resizable = false;
 		settings.setPosition(glm::vec2(600,0));	

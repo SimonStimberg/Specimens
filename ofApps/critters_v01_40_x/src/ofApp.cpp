@@ -104,6 +104,9 @@ void ofApp::setup() {
     uniqueFileName = ofGetTimestampString("%y-%m-%d__%Hh%M");
     // uniqueFileName = ofGetTimestampString("%y-%m-%d_%Hh%Mm%S");
 
+
+    debug = false;
+
 }
 
 
@@ -238,7 +241,18 @@ void ofApp::update() {
     // ofLogNotice("intestines: " + ofToString(molSystem[3].intestines.size()));
 
 
-    if(bRender && molSystem[0].allMolecules.size() <= 0) bRender = false;
+    if(bRender && molSystem[0].allMolecules.size() <= 0) {
+        bRender = false;
+        ofLogNotice("all organisms dead - rendering stopped");
+    }
+
+    if (debug) {
+        // interate over all Molecules
+        for (int i = 0; i < molSystem[0].allMolecules.size(); i++) {
+            // print the position of the Molecule
+            ofLogNotice("Molecule " + ofToString(i) + " position: " + ofToString(molSystem[0].allMolecules[i]->position.x) + " " + ofToString(molSystem[0].allMolecules[i]->position.y));
+        }
+    }
     
 }
 
@@ -301,7 +315,9 @@ void ofApp::draw(){
 
     // render Simulation
     if(bRender) {
-        ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
+        // ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
+        // ofSaveScreen(uniqueFileName + "/frame_" + ofToString(ofGetFrameNum()) + ".png");
+        ofSaveScreen(uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
     }
 
 }
@@ -412,11 +428,40 @@ void ofApp::keyPressed(int key){
 
     if(key == 'r')
 	{
-        uniqueFileName = ofGetTimestampString("%y-%m-%d__%Hh%M");
-        bRender = true;
-        molSystem[0].addControlledRandom(0, 0);
+
+        if (!bRender) {
+
+            string timeStamp = ofGetTimestampString("%y-%m-%d__%Hh%Mm%S");
+
+            uniqueFileName = "render/" + timeStamp;
+
+
+            if (!ofDirectory::doesDirectoryExist(uniqueFileName)) {
+                ofDirectory::createDirectory(uniqueFileName);
+                uniqueFileName += "/" + timeStamp;
+                molSystem[0].addControlledRandom(0, 0);
+                bRender = true;
+                ofLogNotice("rendering started");
+
+            } else {
+                ofLogNotice("render directory already exists - rendering aborted");
+            }
+
+        } else {
+            ofLogNotice("rendering already started, can not start again");
+        }
+
+        
+        
+        
+        
         // ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
 
+    }
+
+    if(key == 'd')
+	{
+        debug = !debug;
     }
   
 }

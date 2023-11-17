@@ -507,7 +507,7 @@ void Neuron::updatePosition()
     }
     position /= neuronMolecules.size();
 
-    if (position.y > systemPtr->worldSize.y) {
+    if (position.y > systemPtr->worldSize.y || isnan(position.x)) {
         // ofLogNotice("Relieve me, I'm out of the screen!");
         die();
     }

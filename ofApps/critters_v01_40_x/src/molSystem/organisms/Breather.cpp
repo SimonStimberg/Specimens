@@ -528,7 +528,7 @@ void Breather::updatePosition()
     }
     position /= cellMolecules.size();
 
-    if (position.y > systemPtr->worldSize.y) die();
+    if (position.y > systemPtr->worldSize.y || isnan(position.x)) die();
 }
 
 

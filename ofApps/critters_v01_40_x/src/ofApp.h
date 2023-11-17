@@ -95,5 +95,8 @@ class ofApp : public ofBaseApp{
 
 		bool bRender;
 		string uniqueFileName;
+
+
+		bool debug;
 		
 };

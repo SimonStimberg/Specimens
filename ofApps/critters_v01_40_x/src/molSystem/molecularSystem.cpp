@@ -28,7 +28,7 @@ void molecularSystem::setup(int width, int height) {
     doNotDigest = false;
     freshlySpawned = false;
     // collapseThreshold = floor(1300 * width/800.0);
-    collapseThreshold = floor( (height / 15) * (width / 15) );
+    collapseThreshold = floor( (height / 15) * (width / 14) );
 
     setGui();
 

@@ -33,7 +33,7 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x960.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x2016.xml";
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
