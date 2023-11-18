@@ -523,6 +523,7 @@ void Intestine::copyPositions(vector<glm::vec2> & positions)
     if (positions.size() == intestineMolecules.size()) {
         for (int i = 0; i < intestineMolecules.size(); i++) {
             intestineMolecules[i]->position = positions[i]; 
+            intestineMolecules[i]->velocity = glm::vec2(ofRandom(-0.2, 0.2), ofRandom(-0.2, 0.2));
         }
     } else ofLogNotice("positions vector has not the same size as the Intestine");
 }
@@ -534,18 +535,18 @@ void Intestine::die()
     
     // get the position of the center of the cell aka the average position
     // glm::vec2 center(0,0);
-    // for (int i = 0; i < intestineMolecules.size(); i++) { 
-    //     intestineMolecules[i]->removeMe = true;      // mark the Molecules to be removed
-    //     // center += intestineMolecules[i]->position;	// sum the positions of all cells
-    //     if (position.x < systemPtr->worldSize.x) {
-    //         if(i % 2 == 0) {
-    //             glm::vec2 spawnPos = (intestineMolecules[i]->position + intestineMolecules[i+1]->position) * 0.5;
-    //             spawnPos.x += ofRandom(-10.0, 10.0);
-    //             spawnPos.y += ofRandom(-10.0, 10.0);
-    //             systemPtr->addLiquid(spawnPos.x, spawnPos.y);
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < intestineMolecules.size(); i++) { 
+        intestineMolecules[i]->removeMe = true;      // mark the Molecules to be removed
+        // center += intestineMolecules[i]->position;	// sum the positions of all cells
+        // if (position.x < systemPtr->worldSize.x) {
+        //     if(i % 2 == 0) {
+        //         glm::vec2 spawnPos = (intestineMolecules[i]->position + intestineMolecules[i+1]->position) * 0.5;
+        //         spawnPos.x += ofRandom(-10.0, 10.0);
+        //         spawnPos.y += ofRandom(-10.0, 10.0);
+        //         systemPtr->addLiquid(spawnPos.x, spawnPos.y);
+        //     }
+        // }
+    }
     // center /= intestineMolecules.size(); 	// get the average / dividing by the total amount
 
     for (int i = 0; i < springs.size(); i++) { 
@@ -609,7 +610,7 @@ void Intestine::updatePosition()
     // position /= intestineMolecules.size();
     position /= 2;
 
-    if (position.y > systemPtr->worldSize.y || isnan(position.x)) die();
+    if (position.y > (systemPtr->worldSize.y + 200) || isnan(position.x)) die();
 }
 
 

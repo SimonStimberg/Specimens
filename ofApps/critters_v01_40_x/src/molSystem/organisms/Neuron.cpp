@@ -29,7 +29,7 @@ void Neuron::set(int arms, int elements, int x, int y)
 
     isSignaling = false;
     signalCounter = 0;
-    maxNumSignals = (int)ofRandom(20, 45);
+    maxNumSignals = (int)ofRandom(25, 45);
     nextSignal = ofGetElapsedTimeMillis();
 
 
@@ -507,7 +507,7 @@ void Neuron::updatePosition()
     }
     position /= neuronMolecules.size();
 
-    if (position.y > systemPtr->worldSize.y || isnan(position.x)) {
+    if (position.y > (systemPtr->worldSize.y + 200) || isnan(position.x)) {
         // ofLogNotice("Relieve me, I'm out of the screen!");
         die();
     }

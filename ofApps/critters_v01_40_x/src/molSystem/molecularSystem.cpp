@@ -68,10 +68,13 @@ void molecularSystem::setup(int width, int height) {
 //------------------------------------------------------------------
 void molecularSystem::update() {
 
+    // remove dead organisms
+    if(thereAreCadavers) cleanUp();    
+
+    // add new organisms being triggered last frame
     addFromStack();
 
-    // ofLogNotice("updating mol system");
-
+    // update the bin structure
     updateBins();
 
 
@@ -105,10 +108,7 @@ void molecularSystem::update() {
     for(unsigned int i = 0; i < allMolecules.size(); i++) {
 		allMolecules[i]->applyForces();
 	}
- 
-
-    // remove dead organisms
-    if(thereAreCadavers) cleanUp();     
+    
 
     // if the amount of Molecules surpasses a certain threshold the system collapses: the contents will be flushed though a whole in the ground
     if(allMolecules.size() > collapseThreshold && !flush) {
@@ -223,7 +223,7 @@ void molecularSystem::addRandom(float x, float y) {
 
     if(sdf <= -5.0 ) {     // -20 -> keep a border of 20px for safety
 
-        int amount = 1;
+        int amount = 3;
 
         for(unsigned int i = 0; i < amount; i++){ 
 
@@ -233,26 +233,27 @@ void molecularSystem::addRandom(float x, float y) {
             float probability[5] = {0.2, 0.4, 0.9, 1.1, 1.7};   // the probability for the different organism types      Breather: 0.2
             float dice = ofRandom(probability[4]);
 
-            if (dice < probability[0]) {
-                // addBreather(x, y);
-                addOnNextFrame(BREATHER, x, y);
-            } else if (dice < probability[1]) {
-                // addPumper(x, y);
-                addOnNextFrame(PUMPER, x, y);
-            } else if (dice < probability[2]) {
-                // addNeuron(x, y);
-                addOnNextFrame(NEURON, x, y);
-            } else if (dice < probability[3]) {
-                // addIntestine(x, y);
-                addOnNextFrame(INTESTINE, x, y);
-            } else {
-                // addLiquid(x, y);
-                // addLiquid(x + 2.0, y - 1.0);
-                // addLiquid(x + 2.0, y + 1.0);
-                addOnNextFrame(LIQUID, x, y);
-                addOnNextFrame(LIQUID, x + 2.0, y - 1.0);
-                addOnNextFrame(LIQUID, x + 2.0, y + 1.0);
-            }
+            // if (dice < probability[0]) {
+            //     // addBreather(x, y);
+            //     addOnNextFrame(BREATHER, x, y);
+            // } else if (dice < probability[1]) {
+            //     // addPumper(x, y);
+            //     addOnNextFrame(PUMPER, x, y);
+            // } else if (dice < probability[2]) {
+            //     // addNeuron(x, y);
+            //     addOnNextFrame(NEURON, x, y);
+            // } else if (dice < probability[3]) {
+            //     // addIntestine(x, y);
+            //     addOnNextFrame(INTESTINE, x, y);
+            // } else {
+            //     // addLiquid(x, y);
+            //     // addLiquid(x + 2.0, y - 1.0);
+            //     // addLiquid(x + 2.0, y + 1.0);
+            //     addOnNextFrame(LIQUID, x, y);
+            //     addOnNextFrame(LIQUID, x + 2.0, y - 1.0);
+            //     addOnNextFrame(LIQUID, x + 2.0, y + 1.0);
+            // }
+            addOnNextFrame(INTESTINE, x, y);
 
         }
 
@@ -296,8 +297,10 @@ void molecularSystem::addControlledRandom(float x, float y) {
 
 
         // manual way of defining the organism distribution
-        int organsims[5] {7,  1, 2, 5, 2}; 
+        // int organsims[5] {7,  1, 2, 5, 2}; 
+        int organsims[5] {7,  1, 2, 5, 3}; 
         // int organsims[5] {10, 2, 3, 7, 3}; 
+        
         int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
 
         while (total > 0) {
