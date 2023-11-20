@@ -124,19 +124,19 @@ void molecularSystem::update() {
     }
 
 
-    // if(drop) {
+    if(drop) {
 
-    //     bool allWithinCanvas = true;
+        bool allWithinCanvas = true;
 
-    //     for(unsigned int i = 0; i < allMolecules.size(); i++) {
-    //         if (allMolecules[i]->position.y < -worldSize.y * 0.45) {
-    //             allWithinCanvas = false;
-    //             break;
-    //         }
-    //     }
+        for(unsigned int i = 0; i < allMolecules.size(); i++) {
+            if (allMolecules[i]->position.y < -worldSize.y * 0.45) {
+                allWithinCanvas = false;
+                break;
+            }
+        }
 
-    //     if(allWithinCanvas) drop = false;
-    // }
+        if(allWithinCanvas) drop = false;
+    }
 
 }
 
@@ -193,8 +193,9 @@ void molecularSystem::addOrganisms(organismType type, int num, float x, float y)
             // float xPos = x + ofRandom(-50., 50.);
             // float yPos = y + ofRandom(-20., 20.);
             float xPos = ofRandom(-worldSize.x * 0.47, worldSize.x * 0.47);
-            float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
+            // float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
             // float yPos = -worldSize.y * 0.7;
+            float yPos = -worldSize.y * 0.7 - ofRandom(70.);    // spawn outside of the canvas to let the organisms drop into the vessel
 
 
 
@@ -331,6 +332,11 @@ void molecularSystem::addControlledRandom(float x, float y) {
             }
         }
         
+    }
+
+    // add initial downward velocity to all Molecules to simulate a drop into liquid (slightly gravity is added as well until all Molecules have entered the canvas (is being done in the Molecule class))
+    for (unsigned int i = 0; i < allMolecules.size(); i++) {
+        allMolecules[i]->velocity.y = 6. + ofRandom( abs(allMolecules[i]->position.y + (worldSize.y*0.5)) / 100. );
     }
 
 }
