@@ -327,8 +327,8 @@ glm::vec2 Molecule::gravity() {
 
 
 	// add some very slight horizontal movement to simulate Brownian Molecular Motion
-	brownianMotion.x = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.007;
-	brownianMotion.y = ofSignedNoise(uniqueVal, position.y * 0.006, ofGetElapsedTimef()*0.2) * 0.007;
+	brownianMotion.x = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
+	brownianMotion.y = ofSignedNoise(uniqueVal, position.y * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
 	float gravity = 0.0;
 	
 

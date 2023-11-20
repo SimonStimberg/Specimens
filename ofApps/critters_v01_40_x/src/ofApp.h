@@ -24,6 +24,7 @@ class ofApp : public ofBaseApp{
 		void draw();
 		// void initSynth();
 		void setTVmask();
+		void startRender();
 		// void reconnectAudio();
 
 		void keyPressed(int key);
@@ -95,6 +96,7 @@ class ofApp : public ofBaseApp{
 
 		bool bRender;
 		string uniqueFileName;
+		int renderCycle;
 
 
 		bool debug;

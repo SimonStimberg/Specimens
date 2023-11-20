@@ -103,6 +103,7 @@ void ofApp::setup() {
     bRender = false;
     uniqueFileName = ofGetTimestampString("%y-%m-%d__%Hh%M");
     // uniqueFileName = ofGetTimestampString("%y-%m-%d_%Hh%Mm%S");
+    renderCycle = 0;
 
 
     debug = false;
@@ -241,9 +242,16 @@ void ofApp::update() {
     // ofLogNotice("intestines: " + ofToString(molSystem[3].intestines.size()));
 
 
-    if(bRender && molSystem[0].allMolecules.size() <= 0) {
-        bRender = false;
-        ofLogNotice("all organisms dead - rendering stopped");
+    if(bRender && molSystem[0].allMolecules.size() <= 0 && !molSystem[0].flush) {
+        if (renderCycle < 3) {
+            bRender = false;
+            startRender();
+            ofLogNotice("all organisms dead - restarting rendering");
+        } else {
+            bRender = false;
+            ofLogNotice("max render cycle reached - rendering stopped");
+            ofExit();    
+        }
     }
 
     if (debug) {
@@ -363,6 +371,37 @@ void ofApp::setTVmask() {
 }
 
 
+//--------------------------------------------------------------
+void ofApp::startRender() {
+
+    if (!bRender) {
+
+        string timeStamp = ofGetTimestampString("%y-%m-%d__%Hh%Mm%S");
+
+        uniqueFileName = "render/" + timeStamp;
+
+
+        if (!ofDirectory::doesDirectoryExist(uniqueFileName)) {
+            ofDirectory::createDirectory(uniqueFileName);
+            uniqueFileName += "/" + timeStamp;
+            molSystem[0].addControlledRandom(0, 0);
+            bRender = true;
+            renderCycle++;
+            ofLogNotice("rendering started");
+
+        } else {
+            ofLogNotice("render directory already exists - rendering aborted");
+        }
+
+    } else {
+        ofLogNotice("rendering already started, can not start again");
+    }
+
+    // ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
+
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){  
@@ -428,35 +467,7 @@ void ofApp::keyPressed(int key){
 
     if(key == 'r')
 	{
-
-        if (!bRender) {
-
-            string timeStamp = ofGetTimestampString("%y-%m-%d__%Hh%Mm%S");
-
-            uniqueFileName = "render/" + timeStamp;
-
-
-            if (!ofDirectory::doesDirectoryExist(uniqueFileName)) {
-                ofDirectory::createDirectory(uniqueFileName);
-                uniqueFileName += "/" + timeStamp;
-                molSystem[0].addControlledRandom(0, 0);
-                bRender = true;
-                ofLogNotice("rendering started");
-
-            } else {
-                ofLogNotice("render directory already exists - rendering aborted");
-            }
-
-        } else {
-            ofLogNotice("rendering already started, can not start again");
-        }
-
-        
-        
-        
-        
-        // ofSaveScreen("render/" + uniqueFileName + "__" + ofToString(ofGetFrameNum()) + ".png");
-
+        startRender();    
     }
 
     if(key == 'd')

@@ -32,7 +32,7 @@ void Breather::set(int num, int x, int y)
     phaseCompensation = 0.0;
     cycleCheck = true;
     cycleCount = 0;
-    maxNumCycles = (int)ofRandom(25, 55);
+    maxNumCycles = (int)ofRandom(35, 70);
 
     arousal = 0.7;
     valence = 0.0;

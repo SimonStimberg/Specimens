@@ -28,7 +28,7 @@ void molecularSystem::setup(int width, int height) {
     doNotDigest = false;
     freshlySpawned = false;
     // collapseThreshold = floor(1300 * width/800.0);
-    collapseThreshold = floor( (height / 15) * (width / 14) );
+    collapseThreshold = floor( (height / 15) * (width / 15) );
 
     setGui();
 
@@ -192,7 +192,7 @@ void molecularSystem::addOrganisms(organismType type, int num, float x, float y)
 
             // float xPos = x + ofRandom(-50., 50.);
             // float yPos = y + ofRandom(-20., 20.);
-            float xPos = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
+            float xPos = ofRandom(-worldSize.x * 0.47, worldSize.x * 0.47);
             float yPos = ofRandom(-worldSize.y * 0.3, worldSize.y * 0.3);
             // float yPos = -worldSize.y * 0.7;
 
@@ -298,8 +298,17 @@ void molecularSystem::addControlledRandom(float x, float y) {
 
         // manual way of defining the organism distribution
         // int organsims[5] {7,  1, 2, 5, 2}; 
-        int organsims[5] {7,  1, 2, 5, 3}; 
         // int organsims[5] {10, 2, 3, 7, 3}; 
+
+        // int organsims[5] {7,  1, 2, 5, 3}; 
+        
+
+        int organsims[5];
+        organsims[0] = floor(ofRandom(7., 11.));
+        organsims[1] = floor(ofRandom(1., 3.));
+        organsims[2] = floor(ofRandom(1., 4.));
+        organsims[3] = floor(ofRandom(4., 8.));
+        organsims[4] = floor(ofRandom(2., 4.));
         
         int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
 
