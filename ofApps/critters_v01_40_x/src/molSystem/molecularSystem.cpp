@@ -15,6 +15,14 @@ void molecularSystem::setup(int width, int height) {
     worldSize.x = width;
     worldSize.y = height;
 
+    // to switch settings for different screen resolutions
+    if (width > 1920) renderMode = 0;
+    else if (width > 1160) renderMode = 1;
+    else renderMode = 2;
+
+    ofLogNotice("render mode: " + ofToString(renderMode));
+
+
     // ofLogNotice("width: " + ofToString(width));
     // ofLogNotice("height: " + ofToString(height));
 
@@ -28,7 +36,9 @@ void molecularSystem::setup(int width, int height) {
     doNotDigest = false;
     freshlySpawned = false;
     // collapseThreshold = floor(1300 * width/800.0);
-    collapseThreshold = floor( (height / 15) * (width / 15) );
+    if (renderMode == 0) collapseThreshold = floor( (height / 15) * (width / 15) );
+    if (renderMode == 1) collapseThreshold = floor( (height / 15) * (width / 16) );
+    if (renderMode == 2) collapseThreshold = floor( (height / 15) * (width / 15) );
 
     setGui();
 
@@ -305,11 +315,36 @@ void molecularSystem::addControlledRandom(float x, float y) {
         
 
         int organsims[5];
-        organsims[0] = floor(ofRandom(7., 11.));
-        organsims[1] = floor(ofRandom(1., 3.));
-        organsims[2] = floor(ofRandom(1., 4.));
-        organsims[3] = floor(ofRandom(4., 8.));
-        organsims[4] = floor(ofRandom(2., 4.));
+
+        if (renderMode == 0) {
+
+            // 2016px  +  1932px 
+            organsims[0] = floor(ofRandom(7., 11.));
+            organsims[1] = floor(ofRandom(1., 3.));
+            organsims[2] = floor(ofRandom(1., 4.));
+            organsims[3] = floor(ofRandom(4., 8.));
+            organsims[4] = floor(ofRandom(3., 4.));
+
+        } else if (renderMode == 1) {
+
+            // 1176px
+            organsims[0] = floor(ofRandom(5., 9.));
+            organsims[1] = floor(ofRandom(1., 2.));
+            organsims[2] = floor(ofRandom(1., 3.));
+            organsims[3] = floor(ofRandom(3., 6.));
+            organsims[4] = floor(ofRandom(1., 3.));
+
+        } else {
+
+            // 672px
+            organsims[0] = floor(ofRandom(4., 7.));
+            organsims[1] = floor(ofRandom(0., 2.));
+            organsims[2] = floor(ofRandom(0., 2.));
+            organsims[3] = floor(ofRandom(1., 4.));
+            organsims[4] = floor(ofRandom(1., 2.));
+        }
+
+
         
         int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
 
@@ -783,7 +818,7 @@ void molecularSystem::setGui() {
 
     // gui.add(tuneCanvasWidth.set("Canvas Width",  worldSize.x*0.75, worldSize.x*0.25, worldSize.x*2.0));
     // gui.add(tuneCanvasHeight.set("Canvas Height", worldSize.y*0.75, worldSize.y*0.25, worldSize.y*2.0));
-    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 400, 2400));
+    gui.add(tuneCanvasWidth.set("Canvas Width",  900, 250, 1400));
     gui.add(tuneCanvasHeight.set("Canvas Height", 100, 50, 150));
     gui.add(tuneVerticalBow.set("Vertical Bow", 1760, 1500, 3000));
     gui.add(tuneHorizontalBow.set("Horizontal Bow", 1740, 1500, 3400));

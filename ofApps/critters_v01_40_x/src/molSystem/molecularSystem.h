@@ -98,6 +98,9 @@ class molecularSystem{
         bool freshlySpawned;
 
 
+        int renderMode;
+
+
 
 
 

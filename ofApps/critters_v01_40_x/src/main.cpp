@@ -27,6 +27,11 @@ int main( ){
 		// settings.setSize(600, 800);
 		// settings.setSize(1600, 600);		// 2 screens
 		// settings.setSize(3200, 600);		// 4 screens
+		
+		// Fries TV resolutions:
+		// settings.setSize(672, 168);		// strip
+		// settings.setSize(1260, 168);		// strip
+		// settings.setSize(1932, 168);		// strip
 		settings.setSize(2016, 168);		// strip
 		settings.windowMode = OF_WINDOW;
 		settings.resizable = false;

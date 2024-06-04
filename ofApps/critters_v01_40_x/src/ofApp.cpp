@@ -106,6 +106,8 @@ void ofApp::setup() {
     renderCycle = 0;
 
 
+
+
     debug = false;
 
 }
@@ -242,8 +244,11 @@ void ofApp::update() {
     // ofLogNotice("intestines: " + ofToString(molSystem[3].intestines.size()));
 
 
+    // define how many render cycles should be done
+    int doRenderCycles = 3;
+
     if(bRender && molSystem[0].allMolecules.size() <= 0 && !molSystem[0].flush) {
-        if (renderCycle < 3) {
+        if (renderCycle < doRenderCycles) {
             bRender = false;
             startRender();
             ofLogNotice("all organisms dead - restarting rendering");

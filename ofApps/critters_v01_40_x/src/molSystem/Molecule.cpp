@@ -330,6 +330,9 @@ glm::vec2 Molecule::gravity() {
 	brownianMotion.x = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
 	brownianMotion.y = ofSignedNoise(uniqueVal, position.y * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
 	float gravity = 0.0;
+
+
+	if(type == moleculeType::LIQUID) brownianMotion * 0.75;		// less brownian motion for single liquid molecules
 	
 
 	// if(type == moleculeType::LIQUID) {
@@ -468,7 +471,8 @@ void Molecule::checkBounds() {
 	if(d > 0.0) { 
 
 		// compute the reflection vector based on the incidence vector and the normal (which depends on the shape -> via derivation of the sdf function)
-		glm::vec2 incidence = glm::normalize(velocity) * -1;	// the incidence vector is the velocity only reversed
+		// glm::vec2 incidence = glm::normalize(velocity) * -1;
+		glm::vec2 incidence = -velocity;	// the incidence vector is the velocity only reversed
 		glm::vec2 normal    = -estimateNormal(position);		// the negative normal, as we want to stay INSIDE the shape - so the normal turned to the inside
 
 		float dot = glm::dot(normal, incidence);
@@ -482,7 +486,8 @@ void Molecule::checkBounds() {
 
 		// then change the direction corresponding to the reflection vector but with the same velocity (same length)
 		// multiplied by a value < 1.0 to slow the Molecule down - simulating a kind of energy absorption happening on impact
-		velocity = glm::normalize(reflection) * glm::length(velocity) * 0.95;
+		// velocity = glm::normalize(reflection) * glm::length(velocity) * 0.95;
+		velocity = reflection * 0.95;
 
 	} 
 

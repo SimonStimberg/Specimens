@@ -33,7 +33,8 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x2016.xml";
+    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x2016.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/friesTV_x" + ofToString(mainPtr->molSystem[0].worldSize.x) + ".xml";
     // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
@@ -382,6 +383,8 @@ void GuiApp::loadPreset(string filePath, int panel)
             // mainPtr->synth.gui.loadFromFile(filePath);
             guiSynth.loadFromFile(filePath);
         }
+    } else {
+        ofLogError("The file " + filePath + " is missing");
     }
 }
 
