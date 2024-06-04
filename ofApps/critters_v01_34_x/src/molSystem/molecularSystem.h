@@ -48,6 +48,7 @@ class molecularSystem{
         void addControlledRandom(float x, float y);
         
         void addOnNextFrame(organismType type, float x, float y);
+        void addBisectedIntestine(vector<glm::vec2> positions);
         void addFromStack();
         
         void setGui();
@@ -78,6 +79,7 @@ class molecularSystem{
         vector <organismType> organismsToAdd;
         vector <glm::vec2>    positionsToAdd;
 
+        vector <vector<glm::vec2>> bisectedIntestines;
 
         glm::vec2 worldSize;
 

@@ -25,14 +25,15 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/lab30_01.xml";   
+    // string defaultSimulationPreset = "../../../../Presets/Simulation/lab30_01.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/friesTV-physics_01.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_lab30_01.xml";
-    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
+    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_lab30_01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 
@@ -380,6 +381,8 @@ void GuiApp::loadPreset(string filePath, int panel)
             // mainPtr->synth.gui.loadFromFile(filePath);
             guiSynth.loadFromFile(filePath);
         }
+    } else {
+        ofLogError("The file " + filePath + " is missing");
     }
 }
 

@@ -39,7 +39,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 
-		static const int 	numScreens = 4;			// IMPORTANT: defines the number of screens/windows
+		static const int 	numScreens = 1;			// IMPORTANT: defines the number of screens/windows
 		molecularSystem 	molSystem[numScreens];	// there is one molecular system for each screen/window - the size amount of instances is defined by numScreens
 		ofFbo 				vessel[numScreens];		// frame buffer object - the size amount of instances is defined by numScreens
 		glm::vec2 			screenResolution;

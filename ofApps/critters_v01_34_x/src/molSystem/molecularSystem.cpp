@@ -65,10 +65,13 @@ void molecularSystem::setup(int width, int height) {
 //------------------------------------------------------------------
 void molecularSystem::update() {
 
+    // remove dead organisms
+    if(thereAreCadavers) cleanUp();    
+
+    // add new organisms being triggered last frame
     addFromStack();
 
-    // ofLogNotice("updating mol system");
-
+    // update the bin structure
     updateBins();
 
 
@@ -103,9 +106,6 @@ void molecularSystem::update() {
 		allMolecules[i]->applyForces();
 	}
  
-
-    // remove dead organisms
-    if(thereAreCadavers) cleanUp();     
 
     // if the amount of Molecules surpasses a certain threshold the system collapses: the contents will be flushed though a whole in the ground
     if(allMolecules.size() > collapseThreshold && !flush) {
@@ -142,13 +142,13 @@ void molecularSystem::draw() {
 		intestines[i]->draw();
 	}
 
-    // ofSetColor(ofColor::indianRed);
-    // ofFill();
-    // if (intrusionPoints.size() > 0) {
-    //     for(unsigned int i = 0; i < intrusionPoints.size(); i++){
-    //         ofDrawCircle(intrusionPoints[i], 10.);
-    //     }
-    // }
+    ofSetColor(ofColor::indianRed);
+    ofFill();
+    if (intrusionPoints.size() > 0) {
+        for(unsigned int i = 0; i < intrusionPoints.size(); i++){
+            ofDrawCircle(intrusionPoints[i], 10.);
+        }
+    }
 
 }
 
@@ -209,13 +209,17 @@ void molecularSystem::addRandom(float x, float y) {
             float dice = ofRandom(1.);
 
             if (dice < probability[0]) {
-                addBreather(x, y);
+                // addBreather(x, y);
+                addOnNextFrame(BREATHER, x, y);
             } else if (dice < probability[1]) {
-                addPumper(x, y);
+                // addPumper(x, y);
+                addOnNextFrame(PUMPER, x, y);
             } else if (dice < probability[2]) {
-                addNeuron(x, y);
+                // addNeuron(x, y);
+                addOnNextFrame(NEURON, x, y);
             } else {
-                addIntestine(x, y);
+                // addIntestine(x, y);
+                addOnNextFrame(INTESTINE, x, y);
             }
 
         }
@@ -240,7 +244,8 @@ void molecularSystem::addControlledRandom(float x, float y) {
         float sdf = m->signedDistanceField(glm::vec2(x, y));
 
         if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
-            addIntestine(x, y);
+            // addIntestine(x, y);
+            addOnNextFrame(INTESTINE, x, y);
         }
     }
 
@@ -349,6 +354,11 @@ void molecularSystem::addOnNextFrame(organismType type, float x, float y) {
 
 }
 
+//------------------------------------------------------------------
+void molecularSystem::addBisectedIntestine(vector<glm::vec2> positions) {
+    bisectedIntestines.push_back(positions);
+}
+
 
 
 //------------------------------------------------------------------
@@ -371,6 +381,22 @@ void molecularSystem::addFromStack() {
         organismsToAdd.clear();
         positionsToAdd.clear();
 
+    }
+
+
+    if (bisectedIntestines.size() > 0) {
+            
+            for(unsigned int i = 0; i < bisectedIntestines.size(); i++){ 
+    
+                Intestine * n = new Intestine(this);
+                n->set(bisectedIntestines[i].size() / 2, 0.0, 0.0);
+                n->copyPositions(bisectedIntestines[i]);
+                n->linkAudioModule(audioLink->getFreeIntestineModule());
+                intestines.push_back(n);
+    
+            }
+    
+            bisectedIntestines.clear();
     }
 
 }

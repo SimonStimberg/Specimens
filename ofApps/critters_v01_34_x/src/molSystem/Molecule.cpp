@@ -119,7 +119,7 @@ void Molecule::applyForces() {
 	outerForce = glm::vec2(0,0);	// reset outer force vector to zero
 
 
-	if(type == moleculeType::LIQUID && position.x > systemPtr->worldSize.x) {
+	if(type == moleculeType::LIQUID && (position.x > systemPtr->worldSize.x || isnan(position.x))) {
 		removeMe = true;
 		systemPtr->organismsToRemove[LIQUID] = true;
 		systemPtr->thereAreCadavers = true;
@@ -323,29 +323,37 @@ glm::vec2 Molecule::gravity() {
     
     glm::vec2 gravityForce;
 
+	glm::vec2 brownianMotion(0,0);
+
 
 	// add some very slight horizontal movement to simulate Brownian Molecular Motion
-	float brownianMotion = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.005;
+	// float brownianMotion = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.005;
+	brownianMotion.x = ofSignedNoise(uniqueVal, position.x * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
+	brownianMotion.y = ofSignedNoise(uniqueVal, position.y * 0.006, ofGetElapsedTimef()*0.2) * 0.017;
 	float gravity = 0.0;
 
-	if(type == moleculeType::LIQUID) {
 
-		// make the liquid molecules (or suspended solid particles) to differ a bit in their weight to look less homogeneous
-		gravity = uniqueVal * 0.000001;
-		gravity += 0.02;
-		if(systemPtr->flush) gravity += 0.05;	// add a additional drag to the bottom, once the system collapsed
-
-	} else {
-
-		// make the Molecules of an organisms a bit lighter than the floating particles
-		gravity += 0.01;
-		if(systemPtr->flush) gravity += 0.05;  // add a additional drag to the bottom, once the system collapsed
-
-	}
+	if(type == moleculeType::LIQUID) brownianMotion * 0.75;		// less brownian motion for single liquid molecules
 
 
-	gravityForce.x = gravity;
-	gravityForce.y = brownianMotion;
+	// if(type == moleculeType::LIQUID) {
+
+	// 	// make the liquid molecules (or suspended solid particles) to differ a bit in their weight to look less homogeneous
+	// 	gravity = uniqueVal * 0.000001;
+	gravity += 0.02;
+	if(systemPtr->flush) gravity += 0.07;	// add a additional drag to the bottom, once the system collapsed
+
+	// } else {
+
+	// 	// make the Molecules of an organisms a bit lighter than the floating particles
+	// 	gravity += 0.01;
+	// 	if(systemPtr->flush) gravity += 0.05;  // add a additional drag to the bottom, once the system collapsed
+
+	// }
+
+
+	gravityForce.x = brownianMotion.x + gravity;
+	gravityForce.y = brownianMotion.y;
 
 
 	return gravityForce;
@@ -463,7 +471,8 @@ void Molecule::checkBounds() {
 	if(d > 0.0) { 
 
 		// compute the reflection vector based on the incidence vector and the normal (which depends on the shape -> via derivation of the sdf function)
-		glm::vec2 incidence = glm::normalize(velocity) * -1;	// the incidence vector is the velocity only reversed
+		// glm::vec2 incidence = glm::normalize(velocity) * -1;
+		glm::vec2 incidence = -velocity;	// the incidence vector is the velocity only reversed
 		glm::vec2 normal    = -estimateNormal(position);		// the negative normal, as we want to stay INSIDE the shape - so the normal turned to the inside
 
 		float dot = glm::dot(normal, incidence);
@@ -473,11 +482,13 @@ void Molecule::checkBounds() {
 		// we do so by moving the Molecule slightly along the normal (which is the most direct way away from the shape)
 			// the factor is arbitrary - but greater than a certain threshold, below which the Molecule being kept pushed into the outside of the shape
 			// but as small as possible, as with greater values the Molecules keep bouncing on the border
-		position = position + normal * 0.5;	// * 0.25
+		// position = position + normal * 0.5;	// * 0.25
+		position = position + normal * d;
 
 		// then change the direction corresponding to the reflection vector but with the same velocity (same length)
 		// multiplied by a value < 1.0 to slow the Molecule down - simulating a kind of energy absorption happening on impact
-		velocity = glm::normalize(reflection) * glm::length(velocity) * 0.95;
+		// velocity = glm::normalize(reflection) * glm::length(velocity) * 0.95;
+		velocity = reflection * 0.95;
 
 	} 
 
