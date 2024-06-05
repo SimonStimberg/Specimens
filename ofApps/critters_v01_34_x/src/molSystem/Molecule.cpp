@@ -547,7 +547,7 @@ float Molecule::sdEllipse( glm::vec2 p, glm::vec2 r)
 float Molecule::sdBox( glm::vec2 p)
 {
 	// glm::vec2 rad(175.0, 1000.0);
-	glm::vec2 rad(1000.0, 125.0);
+	glm::vec2 rad(1000.0, 150.0);
     p = abs(p)-rad;
     return max(p.x,p.y);
 }
