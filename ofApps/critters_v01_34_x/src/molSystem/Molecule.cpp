@@ -340,8 +340,9 @@ glm::vec2 Molecule::gravity() {
 
 	// 	// make the liquid molecules (or suspended solid particles) to differ a bit in their weight to look less homogeneous
 	// 	gravity = uniqueVal * 0.000001;
-	gravity += 0.02;
-	if(systemPtr->flush) gravity += 0.07;	// add a additional drag to the bottom, once the system collapsed
+	gravity += 0.01;
+	if(systemPtr->flush) gravity += 0.11;	// add a additional drag to the bottom, once the system collapsed
+	if(systemPtr->drop && position.x < -0.5 * systemPtr->worldSize.x) gravity += 0.71;
 
 	// } else {
 
@@ -512,7 +513,15 @@ float Molecule::signedDistanceField( glm::vec2 p)
 	if(systemPtr->flush) {
 		// p.y -= 750.0;
 		p.x -= 1000.0;
-		sdf = opSmoothUnion( sdf, sdBox(p), systemPtr->tuneEdges );
+		glm::vec2 rad(1000.0, systemPtr->worldSize.y*0.4);
+		// glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
+		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
+	}
+	if(systemPtr->drop) {
+		p.x += 550.0;
+		// p.x -= 1500.0;
+		glm::vec2 rad(500.0, systemPtr->worldSize.y*0.1);
+		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
 	}
 
 	return sdf;
@@ -544,10 +553,10 @@ float Molecule::sdEllipse( glm::vec2 p, glm::vec2 r)
     return p.x - (r.y*sqrt(m-d*d)-r.x*d) * r.x/m;
 }
 
-float Molecule::sdBox( glm::vec2 p)
+float Molecule::sdBox( glm::vec2 p, glm::vec2 rad)
 {
 	// glm::vec2 rad(175.0, 1000.0);
-	glm::vec2 rad(1000.0, 150.0);
+	// glm::vec2 rad(1000.0, 150.0);
     p = abs(p)-rad;
     return max(p.x,p.y);
 }

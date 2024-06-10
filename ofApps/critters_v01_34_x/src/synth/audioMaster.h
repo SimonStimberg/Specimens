@@ -81,6 +81,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             vector <pdsp::Compressor>		compressor;
             // pdsp::Compressor		compressorA;
             // pdsp::Compressor		compressorB;
+            std::vector <pdsp::ValueControl> reverbAmt;
 
             vector <audioModule::SubMaster> subMasterModules;
 

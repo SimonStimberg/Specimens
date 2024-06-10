@@ -21,12 +21,16 @@ void audioModule::Master::setup(int screens){
     masterBus.channels(screens);
     cleanBus.channels(screens);
     fxBus.channels(screens);
+    reverbAmt.resize(screens);
     
     compressor.resize(screens);
-    for(int i = 0; i < compressor.size(); i++) {
+    for(int i = 0; i < screens; i++) {
         compressor[i].stereoLink(false);
         guiPtr->compThreshold >> compressor[i].in_threshold();
         guiPtr->compKnee      >> compressor[i].in_knee();
+
+        reverbAmt[i].enableSmoothing(4000);
+        reverbAmt[i] >> disasterFX.reverb_ch(i);
     }
 
     subMasterModules.resize(screens);
@@ -107,7 +111,8 @@ void audioModule::Master::switchDistortion(bool state, int screen) {
 
 //------------------------------------------------------------------
 void audioModule::Master::setReverbAmount(float amount, int screen) {
-    amount >> disasterFX.reverb_ch(screen);
+    // amount >> disasterFX.reverb_ch(screen);
+    reverbAmt[screen].set(amount);
 }
 
 audioModule::SubMaster & audioModule::Master::getSubMasterModule(int screen) {

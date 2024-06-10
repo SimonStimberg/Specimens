@@ -46,6 +46,7 @@ class molecularSystem{
         void addOrganisms(organismType type, int num);
         void addRandom(float x, float y);
         void addControlledRandom(float x, float y);
+        void addInitialDrop(int vesselType);
         
         void addOnNextFrame(organismType type, float x, float y);
         void addBisectedIntestine(vector<glm::vec2> positions);
@@ -81,10 +82,13 @@ class molecularSystem{
 
         vector <vector<glm::vec2>> bisectedIntestines;
 
+
         glm::vec2 worldSize;
 
         bool flush;
+        bool drop;
         int  flushTimestamp;
+        int  dropTimestamp;
         bool debugView;
         bool thereAreCadavers;
         bool organismsToRemove[5]; 

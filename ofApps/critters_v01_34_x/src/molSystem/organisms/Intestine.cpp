@@ -25,7 +25,7 @@ void Intestine::set(int num, int x, int y)
     nextDigestion = ofGetElapsedTimeMillis() + 10000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
     digestionPos = glm::vec2(0, 0);
     // maxElements = 140;
-    maxElements = 92;
+    maxElements = 70;
 
     freqDivergence = ofRandom(20.);
 

@@ -52,7 +52,7 @@ class Molecule {
         float signedDistanceField( glm::vec2 p);
         float sdCircle( glm::vec2 p);
         float sdEllipse( glm::vec2 p, glm::vec2 r);
-        float sdBox( glm::vec2 p);
+        float sdBox( glm::vec2 p, glm::vec2 rad);
         float opSmoothIntersection( float d1, float d2, float k );
         float opSmoothUnion( float d1, float d2, float k );
         glm::vec2 estimateNormal(glm::vec2 p);

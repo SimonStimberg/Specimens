@@ -19,7 +19,9 @@ void molecularSystem::setup(int width, int height) {
     // ofLogNotice("height: " + ofToString(height));
 
     flush = false;
+    drop = false;
     flushTimestamp = 0;
+    dropTimestamp = 0;
     debugView = false;
     std::fill_n (organismsToRemove, 5, false);
     thereAreCadavers = false;
@@ -114,10 +116,27 @@ void molecularSystem::update() {
         ofLogNotice("timestamp: " + ofToString(flushTimestamp));
     }
 
+
+    if(drop) {
+
+        bool allWithinCanvas = true;
+
+        for(unsigned int i = 0; i < allMolecules.size(); i++) {
+            if (allMolecules[i]->position.x < -worldSize.x * 0.45) {
+                allWithinCanvas = false;
+                break;
+            }
+        }
+
+        if(allWithinCanvas) drop = false;
+    }
+
+
     // if the system has collapsed (flush is true) and all molecules have been deleted from the system: restart!
-    if(flush && allMolecules.size() <= 0) {
+    if(flush && allMolecules.size() <= 0 && ofGetElapsedTimeMillis() > flushTimestamp + 15000) {
         flush = false;
-        addOrganisms(LIQUID, floor(250 * worldSize.x/800.0));
+        // addOrganisms(LIQUID, floor(250 * worldSize.x/800.0));
+        addInitialDrop(2);
     }
 
 }
@@ -162,22 +181,30 @@ void molecularSystem::addOrganisms(organismType type, int num) {
         for(unsigned int i = 0; i < num; i++){ 
 
 
-            float x = 0.;
-            float y = 0.;
-            if(type == LIQUID) {
-                x = -worldSize.x *0.5 - ofRandom(1000.);
-                y = ofRandom(-10., 10.);
-            } else {
-                x = -worldSize.x *0.5 - 50 - ofRandom(10.);
-                y = ofRandom(-10., 10.);
-            }
+            // float x = 0.;
+            // float y = 0.;
+            // if(type == LIQUID) {
+            //     x = -worldSize.x *0.5 - ofRandom(1000.);
+            //     y = ofRandom(-10., 10.);
+            // } else {
+            //     x = -worldSize.x *0.5 - 50 - ofRandom(10.);
+            //     y = ofRandom(-10., 10.);
+            // }
 
 
-            if (type == LIQUID)    addLiquid(x, y);
-            if (type == BREATHER)  addBreather(x, y);
-            if (type == PUMPER)    addPumper(x, y);
-            if (type == NEURON)    addNeuron(x, y);
-            if (type == INTESTINE) addIntestine(x, y);
+            // float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+            // float x = -worldSize.x * 0.7 - ofRandom(150.);    // spawn outside of the canvas to let the organisms drop into the vessel
+
+            float y = ofRandom(-worldSize.y * 0.4, worldSize.y * 0.4);
+            float x = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
+
+            addOnNextFrame(type, x, y);
+
+            // if (type == LIQUID)    addLiquid(x, y);
+            // if (type == BREATHER)  addBreather(x, y);
+            // if (type == PUMPER)    addPumper(x, y);
+            // if (type == NEURON)    addOnNextFrame(NEURON, x, y); // addNeuron(x, y); }
+            // if (type == INTESTINE) addIntestine(x, y);
 
         }
     }
@@ -236,7 +263,7 @@ void molecularSystem::addControlledRandom(float x, float y) {
 
     if( amountOrganisms < 9) {
         addRandom(x, y);
-    } else if (intestines.size() < 3) {
+    } else if (intestines.size() < 2) {
 
         // check if spawning position is within the vessel
         Molecule * m = new Molecule(this);
@@ -248,6 +275,92 @@ void molecularSystem::addControlledRandom(float x, float y) {
             addOnNextFrame(INTESTINE, x, y);
         }
     }
+
+}
+
+
+//------------------------------------------------------------------
+void molecularSystem::addInitialDrop(int vesselType) {
+
+    drop = true;
+    dropTimestamp = ofGetElapsedTimeMillis();
+
+    int amount = 1;
+    float xOffset = 100.;
+
+
+    for(unsigned int i = 0; i < amount; i++){ 
+       
+
+        int organsims[5];
+
+        if (vesselType == 0) {
+
+            // 2016px  +  1932px 
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 3.));
+            organsims[2] = floor(ofRandom(1., 4.));
+            organsims[3] = 1;   // floor(ofRandom(4., 8.));
+            organsims[4] = floor(ofRandom(3., 4.));
+
+        } else if (vesselType == 1) {
+
+            // 1176px
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 2.));
+            organsims[2] = floor(ofRandom(1., 3.));
+            organsims[3] = floor(ofRandom(3., 6.));
+            organsims[4] = floor(ofRandom(1., 3.));
+
+        } else {
+
+            // 672px
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 3.));
+            organsims[2] = floor(ofRandom(0., 2.));
+            organsims[3] = floor(ofRandom(2., 4.));
+            organsims[4] = floor(ofRandom(1., 2.));
+        }
+
+
+        
+        int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
+
+        while (total > 0) {
+            int pick = floor(ofRandom(5));
+            if (organsims[pick] > 0) {
+                organsims[pick] -= 1;
+                total -= 1;
+
+                // spawn outside of the canvas to let the organisms drop into the vessel
+                float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+                float x = -worldSize.x * 0.7 - ofRandom(150.);    
+
+                if (pick == 0) {
+                    // addOrganisms(LIQUID, 1);
+                    addOnNextFrame(LIQUID, x, y);
+                } else if (pick == 1) {
+                    // addOrganisms(BREATHER, 1);
+                    addOnNextFrame(BREATHER, x, y);
+                } else if (pick == 2) {
+                    // addOrganisms(PUMPER, 1); 
+                    addOnNextFrame(PUMPER, x, y);
+                } else if (pick == 3) {
+                    // addOrganisms(NEURON, 1);
+                    addOnNextFrame(NEURON, x, y);
+                } else if (pick == 4) {
+                    // addOrganisms(INTESTINE, 1);
+                    addOnNextFrame(INTESTINE, x, y);
+                }
+            }
+        }
+        
+    }
+
+    // add initial downward velocity to all Molecules to simulate a drop into liquid (slightly gravity is added as well until all Molecules have entered the canvas (is being done in the Molecule class))
+    // for (unsigned int i = 0; i < allMolecules.size(); i++) {
+    //     allMolecules[i]->velocity.x = 6. + ofRandom( abs(allMolecules[i]->position.x + (worldSize.x*0.5)) / 100. );
+    // }
 
 }
 
@@ -294,7 +407,7 @@ void molecularSystem::addBreather(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addPumper(float x, float y) {
 
-    int amount = 5;
+    int amount = 6;
 
     Pumper * c = new Pumper(this);
     c->set(amount, x, y);

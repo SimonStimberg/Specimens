@@ -231,7 +231,7 @@ void Pumper::draw()
 void Pumper::grow()
 {
 
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
 
         Molecule *first = cellMolecules[0];
         Molecule *last  = cellMolecules[cellMolecules.size()-1];

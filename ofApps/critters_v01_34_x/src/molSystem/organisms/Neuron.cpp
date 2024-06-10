@@ -24,6 +24,7 @@ void Neuron::set(int arms, int elements, int x, int y)
     mature = false;
     isDead = false;
     debugVal = 10000000;
+    arousal = 0.0;
     arousalThreshold = ofRandom(0.1, 0.35);
     freqDivergence = ofRandom(-50., 50.);
 
@@ -88,7 +89,7 @@ void Neuron::linkAudioModule(audioModule::Neuron & module)
     pdsp::f2p(880) >> audioModule->in_pitch();
 
     impulse >> audioModule->in_trig();
-    impulse.trigger(1.0);   // trigger once on initialization
+    // impulse.trigger(1.0);   // trigger once on initialization
 
 }
 
@@ -207,7 +208,7 @@ void Neuron::grow()
     // here resources could be saved if a flag would notice that there is no more Dendrite to grow on
 
     // only grow if the time has come to
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
 
         // choose a random dendrite to grow on
         int pick = floor(ofRandom(dendrites.size()));

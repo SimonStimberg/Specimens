@@ -74,7 +74,8 @@ void ofApp::setup() {
 
 
         // add organisms or liquid (free floating particles) to the Molecular System
-        molSystem[i].addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
+        molSystem[i].addInitialDrop(2);
+        // molSystem[i].addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
         // molSystem[i].addOrganisms(BREATHER,  2);
         // molSystem[i].addOrganisms(PUMPER,    1);
         // molSystem[i].addOrganisms(NEURON,    3);
@@ -152,15 +153,15 @@ void ofApp::update() {
             mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
             
             float angle = glm::radians(-90.0);
-            mousePos[0] = glm::rotate(mousePos[0], angle);
+            // mousePos[0] = glm::rotate(mousePos[0], angle);
             
             molSystem[i].setIntrusionPoints(mousePos);
 
         #endif
 
            
-        glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
+        // glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+        // if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
         
         molSystem[i].update();
 
@@ -256,8 +257,8 @@ void ofApp::draw(){
 
         #ifndef SHOW_ON_CRT
             // simulate upright orientation of the CRT screens when in window mode
-            ofTranslate(600, 0);
-            ofRotateDeg(90);
+            // ofTranslate(600, 0);
+            // ofRotateDeg(90);
         #endif
 
         // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
