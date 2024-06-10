@@ -32,7 +32,8 @@ int main( ){
 		// settings.setSize(672, 168);		// strip
 		// settings.setSize(1260, 168);		// strip
 		// settings.setSize(1932, 168);		// strip
-		settings.setSize(2016, 168);		// strip
+		// settings.setSize(2016, 168);		// strip
+		settings.setSize(256, 256);
 		settings.windowMode = OF_WINDOW;
 		settings.resizable = false;
 		settings.setPosition(glm::vec2(600,0));	

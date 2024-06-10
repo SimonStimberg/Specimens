@@ -340,8 +340,9 @@ glm::vec2 Molecule::gravity() {
 	// 	// make the liquid molecules (or suspended solid particles) to differ a bit in their weight to look less homogeneous
 		// gravity = uniqueVal * 0.000001;
 		// gravity += 0.01;
-		if(systemPtr->flush) gravity += 0.07;	// add a additional drag to the bottom, once the system collapsed
-		if(systemPtr->drop) gravity += 0.01;
+		if(systemPtr->flush) gravity += 0.15;	// add a additional drag to the bottom, once the system collapsed
+		// if(systemPtr->drop) gravity += 0.01;
+		if(systemPtr->drop && position.y < -0.5 * systemPtr->worldSize.y) gravity += 0.41;
 
 	// } else {
 
@@ -482,7 +483,8 @@ void Molecule::checkBounds() {
 		// we do so by moving the Molecule slightly along the normal (which is the most direct way away from the shape)
 			// the factor is arbitrary - but greater than a certain threshold, below which the Molecule being kept pushed into the outside of the shape
 			// but as small as possible, as with greater values the Molecules keep bouncing on the border
-		position = position + normal * 0.5;	// * 0.25
+		// position = position + normal * 0.5;	// * 0.25
+		position = position + normal * d;
 
 		// then change the direction corresponding to the reflection vector but with the same velocity (same length)
 		// multiplied by a value < 1.0 to slow the Molecule down - simulating a kind of energy absorption happening on impact
@@ -511,13 +513,13 @@ float Molecule::signedDistanceField( glm::vec2 p)
 	if(systemPtr->flush) {
 		p.y -= 550.0;
 		// p.x -= 1500.0;
-		glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
+		glm::vec2 rad(systemPtr->worldSize.x*0.3, 500.0);
 		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
 	}
 	if(systemPtr->drop) {
 		p.y += 550.0;
 		// p.x -= 1500.0;
-		glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
+		glm::vec2 rad(systemPtr->worldSize.x*0.15, 500.0);
 		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
 	}
 

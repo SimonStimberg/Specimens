@@ -245,7 +245,7 @@ void ofApp::update() {
 
 
     // define how many render cycles should be done
-    int doRenderCycles = 3;
+    int doRenderCycles = 1;
 
     if(bRender && molSystem[0].allMolecules.size() <= 0 && !molSystem[0].flush) {
         if (renderCycle < doRenderCycles) {
