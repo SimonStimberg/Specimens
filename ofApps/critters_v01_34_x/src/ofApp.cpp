@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -111,7 +111,7 @@ void ofApp::update() {
             ofLogNotice("shutdown please");
             // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
             // ofSystem("sudo -S shutdown -h now < ./masterpw.txt");
-            ofSystem("echo \"xxx\" | sudo -S shutdown -h now");
+            ofSystem("echo \"samsara\" | sudo -S shutdown -h now");
             ofExit();
         }
     }

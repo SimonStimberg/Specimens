@@ -2,7 +2,7 @@
 #include "audioMaster.h"
 #include "ofApp.h"
 
-// #define SHOW_ON_CRT
+#define SHOW_ON_CRT
 
 
 // MASTER AUDIO MODULE
