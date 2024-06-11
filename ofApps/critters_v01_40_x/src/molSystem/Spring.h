@@ -24,7 +24,7 @@ class Spring {
         void connect(Molecule * molA, Molecule * molB);
         void disconnect();
         void update();
-        void draw();
+        void draw(float resMultiplier);
 
         molecularSystem * systemPtr;
         

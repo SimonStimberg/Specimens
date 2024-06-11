@@ -13,6 +13,9 @@ void ofApp::setup() {
     // ofSetVerticalSync(true);
     ofSetFrameRate(50);
 
+    // ofSetCurveResolution(100);
+    // ofSetCircleResolution(100);
+    // ofSetPolyMode(OF_POLY_WINDING_POSITIVE);
     // ofEnableAntiAliasing(); 
     // ofEnableSmoothing();
 
@@ -21,6 +24,7 @@ void ofApp::setup() {
     audioMaster.setup(numScreens);
 
 
+    resMultiplier = 4.0;
 
     // sets the native resolution of the screens that are rendered to
     screenResolution.x = ofGetWidth(); 
@@ -59,7 +63,7 @@ void ofApp::setup() {
 
 
         // initialize the Molecular System
-        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight());  
+        molSystem[i].setup(vessel[i].getWidth() / resMultiplier, vessel[i].getHeight() / resMultiplier);  
 
         molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
@@ -129,6 +133,8 @@ void ofApp::update() {
         }
     }
 
+    
+
 
     // USE THIS FOR KINECT INTERACTION
     // kinectToPoints.update();
@@ -173,7 +179,7 @@ void ofApp::update() {
             // draw the Molecular System
             ofPushMatrix();
                 ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
-                molSystem[i].draw();
+                molSystem[i].draw(resMultiplier);
             ofPopMatrix();
 
 

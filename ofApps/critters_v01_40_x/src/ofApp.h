@@ -91,6 +91,7 @@ class ofApp : public ofBaseApp{
 		int maxIntestines = 0;
 
 
+		float resMultiplier;
 		bool bSmoothing = true;
 		bool bAntialiasing = false;
 

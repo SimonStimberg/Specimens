@@ -33,7 +33,7 @@ class Molecule {
         void reset(float x, float y, float velX, float velY);
         void update();
         void applyForces();
-        void draw();
+        void draw(float resMultiplier);
 
         // force calculation functions
         glm::vec2 repulsion();

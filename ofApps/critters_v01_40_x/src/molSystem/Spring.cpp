@@ -135,11 +135,11 @@ void Spring::update()
 }
 
 //------------------------------------------------------------------
-void Spring::draw()
+void Spring::draw(float resMultiplier)
 {
     if (moleculeA != NULL && moleculeB != NULL) {
 
-        ofDrawLine(moleculeA->position, moleculeB->position);
+        ofDrawLine(moleculeA->position * resMultiplier, moleculeB->position * resMultiplier);
 
         // // draw the Normal - for debug visualization only
         // ofSetColor(ofColor::indianRed);

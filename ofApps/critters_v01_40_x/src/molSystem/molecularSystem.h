@@ -27,7 +27,7 @@ class molecularSystem{
         void setup(int width, int height);
         void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
-        void draw();
+        void draw(float resMultiplier);
 
         // bin system
         void updateBins();

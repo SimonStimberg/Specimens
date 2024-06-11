@@ -164,7 +164,7 @@ void Pumper::update()
 
 
 //------------------------------------------------------------------
-void Pumper::draw()
+void Pumper::draw(float resMultiplier)
 {
 
     ofNoFill();
@@ -178,7 +178,7 @@ void Pumper::draw()
         }
 
 
-    ofSetLineWidth(3);
+    ofSetLineWidth(3 * resMultiplier);
 
     ofColor col = ofColor::fromHex(0xf22571);
 
@@ -200,6 +200,7 @@ void Pumper::draw()
     for (int i = 0; i < cellMolecules.size(); i++)
     {
         glm::vec2 vertexPos = cellMolecules[i]->position;
+        vertexPos *= resMultiplier;
         if (i == 0)
         {
             ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
@@ -208,6 +209,7 @@ void Pumper::draw()
         else if (i == cellMolecules.size() - 1)
         {
             glm::vec2 firstVertexPos = cellMolecules[0]->position;
+            firstVertexPos *= resMultiplier;
             ofCurveVertex(vertexPos);
             ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
             ofCurveVertex(firstVertexPos); // we duplicate the first point twice

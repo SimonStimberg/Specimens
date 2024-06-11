@@ -152,22 +152,22 @@ void molecularSystem::update() {
 
 
 //------------------------------------------------------------------
-void molecularSystem::draw() {
+void molecularSystem::draw(float resMultiplier) {
 
     for(unsigned int i = 0; i < liquid.size(); i++){
-		liquid[i]->draw();
+		liquid[i]->draw(resMultiplier);
 	}
     for(unsigned int i = 0; i < breathers.size(); i++){
-		breathers[i]->draw();
+		breathers[i]->draw(resMultiplier);
 	}
     for(unsigned int i = 0; i < pumpers.size(); i++){
-		pumpers[i]->draw();
+		pumpers[i]->draw(resMultiplier);
 	}
     for(unsigned int i = 0; i < neurons.size(); i++){
-		neurons[i]->draw();
+		neurons[i]->draw(resMultiplier);
 	}
     for(unsigned int i = 0; i < intestines.size(); i++){
-		intestines[i]->draw();
+		intestines[i]->draw(resMultiplier);
 	}
 
     // ofSetColor(ofColor::indianRed);
@@ -827,10 +827,10 @@ void molecularSystem::setGui() {
 
     // gui.add(tuneCanvasWidth.set("Canvas Width",  worldSize.x*0.75, worldSize.x*0.25, worldSize.x*2.0));
     // gui.add(tuneCanvasHeight.set("Canvas Height", worldSize.y*0.75, worldSize.y*0.25, worldSize.y*2.0));
-    gui.add(tuneCanvasWidth.set("Canvas Width",  110, 50, 150));
-    gui.add(tuneCanvasHeight.set("Canvas Height", 110, 50, 150));
-    gui.add(tuneVerticalBow.set("Vertical Bow", 350, 150, 3000));
-    gui.add(tuneHorizontalBow.set("Horizontal Bow", 350, 150, 3400));
+    gui.add(tuneCanvasWidth.set("Canvas Width",  100, 50, 150));
+    gui.add(tuneCanvasHeight.set("Canvas Height", 100, 50, 150));
+    gui.add(tuneVerticalBow.set("Vertical Bow", 225, 150, 3000));
+    gui.add(tuneHorizontalBow.set("Horizontal Bow", 225, 150, 3400));
     gui.add(tuneEdges.set("Smooth Edges", 37, 0, 60));
     gui.add(tuneXpos.set("X Position", 0.0, -50.0, 50.0));
     gui.add(tuneYpos.set("Y Position", 0.0, -50.0, 50.0));

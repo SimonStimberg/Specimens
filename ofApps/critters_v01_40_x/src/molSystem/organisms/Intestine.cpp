@@ -157,7 +157,7 @@ void Intestine::update()
 
 
 //------------------------------------------------------------------
-void Intestine::draw()
+void Intestine::draw(float resMultiplier)
 {
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
@@ -186,16 +186,16 @@ void Intestine::draw()
 
         float radius = ofMap( getDigestionStatus(), 0.0, 1.0, 3.0, 5.0 );
        
-        ofDrawCircle(digestionPos, radius);
+        ofDrawCircle(digestionPos * resMultiplier, radius * resMultiplier);
     }
 
     ofNoFill();
-    ofSetLineWidth(3);
+    ofSetLineWidth(3 * resMultiplier);
 
     ofSetColor(50);
     for (unsigned int i = 0; i < springs.size(); i++)
     {
-        springs[i]->draw();
+        springs[i]->draw(resMultiplier);
     }
 
     ofSetColor(guiPtr->membraneColor);
@@ -206,6 +206,7 @@ void Intestine::draw()
         for (int i = 0 + membrane; i < intestineMolecules.size(); i+=2)
         {
             glm::vec2 vertexPos = intestineMolecules[i]->position;
+            vertexPos *= resMultiplier;
             if (i == 0 + membrane || i == intestineMolecules.size() - 2 + membrane)
             {
                 ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
@@ -222,10 +223,10 @@ void Intestine::draw()
 
 
 
-    for (unsigned int i = 0; i < intestineMolecules.size(); i++)
-    {
-        intestineMolecules[i]->draw();
-    }
+    // for (unsigned int i = 0; i < intestineMolecules.size(); i++)
+    // {
+    //     intestineMolecules[i]->draw(resMultiplier);
+    // }
 }
 
 

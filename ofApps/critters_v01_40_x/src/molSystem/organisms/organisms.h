@@ -25,7 +25,7 @@ class Breather{
         void set(int num, int x, int y);
         void linkAudioModule(audioModule::Breather & module);
         void update();
-        void draw();
+        void draw(float resMultiplier);
 
         void grow();
         void applyPressure();
@@ -99,7 +99,7 @@ class Pumper{
         void set(int num, int x, int y);
         void linkAudioModule(audioModule::Pumper & module);
         void update();
-        void draw();
+        void draw(float resMultiplier);
 
         void grow();
         void contract();
@@ -174,7 +174,7 @@ class Neuron{
         void set(int arms, int elements, int x, int y);
         void linkAudioModule(audioModule::Neuron & module);
         void update();
-        void draw();
+        void draw(float resMultiplier);
 
         void grow();
         void connect(Molecule * myMolecule, Molecule * otherMolecule);
@@ -244,7 +244,7 @@ class Intestine{
         void set(int num, int x, int y);
         void linkAudioModule(audioModule::Intestine & module);
         void update();
-        void draw();
+        void draw(float resMultiplier);
         
         void grow();
         void keepShape();

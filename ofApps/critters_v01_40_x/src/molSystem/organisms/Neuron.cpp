@@ -140,13 +140,13 @@ void Neuron::update()
 
 
 //------------------------------------------------------------------
-void Neuron::draw()
+void Neuron::draw(float resMultiplier)
 {
     if(isSignaling) 
     {
         ofSetColor(ofColor::white);
         ofFill();
-        ofDrawCircle(signalPos, 4);
+        ofDrawCircle(signalPos * resMultiplier, 4 * resMultiplier);
     }
 
 
@@ -162,24 +162,30 @@ void Neuron::draw()
     ofSetHexColor(0xfcfdbd);    // very bright yellow
     ofFill();
 
-    ofDrawCircle(neuronMolecules[0]->position, 3);
+    glm::vec2 centerPos = neuronMolecules[0]->position;
+    centerPos *= resMultiplier;
+
+    ofDrawCircle(centerPos, 3 * resMultiplier);
 
 
     ofNoFill();
-    ofSetLineWidth(3);
+    ofSetLineWidth(3 * resMultiplier);
 
     for (int i = 0; i < dendrites.size(); i++) {
         ofBeginShape();
-        ofCurveVertex(neuronMolecules[0]->position);
-        ofCurveVertex(neuronMolecules[0]->position);
+        ofCurveVertex(centerPos);
+        ofCurveVertex(centerPos);
 
         for (int j = 0; j < dendrites[i].size(); j++) { 
+
+            glm::vec2 segmentPos = dendrites[i][j]->position;
+            segmentPos *= resMultiplier;
             
             if (j == dendrites[i].size()-1) {
-                ofCurveVertex(dendrites[i][j]->position);
-                ofCurveVertex(dendrites[i][j]->position);
+                ofCurveVertex(segmentPos);
+                ofCurveVertex(segmentPos);
             } else {
-                ofCurveVertex(dendrites[i][j]->position);
+                ofCurveVertex(segmentPos);
             }
             
         }
@@ -197,10 +203,10 @@ void Neuron::draw()
     // }
     
     ofSetColor(ofColor::darkSlateGrey);
-    ofSetLineWidth(3);
+    ofSetLineWidth(3 * resMultiplier);
     for (unsigned int i = 0; i < connections.size(); i++)
     {
-        connections[i]->draw();
+        connections[i]->draw(resMultiplier);
     }
 
 

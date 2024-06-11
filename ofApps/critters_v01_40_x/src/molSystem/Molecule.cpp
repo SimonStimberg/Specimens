@@ -129,7 +129,7 @@ void Molecule::applyForces() {
 
 
 //------------------------------------------------------------------
-void Molecule::draw() {
+void Molecule::draw(float resMultiplier) {
 
 
 	// ONLY DRAW LIQUID MOLECULES
@@ -139,7 +139,7 @@ void Molecule::draw() {
 	if (type == moleculeType::LIQUID) {
 		ofFill();
 		ofSetHexColor(0x1b9080);
-    	ofDrawCircle(position.x, position.y, 2.6);
+    	ofDrawCircle(position * resMultiplier, 2.6 * resMultiplier);
 	}
 
 	// OR WHEN IN DEBUG MODE

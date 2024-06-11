@@ -50,7 +50,8 @@ void Breather::set(int num, int x, int y)
         float velY = ofRandom(-1.0, 1.0);
 
         Molecule *m = new Molecule(systemPtr, this);
-        m->reset(xPos, yPos, velX, velY);
+        // m->reset(xPos, yPos, velX, velY);
+        m->reset(xPos, yPos, 0, 0);
 
         cellMolecules.push_back(m);
         systemPtr->allMolecules.push_back(m);
@@ -178,7 +179,7 @@ void Breather::update()
 }
 
 //------------------------------------------------------------------
-void Breather::draw()
+void Breather::draw(float resMultiplier)
 {
 
     ofNoFill();
@@ -194,7 +195,7 @@ void Breather::draw()
 
         }
 
-    ofSetLineWidth(3);
+    ofSetLineWidth(3 * resMultiplier);
 
 
 
@@ -226,10 +227,25 @@ void Breather::draw()
 
 
     ofSetColor(col);
+
+    // ofFill();
+    // ofSetLineWidth(0);
+
+    // for (unsigned int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     // cellMolecules[i]->position;
+    //     ofDrawCircle(cellMolecules[i]->position * resMultiplier, 2.5 * resMultiplier);
+    // }
+
+    // ofNoFill();
+    ofSetLineWidth(3 * resMultiplier);
+
+
     ofBeginShape();
     for (int i = 0; i < cellMolecules.size(); i++)
     {
         glm::vec2 vertexPos = cellMolecules[i]->position;
+        vertexPos *= resMultiplier;
         if (i == 0)
         {
             ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
@@ -238,6 +254,7 @@ void Breather::draw()
         else if (i == cellMolecules.size() - 1)
         {
             glm::vec2 firstVertexPos = cellMolecules[0]->position;
+            firstVertexPos *= resMultiplier;
             ofCurveVertex(vertexPos);
             ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
             ofCurveVertex(firstVertexPos); // we duplicate the first point twice
@@ -253,10 +270,10 @@ void Breather::draw()
     // {
     //     springs[i]->draw();
     // }
-    for (unsigned int i = 0; i < cellMolecules.size(); i++)
-    {
-        cellMolecules[i]->draw();
-    }
+    // for (unsigned int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     cellMolecules[i]->draw();
+    // }
 }
 
 
