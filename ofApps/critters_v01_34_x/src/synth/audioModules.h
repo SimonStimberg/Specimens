@@ -24,8 +24,12 @@ namespace audioModule {     // all class reside within the name space audioModul
             Breather(){}
             Breather(const Breather& other){}
             
-            void setup(int pitch);  
+            void setup();  
+            void setFrequency(int pitch);
             void startBreathing();
+            bool isFree() { return bIsFree; }
+            void blockModule() { bIsFree = false; }
+            void freeModule() { bIsFree = true; count = 0; }
                         
             float meter_pitch() const;
             float ctrlLfoOut() const;
@@ -85,7 +89,8 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::AHR                   muteEnv;
 
             int  count    = 0;
-            bool newPhase = false;        
+            bool newPhase = false;      
+            bool bIsFree = true;
             
         
     }; // end Breather class -------------------------------------------------------
@@ -107,6 +112,9 @@ namespace audioModule {     // all class reside within the name space audioModul
 
             void initiate();
             void startImpulse();
+            bool isFree() { return bIsFree; }
+            void blockModule();
+            void freeModule();
     
             void enableDB( float minValue=-18.0f );
             void disableDB( );
@@ -125,6 +133,8 @@ namespace audioModule {     // all class reside within the name space audioModul
 
 
         private:
+
+            pdsp::Amp           bypass;
             
             pdsp::PatchNode     triggers;
             pdsp::FMOperator    osc;
@@ -148,6 +158,10 @@ namespace audioModule {     // all class reside within the name space audioModul
 
             pdsp::Amp               meterAmp;
             pdsp::Amp               muteAmp;
+
+
+            bool bIsFree = true;
+            int countOffset = 0;
             
     }; // end Pumper class -------------------------------------------------------
 
@@ -166,6 +180,10 @@ namespace audioModule {     // all class reside within the name space audioModul
             Neuron(const Neuron& other){}
             
             void init();  
+            bool isFree() { return bIsFree; }
+            void blockModule();
+            void freeModule();
+            void reset();
 
             pdsp::Patchable & in_trig() { return in("trig"); }
             pdsp::Patchable & in_pitch() { return in("pitch"); }
@@ -173,6 +191,8 @@ namespace audioModule {     // all class reside within the name space audioModul
 
 
         private:
+
+            pdsp::Amp           bypass;
 
             // control nodes
             pdsp::PatchNode     trigger;
@@ -200,6 +220,12 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::Amp                   gain;
 
             pdsp::AHR                   pitchEnv;
+
+
+            bool bIsFree = true;
+
+
+            // pdsp::VAOscillator          testOsc;
             
                 
         
@@ -220,6 +246,9 @@ namespace audioModule {     // all class reside within the name space audioModul
             Intestine(const Intestine& other){}
             
             void init();  
+            bool isFree() { return bIsFree; }
+            void blockModule();
+            void freeModule();
                 
             pdsp::Patchable & in_trig() { return in("trig"); }
             pdsp::Patchable & in_pitch() { return in("pitch"); }
@@ -228,6 +257,9 @@ namespace audioModule {     // all class reside within the name space audioModul
 
 
         private:
+
+            // pdsp::Amp               bypass;
+            pdsp::TriggerControl    killSwitch;
 
             // control nodes
             pdsp::PatchNode     trigger;
@@ -262,7 +294,10 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::VAFilter              filter;
             pdsp::Amp                   filterModAmt;
             // pdsp::AHR                   fltrEnv;
-                
+
+
+            bool bIsFree = true;
+
                 
         
     }; // end Intestine class -------------------------------------------------------

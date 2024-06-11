@@ -95,6 +95,12 @@ void Spring::update()
             tuneElasticity = guiPtr->tuneStructureElasticity;
             tuneFrcLimit = guiPtr->tuneStructureLimitForce;
 
+        } else if (type == DENDRITE) {
+
+            restLength = guiPtr->tuneDendriteLength;
+            tuneElasticity = guiPtr->tuneDendriteElasticity;
+            tuneFrcLimit = guiPtr->tuneDendriteLimitForce;
+
         }
 
 

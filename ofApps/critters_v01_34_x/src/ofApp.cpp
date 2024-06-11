@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 // uncomment this if the simulation is to be shown on CRT screens
-#define SHOW_ON_CRT
+// #define SHOW_ON_CRT
 
 
 shared_ptr<GuiApp> guiPtr;  // pointer to the gui app for the exchange of control parameters
@@ -14,7 +14,10 @@ void ofApp::setup() {
     ofSetFrameRate(50);
 
 
-    initSynth();
+    // initSynth();
+    audioMaster.setup(numScreens);
+
+
 
     // sets the native resolution of the screens that are rendered to
     screenResolution.x = 800; 
@@ -52,14 +55,16 @@ void ofApp::setup() {
 
 
         // initialize the Molecular System
-        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight());    
+        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight());  
+
+        molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
         // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
         // the Molecular System creates stems for each organism type
-        molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
-        molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
-        molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
-        molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
+        // molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
+        // molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
+        // molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
+        // molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
 
         // compressor[i].ch(0) >> sumBus.ch(i);
         // compressor[i].ch(1) >> fxBus.ch(i);
@@ -69,7 +74,8 @@ void ofApp::setup() {
 
 
         // add organisms or liquid (free floating particles) to the Molecular System
-        molSystem[i].addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
+        molSystem[i].addInitialDrop(2);
+        // molSystem[i].addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
         // molSystem[i].addOrganisms(BREATHER,  2);
         // molSystem[i].addOrganisms(PUMPER,    1);
         // molSystem[i].addOrganisms(NEURON,    3);
@@ -87,9 +93,9 @@ void ofApp::setup() {
 
     ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
-    // #ifdef SHOW_ON_CRT
+    #ifdef SHOW_ON_CRT
         ofHideCursor();     // hide mouse cursor
-    // #endif
+    #endif
 
 }
 
@@ -98,7 +104,6 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
-    // ofHideCursor();
 
     if (mouseDown) {
         // ofLogNotice("still pressed");
@@ -112,35 +117,51 @@ void ofApp::update() {
     }
 
 
-    // USE THIS FOR KINECT INTERACTION
-    kinectToPoints.update();
-    // molSystem[0].setIntrusionPoints(kinectToPoints.getTouchPoints());
+    #ifdef SHOW_ON_CRT
 
-    // ofLogNotice("Touchpoints Scrn 0: " + ofToString(kinectToPoints.getTouchPoints(0)));
-    // ofLogNotice("Touchpoints Scrn 1: " + ofToString(kinectToPoints.getTouchPoints(1)));
-    // ofLogNotice("Touchpoints Scrn 2: " + ofToString(kinectToPoints.getTouchPoints(2)));
-    // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
+        // USE THIS FOR KINECT INTERACTION
+        kinectToPoints.update();
 
-    // USE THIS FOR MOUSE INTERACTION   
-    // vector <glm::vec2> mousePos;
-    // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+        // ofLogNotice("Touchpoints Scrn 0: " + ofToString(kinectToPoints.getTouchPoints(0)));
+        // ofLogNotice("Touchpoints Scrn 1: " + ofToString(kinectToPoints.getTouchPoints(1)));
+        // ofLogNotice("Touchpoints Scrn 2: " + ofToString(kinectToPoints.getTouchPoints(2)));
+        // ofLogNotice("Touchpoints Scrn 3: " + ofToString(kinectToPoints.getTouchPoints(3)));
+
+    #else
+
+        // USE THIS FOR MOUSE INTERACTION   
+        vector <glm::vec2> mousePos;
+        mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+
+    #endif
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
     for (int i = 0; i < numScreens; i++) {
-        
-        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;     // vessel[i].getWidth()
-        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
 
-        // // set mouse position (or kinect output) as intrusion points for interaction
-        // molSystem[i].setIntrusionPoints(mousePos);
 
-        
+        #ifdef SHOW_ON_CRT
 
-        molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
-        glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addRandom(check.x, check.y);
+            // set kinect output as intrusion points for interaction
+            molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+
+        #else
+
+            // set mouse position as intrusion points for interaction
+            float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+            mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;
+            mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
+            
+            float angle = glm::radians(-90.0);
+            // mousePos[0] = glm::rotate(mousePos[0], angle);
+            
+            molSystem[i].setIntrusionPoints(mousePos);
+
+        #endif
+
+           
+        // glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+        // if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
         
         molSystem[i].update();
 
@@ -177,12 +198,25 @@ void ofApp::update() {
 
 
 
+        // if(molSystem[i].flush) {
+        //     1.0f >> disasterFX.distortion_ch(i);
+        // } else {
+        //     float pressure = molSystem[i].getSystemPressure();
+        //     pressure * pressure * 0.65 >> disasterFX.reverb_ch(i);
+        //     0.0f >> disasterFX.distortion_ch(i);
+        // }
+
+        
+        audioMaster.switchDistortion(molSystem[i].flush, i);
+
         if(molSystem[i].flush) {
-            1.0f >> disasterFX.distortion_ch(i);
+            audioMaster.switchDistortion(true, i);
         } else {
             float pressure = molSystem[i].getSystemPressure();
-            pressure * pressure * 0.65 >> disasterFX.reverb_ch(i);
-            0.0f >> disasterFX.distortion_ch(i);
+            pressure = pressure * pressure * 0.65;
+            audioMaster.setReverbAmount(pressure, i);
+            
+            audioMaster.switchDistortion(false, i);
         }
 
 
@@ -242,12 +276,18 @@ void ofApp::draw(){
             for (int i = 0; i < numScreens; i++) {
                 numMolecules += molSystem[i].allMolecules.size();
                 itrPts += kinectToPoints.getTouchPoints(i).size();
+
+                maxBreathers = (molSystem[i].breathers.size() > maxBreathers) ? molSystem[i].breathers.size() : maxBreathers;
+                maxPumpers = (molSystem[i].pumpers.size() > maxPumpers) ? molSystem[i].pumpers.size() : maxPumpers;
+                maxNeurons = (molSystem[i].neurons.size() > maxNeurons) ? molSystem[i].neurons.size() : maxNeurons;
+                maxIntestines = (molSystem[i].intestines.size() > maxIntestines) ? molSystem[i].intestines.size() : maxIntestines;
             }
             ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
             ofPushMatrix();
+                string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
                 ofRotateDeg(-90);
-                string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts);
                 ofDrawBitmapString(infoTxt, -500, ofGetWidth()-700);
+                // ofDrawBitmapString(infoTxt, 50, 50);
             ofPopMatrix();
         #endif
 
@@ -303,131 +343,6 @@ void ofApp::setTVmask() {
 
 
 //--------------------------------------------------------------
-void ofApp::initSynth() {
-
-    // AUDIO SETUP
-
-
-
-    // set the gain for each bus
-    fxBus.set(1.0);
-    cleanBus.set(1.0);
-    sumBus.set(1.0);
-    // guiPtr->masterGain >> gain;
-
-    guiPtr->lowCutFreq >> loCut.in_freq();  // low cut frequency
-    compressor.resize(4);
-    for(int i = 0; i < compressor.size(); i++) {
-        compressor[i].stereoLink(false);
-        guiPtr->compThreshold >> compressor[i].in_threshold();
-        guiPtr->compKnee      >> compressor[i].in_knee();
-    }
-
-
-
-    // FX CHAIN ROUTING
-
-    cleanBus.ch(0) >> compressor[0].ch(0) >> sumBus.ch(0);
-    cleanBus.ch(1) >> compressor[1].ch(0) >> sumBus.ch(1);
-    cleanBus.ch(2) >> compressor[2].ch(0) >> sumBus.ch(2);
-    cleanBus.ch(3) >> compressor[3].ch(0) >> sumBus.ch(3);
-
-    fxBus.ch(0)    >> compressor[0].ch(1) >> chorus.ch(0) >> delay.ch(0) >> sumBus.ch(0);     // one FX bus per Screen
-    fxBus.ch(1)    >> compressor[1].ch(1) >> chorus.ch(1) >> delay.ch(1) >> sumBus.ch(1);
-    fxBus.ch(2)    >> compressor[2].ch(1) >> chorus.ch(2) >> delay.ch(2) >> sumBus.ch(2);
-    fxBus.ch(3)    >> compressor[3].ch(1) >> chorus.ch(3) >> delay.ch(3) >> sumBus.ch(3); 
-
-
-
-
-
-    // ALL FX BYPASS ROUTING
-
-    // fxBus.ch(0) >> gain.ch(0);
-    // fxBus.ch(1) >> gain.ch(1);
-    // fxBus.ch(2) >> gain.ch(2);
-    // fxBus.ch(3) >> gain.ch(3);
-
-    
-
-    sumBus.ch(0) >> disasterFX.ch(0) >> loCut.ch(0) >> gain.ch(0);
-    sumBus.ch(1) >> disasterFX.ch(1) >> loCut.ch(1) >> gain.ch(1); 
-    sumBus.ch(2) >> disasterFX.ch(2) >> loCut.ch(2) >> gain.ch(2);
-    sumBus.ch(3) >> disasterFX.ch(3) >> loCut.ch(3) >> gain.ch(3); 
-
-
-
-    // FX SYSTEM COLLAPSE ROUTING
-
-    // mix the reverb according to the system pressure level
-    // sumBus.ch(0) >> mix.in_A();
-    // sumBus.ch(0) >> reverb >> mix.in_B(); 
-    // mixFader >> mix.in_fade();
-
-    // switch routing to the distotion chain once the system collapses
-    // switcher.resize(2);
-    // mix >> switcher.input(0);
-    // mix >> bitCrush * 4.0f >> saturator * dB(-3) >> switcher.input(1);
-
-    // switcher >> gain.ch(0); 
-    // 0.0f >> switcher.in_select();
-
-
-    // gain.ch(0) >> gain.ch(1);      // for temporary stereo monitoring if the simulation runs with one screen only
-
-
-
-    // MAIN OUTPUT
-    // one mono channel per screen
-    gain.ch(0) >> engine.audio_out(0);
-    gain.ch(1) >> engine.audio_out(1);
-    gain.ch(2) >> engine.audio_out(2);
-    gain.ch(3) >> engine.audio_out(3);
-
-
-        
-
-     //------------SETUPS AND START AUDIO-------------
-    engine.listDevices();
-
-    // defines the audio device used for output
-    #ifdef SHOW_ON_CRT
-        engine.setDeviceID(4);
-    #else
-        engine.setDeviceID(5);  // THIS HAS TO BE SET THIS AT THE RIGHT INDEX!!!!   the ID for the audio devices can will be shown in the console on program start
-    #endif
-    // engine.setChannels (0, 2);  // two channel setup
-    engine.setChannels (0, 4);  // four channel setup
-    // engine.setup( 44100, 512, 3); 
-    engine.setup( 44100, 2048, 8); 
-  
-
-}
-
-
-//--------------------------------------------------------------
-void ofApp::reconnectAudio(){  
-
-      for (int i = 0; i < numScreens; i++) {
-
-   
-
-        // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
-        // the Molecular System creates stems for each organism type
-        molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
-        molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
-        molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
-        molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
-
-        molSystem[i].blackhole >> engine.blackhole();  
-
-      }
-
-}
-
-
-
-//--------------------------------------------------------------
 void ofApp::keyPressed(int key){  
     
     if( key == OF_KEY_RETURN && guiPtr->switchKinectCalibration ){
@@ -455,12 +370,12 @@ void ofApp::keyPressed(int key){
     if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
 
 
-    if( key == 'x' ) { 
-        for(int i = 0; i < molSystem[3].breathers.size(); i++) {
-            0.0 >> molSystem[3].breathers[i]->audioModule.in_bypass();
-        }
+    // if( key == 'x' ) { 
+    //     for(int i = 0; i < molSystem[3].breathers.size(); i++) {
+    //         0.0 >> molSystem[3].breathers[i]->audioModule.in_bypass();
+    //     }
 
-    }
+    // }
 
     if( key == 'm' ) { 
         ofLogNotice("system shutdown please per keypress");
@@ -493,7 +408,7 @@ void ofApp::mousePressed(int x, int y, int button){
     if (!mouseDown) {
         mouseDown = true;
         mouseDownTime = ofGetElapsedTimeMillis();
-        ofLogNotice("first press");
+        // ofLogNotice("first press");
     } 
 
 }
@@ -526,7 +441,8 @@ void ofApp::mouseReleased(int x, int y, int button){
 
             int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
-            molSystem[screenID].addRandom(xScaled, yScaled);
+            // molSystem[screenID].addRandom(xScaled, yScaled);
+            molSystem[screenID].addControlledRandom(xScaled, yScaled);
             // molSystem[screenID].addLiquid(xScaled, yScaled);
 
             // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
@@ -547,7 +463,7 @@ void ofApp::mouseReleased(int x, int y, int button){
     }
 
     mouseDown = false;
-    ofLogNotice("mouse press released");
+    // ofLogNotice("mouse press released");
 
 }
 

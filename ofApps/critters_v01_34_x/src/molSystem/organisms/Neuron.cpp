@@ -24,6 +24,7 @@ void Neuron::set(int arms, int elements, int x, int y)
     mature = false;
     isDead = false;
     debugVal = 10000000;
+    arousal = 0.0;
     arousalThreshold = ofRandom(0.1, 0.35);
     freqDivergence = ofRandom(-50., 50.);
 
@@ -59,7 +60,7 @@ void Neuron::set(int arms, int elements, int x, int y)
 
 
         // connect the new Molecule to the middle joint through a Spring
-        Spring *s = new Spring(systemPtr);
+        Spring *s = new Spring(systemPtr, DENDRITE);
         s->connect(neuronMolecules[0], m);
 
         springs.push_back(s);
@@ -69,15 +70,26 @@ void Neuron::set(int arms, int elements, int x, int y)
     }
 
 
-    // SETUP AUDIO MODULE
-    audioModule.init();
-    200.0 >> audioModule.in_sigDuration();
-    
-    int pick = floor(ofRandom(6));
-    pdsp::f2p(880) >> audioModule.in_pitch();
+}
 
-    impulse >> audioModule.in_trig();
-    impulse.trigger(1.0);
+
+void Neuron::linkAudioModule(audioModule::Neuron & module)
+{
+
+    audioModule = &module;
+    audioModule->blockModule();
+
+    // ofLogNotice("linking audio module to neuron");
+
+
+    // SETUP AUDIO MODULE
+    // audioModule->init();
+    200.0 >> audioModule->in_sigDuration();  // reset the initial signal duration
+    
+    pdsp::f2p(880) >> audioModule->in_pitch();
+
+    impulse >> audioModule->in_trig();
+    // impulse.trigger(1.0);   // trigger once on initialization
 
 }
 
@@ -111,7 +123,7 @@ void Neuron::update()
     rate = ofMap(rate, 0.75, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
     float frequency = ofLerp(880, 880+freqDivergence, rate);     // interpolate between current frequency and initial untuned frequency
     
-    pdsp::f2p(frequency) >> audioModule.in_pitch();     // update frequency
+    pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
 
     signal();
@@ -196,7 +208,7 @@ void Neuron::grow()
     // here resources could be saved if a flag would notice that there is no more Dendrite to grow on
 
     // only grow if the time has come to
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
 
         // choose a random dendrite to grow on
         int pick = floor(ofRandom(dendrites.size()));
@@ -217,7 +229,7 @@ void Neuron::grow()
             systemPtr->allMolecules.push_back(m);      // and adding a copy to the vector containing totally-all-molecules in the whole System (to be considered in the force calculations like repulsion)
 
             // connect the spring
-            Spring *s = new Spring(systemPtr);
+            Spring *s = new Spring(systemPtr, DENDRITE);
             s->connect(lastElement, m);
 
             // lastElement->addBonding(m);
@@ -330,7 +342,7 @@ void Neuron::signal()
             // set the signal duration for the audio signal, depending on the length of the signal path and the signal speed
             float arousalFactor = ofMap((arousal*arousal), 0.75, 1.0, 1.0, 0.85, true);
             float signalDuration = guiPtr->nronSignalSpeed * arousalFactor * signalFlow.size();
-            signalDuration >> audioModule.in_sigDuration();
+            signalDuration >> audioModule->in_sigDuration();
 
             impulse.trigger(1.0);   // trigger audio
 
@@ -405,7 +417,7 @@ void Neuron::getSynced()
             float threshold = guiPtr->neuronSyncDistance;
 
             if (distance < threshold*threshold) {
-                if (other->audioModule.meter() < 0.01) {
+                if (other->audioModule->meter() < 0.01) {
 
                     sync();
                     sync();
@@ -440,7 +452,8 @@ void Neuron::die()
         if (position.x < systemPtr->worldSize.x) {
             float x = neuronMolecules[i]->position.x + ofRandom(-10.0, 10.0);   // add some randomness to create more dynamic while spawning
             float y = neuronMolecules[i]->position.y + ofRandom(-10.0, 10.0);
-            systemPtr->addLiquid(x, y);
+            // systemPtr->addLiquid(x, y);
+            systemPtr->addOnNextFrame(LIQUID, x, y);
         }
     }
     
@@ -452,7 +465,7 @@ void Neuron::die()
         connections[i]->removeMe = true;    // mark the connections -> as every connected Neuron has a copy, all will now that this connection will have to go
     }
 
-    // audioModule.disconnectAll();
+    // audioModule->disconnectAll();
     
 
     isDead = true;      // mark itself to be removed

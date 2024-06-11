@@ -83,6 +83,13 @@ class GuiApp: public ofBaseApp {
 		ofParameter<ofColor> membraneColor;
 
 
+		// NEURON SHAPE
+		ofParameterGroup guiNeuron;
+		ofParameter<float> tuneDendriteLength;
+		ofParameter<float> tuneDendriteElasticity;
+		ofParameter<float> tuneDendriteLimitForce;
+
+
 		// TIMINGS
 		ofParameterGroup guiTimings;
 

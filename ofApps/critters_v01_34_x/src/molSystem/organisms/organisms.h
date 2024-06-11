@@ -23,6 +23,7 @@ class Breather{
         Breather(molecularSystem * system, cellType myType);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Breather & module);
         void update();
         void draw();
 
@@ -72,7 +73,7 @@ class Breather{
         
 
 
-        audioModule::Breather audioModule;
+        audioModule::Breather * audioModule;
         pdsp::ValueControl  ampCtrl;
         pdsp::ValueControl  filterCutoff;
         pdsp::ValueControl  detune;
@@ -96,6 +97,7 @@ class Pumper{
         Pumper(molecularSystem * system);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Pumper & module);
         void update();
         void draw();
 
@@ -139,7 +141,7 @@ class Pumper{
         int   maxNumCycles;
 
 
-        audioModule::Pumper audioModule;
+        audioModule::Pumper * audioModule;
         pdsp::ValueControl  ampCtrl;
         pdsp::ValueControl  filterCutoff;
         pdsp::TriggerControl  trig;
@@ -149,6 +151,10 @@ class Pumper{
         pdsp::TriggerControl  trigPhase;
         pdsp::ValueControl  setPhase;
         pdsp::ValueControl  setVelocity;
+
+
+        int bugTrack;
+        int bugTrackSub;
 
         
 
@@ -166,6 +172,7 @@ class Neuron{
         Neuron(molecularSystem * system);
 
         void set(int arms, int elements, int x, int y);
+        void linkAudioModule(audioModule::Neuron & module);
         void update();
         void draw();
 
@@ -216,7 +223,7 @@ class Neuron{
         float freqDivergence;
 
 
-        audioModule::Neuron audioModule;
+        audioModule::Neuron * audioModule;
         pdsp::TriggerControl  impulse;
         // pdsp::ValueControl  signalDuration;
         
@@ -235,11 +242,15 @@ class Intestine{
         Intestine(molecularSystem * system);
 
         void set(int num, int x, int y);
+        void linkAudioModule(audioModule::Intestine & module);
         void update();
         void draw();
         
         void grow();
+        void keepShape();
         void digest();
+        void bisect();
+        void copyPositions(vector<glm::vec2> & positions);
         void die();
         void getSynced();
 
@@ -247,6 +258,7 @@ class Intestine{
         void  adaptValence();
         void  updatePosition();
         float getDigestionStatus();
+        float minimumDistance2(glm::vec2 v, glm::vec2 w, glm::vec2 p);
         // float getInflation();
 
 
@@ -275,7 +287,7 @@ class Intestine{
         float freqDivergence;
 
 
-        audioModule::Intestine   audioModule;
+        audioModule::Intestine * audioModule;
         pdsp::TriggerControl     soundCtrl;
         pdsp::ValueControl       pulseRate;
 

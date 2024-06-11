@@ -19,7 +19,9 @@ void molecularSystem::setup(int width, int height) {
     // ofLogNotice("height: " + ofToString(height));
 
     flush = false;
+    drop = false;
     flushTimestamp = 0;
+    dropTimestamp = 0;
     debugView = false;
     std::fill_n (organismsToRemove, 5, false);
     thereAreCadavers = false;
@@ -29,8 +31,8 @@ void molecularSystem::setup(int width, int height) {
 
     setGui();
 
-    masterBus.set(1.0);
-    blackhole.set(1.0);
+    // masterBus.set(1.0);
+    // blackhole.set(1.0);
 
     allMolecules.reserve(1500);       
     allSprings.reserve(1250);
@@ -65,8 +67,13 @@ void molecularSystem::setup(int width, int height) {
 //------------------------------------------------------------------
 void molecularSystem::update() {
 
-    // ofLogNotice("updating mol system");
+    // remove dead organisms
+    if(thereAreCadavers) cleanUp();    
 
+    // add new organisms being triggered last frame
+    addFromStack();
+
+    // update the bin structure
     updateBins();
 
 
@@ -94,9 +101,13 @@ void molecularSystem::update() {
     for(unsigned int i = 0; i < intestines.size(); i++) {
 		intestines[i]->update();
 	}
+
+
+    // apply the accumulated forces for each Molecule in a separate step
+    for(unsigned int i = 0; i < allMolecules.size(); i++) {
+		allMolecules[i]->applyForces();
+	}
  
-    // remove dead organisms
-    if(thereAreCadavers) cleanUp();     
 
     // if the amount of Molecules surpasses a certain threshold the system collapses: the contents will be flushed though a whole in the ground
     if(allMolecules.size() > collapseThreshold && !flush) {
@@ -105,10 +116,27 @@ void molecularSystem::update() {
         ofLogNotice("timestamp: " + ofToString(flushTimestamp));
     }
 
+
+    if(drop) {
+
+        bool allWithinCanvas = true;
+
+        for(unsigned int i = 0; i < allMolecules.size(); i++) {
+            if (allMolecules[i]->position.x < -worldSize.x * 0.45) {
+                allWithinCanvas = false;
+                break;
+            }
+        }
+
+        if(allWithinCanvas) drop = false;
+    }
+
+
     // if the system has collapsed (flush is true) and all molecules have been deleted from the system: restart!
-    if(flush && allMolecules.size() <= 0) {
+    if(flush && allMolecules.size() <= 0 && ofGetElapsedTimeMillis() > flushTimestamp + 15000) {
         flush = false;
-        addOrganisms(LIQUID, floor(250 * worldSize.x/800.0));
+        // addOrganisms(LIQUID, floor(250 * worldSize.x/800.0));
+        addInitialDrop(2);
     }
 
 }
@@ -133,13 +161,13 @@ void molecularSystem::draw() {
 		intestines[i]->draw();
 	}
 
-    // ofSetColor(ofColor::indianRed);
-    // ofFill();
-    // if (intrusionPoints.size() > 0) {
-    //     for(unsigned int i = 0; i < intrusionPoints.size(); i++){
-    //         ofDrawCircle(intrusionPoints[i], 10.);
-    //     }
-    // }
+    ofSetColor(ofColor::indianRed);
+    ofFill();
+    if (intrusionPoints.size() > 0) {
+        for(unsigned int i = 0; i < intrusionPoints.size(); i++){
+            ofDrawCircle(intrusionPoints[i], 10.);
+        }
+    }
 
 }
 
@@ -153,22 +181,30 @@ void molecularSystem::addOrganisms(organismType type, int num) {
         for(unsigned int i = 0; i < num; i++){ 
 
 
-            float x = 0.;
-            float y = 0.;
-            if(type == LIQUID) {
-                x = -worldSize.x *0.5 - ofRandom(1000.);
-                y = ofRandom(-10., 10.);
-            } else {
-                x = -worldSize.x *0.5 - 50 - ofRandom(10.);
-                y = ofRandom(-10., 10.);
-            }
+            // float x = 0.;
+            // float y = 0.;
+            // if(type == LIQUID) {
+            //     x = -worldSize.x *0.5 - ofRandom(1000.);
+            //     y = ofRandom(-10., 10.);
+            // } else {
+            //     x = -worldSize.x *0.5 - 50 - ofRandom(10.);
+            //     y = ofRandom(-10., 10.);
+            // }
 
 
-            if (type == LIQUID)    addLiquid(x, y);
-            if (type == BREATHER)  addBreather(x, y);
-            if (type == PUMPER)    addPumper(x, y);
-            if (type == NEURON)    addNeuron(x, y);
-            if (type == INTESTINE) addIntestine(x, y);
+            // float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+            // float x = -worldSize.x * 0.7 - ofRandom(150.);    // spawn outside of the canvas to let the organisms drop into the vessel
+
+            float y = ofRandom(-worldSize.y * 0.4, worldSize.y * 0.4);
+            float x = ofRandom(-worldSize.x * 0.4, worldSize.x * 0.4);
+
+            addOnNextFrame(type, x, y);
+
+            // if (type == LIQUID)    addLiquid(x, y);
+            // if (type == BREATHER)  addBreather(x, y);
+            // if (type == PUMPER)    addPumper(x, y);
+            // if (type == NEURON)    addOnNextFrame(NEURON, x, y); // addNeuron(x, y); }
+            // if (type == INTESTINE) addIntestine(x, y);
 
         }
     }
@@ -200,19 +236,131 @@ void molecularSystem::addRandom(float x, float y) {
             float dice = ofRandom(1.);
 
             if (dice < probability[0]) {
-                addBreather(x, y);
+                // addBreather(x, y);
+                addOnNextFrame(BREATHER, x, y);
             } else if (dice < probability[1]) {
-                addPumper(x, y);
+                // addPumper(x, y);
+                addOnNextFrame(PUMPER, x, y);
             } else if (dice < probability[2]) {
-                addNeuron(x, y);
+                // addNeuron(x, y);
+                addOnNextFrame(NEURON, x, y);
             } else {
-                addIntestine(x, y);
+                // addIntestine(x, y);
+                addOnNextFrame(INTESTINE, x, y);
             }
 
         }
 
     }
 
+}
+
+
+//------------------------------------------------------------------
+void molecularSystem::addControlledRandom(float x, float y) {
+
+    int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
+
+    if( amountOrganisms < 9) {
+        addRandom(x, y);
+    } else if (intestines.size() < 2) {
+
+        // check if spawning position is within the vessel
+        Molecule * m = new Molecule(this);
+        m->reset(0,0,0,0);
+        float sdf = m->signedDistanceField(glm::vec2(x, y));
+
+        if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
+            // addIntestine(x, y);
+            addOnNextFrame(INTESTINE, x, y);
+        }
+    }
+
+}
+
+
+//------------------------------------------------------------------
+void molecularSystem::addInitialDrop(int vesselType) {
+
+    drop = true;
+    dropTimestamp = ofGetElapsedTimeMillis();
+
+    int amount = 1;
+    float xOffset = 100.;
+
+
+    for(unsigned int i = 0; i < amount; i++){ 
+       
+
+        int organsims[5];
+
+        if (vesselType == 0) {
+
+            // 2016px  +  1932px 
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 3.));
+            organsims[2] = floor(ofRandom(1., 4.));
+            organsims[3] = 1;   // floor(ofRandom(4., 8.));
+            organsims[4] = floor(ofRandom(3., 4.));
+
+        } else if (vesselType == 1) {
+
+            // 1176px
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 2.));
+            organsims[2] = floor(ofRandom(1., 3.));
+            organsims[3] = floor(ofRandom(3., 6.));
+            organsims[4] = floor(ofRandom(1., 3.));
+
+        } else {
+
+            // 672px
+            organsims[0] = floor(ofRandom(90., 120.));
+            organsims[1] = floor(ofRandom(1., 3.));
+            organsims[2] = floor(ofRandom(0., 2.));
+            organsims[3] = floor(ofRandom(2., 4.));
+            organsims[4] = floor(ofRandom(1., 2.));
+        }
+
+
+        
+        int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
+
+        while (total > 0) {
+            int pick = floor(ofRandom(5));
+            if (organsims[pick] > 0) {
+                organsims[pick] -= 1;
+                total -= 1;
+
+                // spawn outside of the canvas to let the organisms drop into the vessel
+                float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+                float x = -worldSize.x * 0.7 - ofRandom(150.);    
+
+                if (pick == 0) {
+                    // addOrganisms(LIQUID, 1);
+                    addOnNextFrame(LIQUID, x, y);
+                } else if (pick == 1) {
+                    // addOrganisms(BREATHER, 1);
+                    addOnNextFrame(BREATHER, x, y);
+                } else if (pick == 2) {
+                    // addOrganisms(PUMPER, 1); 
+                    addOnNextFrame(PUMPER, x, y);
+                } else if (pick == 3) {
+                    // addOrganisms(NEURON, 1);
+                    addOnNextFrame(NEURON, x, y);
+                } else if (pick == 4) {
+                    // addOrganisms(INTESTINE, 1);
+                    addOnNextFrame(INTESTINE, x, y);
+                }
+            }
+        }
+        
+    }
+
+    // add initial downward velocity to all Molecules to simulate a drop into liquid (slightly gravity is added as well until all Molecules have entered the canvas (is being done in the Molecule class))
+    // for (unsigned int i = 0; i < allMolecules.size(); i++) {
+    //     allMolecules[i]->velocity.x = 6. + ofRandom( abs(allMolecules[i]->position.x + (worldSize.x*0.5)) / 100. );
+    // }
 
 }
 
@@ -244,7 +392,9 @@ void molecularSystem::addBreather(float x, float y) {
     Breather * c = new Breather(this, cellType::BREATHER);
     c->set(amount, x, y);
 
-    c->audioModule >> masterBus.ch(0);          // route the audio of the organism to the corresponding stem of that orgainsm type
+    c->linkAudioModule(audioLink->getFreeBreatherModule());
+
+    // c->audioModule >> masterBus.ch(0);          // route the audio of the organism to the corresponding stem of that orgainsm type
     // c->audioModule.out_void() >> blackhole; 
 
     breathers.push_back(c);
@@ -257,12 +407,14 @@ void molecularSystem::addBreather(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addPumper(float x, float y) {
 
-    int amount = 5;
+    int amount = 6;
 
     Pumper * c = new Pumper(this);
     c->set(amount, x, y);
 
-    c->audioModule >> masterBus.ch(1);
+    c->linkAudioModule(audioLink->getFreePumperModule());
+
+    // c->audioModule >> masterBus.ch(1);
     // c->audioModule.out_void() >> blackhole;
 
     pumpers.push_back(c);
@@ -279,7 +431,9 @@ void molecularSystem::addNeuron(float x, float y) {
     Neuron * n = new Neuron(this);
     n->set(arms, elements, x, y);
 
-    n->audioModule >> masterBus.ch(2);
+    n->linkAudioModule(audioLink->getFreeNeuronModule());
+
+    // n->audioModule >> masterBus.ch(2);
 
     neurons.push_back(n);
 
@@ -295,9 +449,68 @@ void molecularSystem::addIntestine(float x, float y) {
     Intestine * n = new Intestine(this);
     n->set(elements, x, y);
 
-    n->audioModule >> masterBus.ch(3);
+    n->linkAudioModule(audioLink->getFreeIntestineModule());
+
+    // n->audioModule >> masterBus.ch(3);
 
     intestines.push_back(n);
+
+}
+
+
+
+//------------------------------------------------------------------
+void molecularSystem::addOnNextFrame(organismType type, float x, float y) {
+
+    organismsToAdd.push_back(type);
+    positionsToAdd.push_back(glm::vec2(x, y));
+
+}
+
+//------------------------------------------------------------------
+void molecularSystem::addBisectedIntestine(vector<glm::vec2> positions) {
+    bisectedIntestines.push_back(positions);
+}
+
+
+
+//------------------------------------------------------------------
+void molecularSystem::addFromStack() {
+
+    if(organismsToAdd.size() > 0 && organismsToAdd.size() == positionsToAdd.size()) {
+
+        // ofLogNotice("adding from stack");
+    
+        for(unsigned int i = 0; i < organismsToAdd.size(); i++){ 
+    
+            if (organismsToAdd[i] == LIQUID)    addLiquid(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == BREATHER)  addBreather(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == PUMPER)    addPumper(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == NEURON)    addNeuron(positionsToAdd[i].x, positionsToAdd[i].y);
+            if (organismsToAdd[i] == INTESTINE) addIntestine(positionsToAdd[i].x, positionsToAdd[i].y);
+    
+        }
+    
+        organismsToAdd.clear();
+        positionsToAdd.clear();
+
+    }
+
+
+    if (bisectedIntestines.size() > 0) {
+            
+            for(unsigned int i = 0; i < bisectedIntestines.size(); i++){ 
+    
+                Intestine * n = new Intestine(this);
+                n->set(bisectedIntestines[i].size() / 2, 0.0, 0.0);
+                n->copyPositions(bisectedIntestines[i]);
+                n->linkAudioModule(audioLink->getFreeIntestineModule());
+                intestines.push_back(n);
+    
+            }
+    
+            bisectedIntestines.clear();
+    }
 
 }
 
@@ -418,6 +631,7 @@ void molecularSystem::cleanUp() {
         vector<Breather *>::iterator itB = breathers.begin();
         for(; itB != breathers.end();){
             if( (*itB)->isDead ){
+                (*itB)->audioModule->freeModule();
                 delete *itB;
                 itB = breathers.erase(itB);
                 // ofLogNotice("Breather deleted!");
@@ -431,6 +645,7 @@ void molecularSystem::cleanUp() {
         vector<Pumper *>::iterator itP = pumpers.begin();
         for(; itP != pumpers.end();){
             if( (*itP)->isDead ){
+                (*itP)->audioModule->freeModule();
                 delete *itP;
                 itP = pumpers.erase(itP);
                 // ofLogNotice("Pumper deleted!");
@@ -467,6 +682,7 @@ void molecularSystem::cleanUp() {
         vector<Neuron *>::iterator itN = neurons.begin();
         for(; itN != neurons.end();){
             if( (*itN)->isDead ){
+                (*itN)->audioModule->freeModule();
                 delete *itN;
                 itN = neurons.erase(itN);
                 // ofLogNotice("Neuron deleted!");
@@ -482,6 +698,7 @@ void molecularSystem::cleanUp() {
         vector<Intestine *>::iterator itI = intestines.begin();
         for(; itI != intestines.end();){
             if( (*itI)->isDead ){
+                (*itI)->audioModule->freeModule();
                 delete *itI;
                 itI = intestines.erase(itI);
                 // ofLogNotice("Intestine deleted!");

@@ -4,6 +4,7 @@
 #include "Spring.h"
 #include "organisms.h"
 #include "ofxPDSP.h"
+#include "../synth/audioMaster.h"
 
 
 
@@ -24,6 +25,7 @@ class molecularSystem{
 
 		molecularSystem();
         void setup(int width, int height);
+        void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
         void draw();
 
@@ -43,6 +45,12 @@ class molecularSystem{
         void addIntestine(float x, float y);
         void addOrganisms(organismType type, int num);
         void addRandom(float x, float y);
+        void addControlledRandom(float x, float y);
+        void addInitialDrop(int vesselType);
+        
+        void addOnNextFrame(organismType type, float x, float y);
+        void addBisectedIntestine(vector<glm::vec2> positions);
+        void addFromStack();
         
         void setGui();
         void setIntrusionPoints(vector <glm::vec2> pts) { intrusionPoints.clear(); intrusionPoints = pts; }
@@ -69,10 +77,18 @@ class molecularSystem{
         vector <glm::vec2> intrusionPoints;     // interaction points by mouse position or Kinect data
 
 
+        vector <organismType> organismsToAdd;
+        vector <glm::vec2>    positionsToAdd;
+
+        vector <vector<glm::vec2>> bisectedIntestines;
+
+
         glm::vec2 worldSize;
 
         bool flush;
+        bool drop;
         int  flushTimestamp;
+        int  dropTimestamp;
         bool debugView;
         bool thereAreCadavers;
         bool organismsToRemove[5]; 
@@ -85,9 +101,9 @@ class molecularSystem{
 
 
         // audio master bus containing the stems for each organism type
-        pdsp::ParameterAmp      masterBus;
-        pdsp::ParameterAmp      blackhole;
-
+        // pdsp::ParameterAmp      masterBus;
+        // pdsp::ParameterAmp      blackhole;
+        audioModule::SubMaster * audioLink;
 
 
         // gui parameters for the canvas shape

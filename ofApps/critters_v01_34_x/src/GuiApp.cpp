@@ -25,13 +25,15 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SIMULATION PRESETS
-    string defaultSimulationPreset = "../../../../Presets/Simulation/Pressure02.xml";   
+    // string defaultSimulationPreset = "../../../../Presets/Simulation/lab30_01.xml";   
+    string defaultSimulationPreset = "../../../../Presets/Simulation/friesTV-physics_01.xml";   
     loadPreset(defaultSimulationPreset, 1);
 
 
 
     // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_FAB01.xml";
+    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_lab30_01.xml";
+    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/MacMini_4screens02_Philips90%.xml";
     loadPreset(defaultTubeCalibration, 1);
 
 
@@ -103,6 +105,7 @@ void GuiApp::setSimulationGUI() {
     guiBreather.add(tuneJointElasticity.set("Joint Elasticity", -5., -10, 10));
     guiBreather.add(tuneJointLimitForce.set("Joint Force limit", 0, -10, 10));
     gui.add(guiBreather);
+    gui.getGroup("Tune Breather Shape").minimize();
 
 
     guiIntestine.setName("Tune Intestine Shape");
@@ -115,6 +118,13 @@ void GuiApp::setSimulationGUI() {
     guiIntestine.add(membraneColor.set("Membrane Color", ofColor(40, 40, 130), ofColor(0, 0), 255));
     gui.add(guiIntestine);
     gui.getGroup("Tune Intestine Shape").minimize();
+
+    guiNeuron.setName("Tune Neuron Shape");
+    guiNeuron.add(tuneDendriteLength.set("Dendrite Length", 22.0, 1., 30.));
+    guiNeuron.add(tuneDendriteElasticity.set("Dendrite Elasticity", -5., -10, 10));
+    guiNeuron.add(tuneDendriteLimitForce.set("Dendrite Force limit", 0, -10, 10));
+    gui.add(guiNeuron);
+    // gui.getGroup("Tune Neuron Shape").minimize();
 
 
 
@@ -190,7 +200,7 @@ void GuiApp::setSynthGUI() {
 
     guiSynth.setup("SYNTH");
     guiSynth.setPosition(300, 10);
-        guiSynth.add( mainPtr->gain.set("master gain", -12, -48, 12) ); 
+        guiSynth.add( mainPtr->audioMaster.gain.set("master gain", -12, -48, 12) ); 
         // masterGain.enableSmoothing(50.f);
         guiSynth.add( lowCutFreq.set("low cut frequency", 150, 20, 500) ); 
         guiSynth.add( compThreshold.set("compressor threshold", -20, -36, 0) ); 
@@ -205,8 +215,8 @@ void GuiApp::setSynthGUI() {
 
 
     guiSynthFX.setName("FX CHAIN");
-        guiSynthFX.add(mainPtr->chorus.parameters);
-        guiSynthFX.add(mainPtr->delay.parameters);
+        guiSynthFX.add(mainPtr->audioMaster.chorus.parameters);
+        guiSynthFX.add(mainPtr->audioMaster.delay.parameters);
     guiSynth.add( guiSynthFX );
     guiSynth.getGroup("FX CHAIN").minimize();
     
@@ -371,6 +381,8 @@ void GuiApp::loadPreset(string filePath, int panel)
             // mainPtr->synth.gui.loadFromFile(filePath);
             guiSynth.loadFromFile(filePath);
         }
+    } else {
+        ofLogError("The file " + filePath + " is missing");
     }
 }
 

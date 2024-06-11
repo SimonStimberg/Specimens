@@ -3,10 +3,11 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxPDSP.h"
-#include "GuiApp.h" 
+#include "GuiApp.h"
 
 #include "molSystem/molecularSystem.h"
-#include "synth/synthFX.h"
+// #include "synth/synthFX.h"
+#include "synth/audioMaster.h"
 #include "interaction/kinect.h"
 
 
@@ -21,9 +22,9 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-		void initSynth();
+		// void initSynth();
 		void setTVmask();
-		void reconnectAudio();
+		// void reconnectAudio();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -46,23 +47,26 @@ class ofApp : public ofBaseApp{
 		
 		// AUDIO UNITS		
 
-		pdsp::Engine            engine;		// the audio engine
+		// pdsp::Engine            engine;		// the audio engine
 
-		// busses, routing, parameters
-		pdsp::ParameterGain     gain;
-		pdsp::ParameterAmp      fxBus;
-		pdsp::ParameterAmp      cleanBus;
-		pdsp::ParameterAmp      sumBus;
+		// // busses, routing, parameters
+		// pdsp::ParameterGain     gain;
+		// pdsp::ParameterAmp      fxBus;
+		// pdsp::ParameterAmp      cleanBus;
+		// pdsp::ParameterAmp      sumBus;
 
 
-		// effect units
-		effect::QuadDelay				delay;
-		effect::QuadChorus 				chorus;
-		effect::DisasterFX				disasterFX;
-		pdsp::LowCut					loCut;
-		vector <pdsp::Compressor>		compressor;
-		// pdsp::Compressor		compressorA;
-		// pdsp::Compressor		compressorB;
+		// // effect units
+		// effect::QuadDelay				delay;
+		// effect::QuadChorus 				chorus;
+		// effect::DisasterFX				disasterFX;
+		// pdsp::LowCut					loCut;
+		// vector <pdsp::Compressor>		compressor;
+		// // pdsp::Compressor		compressorA;
+		// // pdsp::Compressor		compressorB;
+		
+		audioModule::Master audioMaster;
+
 
 
 
@@ -78,5 +82,11 @@ class ofApp : public ofBaseApp{
 
 		bool mouseDown = false;
 		int mouseDownTime = 0;
+
+
+		int maxBreathers = 0;
+		int maxPumpers = 0;
+		int maxNeurons = 0;
+		int maxIntestines = 0;
 		
 };

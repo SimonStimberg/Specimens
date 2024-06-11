@@ -2,26 +2,27 @@
 #include "ofApp.h"
 
 //------------------------------------------------------------------
-Pumper::Pumper()
+Breather::Breather()
 {
     systemPtr = NULL;
 }
 
-Pumper::Pumper(molecularSystem *system)
+Breather::Breather(molecularSystem *system, cellType myType)
 {
 
-    Pumper();
+    Breather();
     this->systemPtr = system;
+    subType = myType;
     mature = false;
     isDead = false;
 
 }
 
-void Pumper::set(int num, int x, int y)
+
+void Breather::set(int num, int x, int y)
 {
 
-    maxGrowth = ofRandom(13, 15);
-    // maxGrowth = 15;
+    maxGrowth = floor(ofRandom(17, 21));
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
     nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
@@ -35,7 +36,6 @@ void Pumper::set(int num, int x, int y)
 
     arousal = 0.0;
     valence = 0.0;
-
     pressure = 1.0;
     
 
@@ -53,6 +53,15 @@ void Pumper::set(int num, int x, int y)
         systemPtr->allMolecules.push_back(m);
     }
 
+    // add one Middle Spring for the Breathers
+    int middle = round(num / 2);    
+
+    Spring *s = new Spring(systemPtr, JOINT);
+    s->connect(cellMolecules[0], cellMolecules[middle]);
+    springs.push_back(s);
+    systemPtr->allSprings.push_back(s);
+    
+
     for (int i = 0; i < num; i++)
     {
         Spring *s = new Spring(systemPtr);
@@ -65,39 +74,55 @@ void Pumper::set(int num, int x, int y)
     }
 
 
-    // SETUP AUDIO MODULE
 
-    audioModule.initiate();
-    trigPhase >> audioModule.in_trigPhase();
-    trig >> audioModule.in_trig();
-    trig.trigger(1.0);
-
-    setPhase >> audioModule.in_phase();
-    setVelocity >> audioModule.in_velocity();
-
-
-    float rates[3] = {0.25, 0.5, 1.};
-    int pick = floor(ofRandom(3));
-    // float impRate = ofRandom(0.25, 0.5);
-    rates[pick] >> audioModule.in_impulseRate();
-    
-
-    
+   
     
 }
 
 
 
-//------------------------------------------------------------------
-void Pumper::update()
+void Breather::linkAudioModule(audioModule::Breather & module)
 {
+    audioModule = &module;
+
+    audioModule->blockModule();
+
+    // SETUP AUDIO MODULE
+
+    frequency = ofRandom(220., 660.);
+    audioModule->setFrequency(pdsp::f2p(frequency));
+    initFrequency = frequency;
+
+
+    ampCtrl >> audioModule->in_level();
+    ampCtrl.enableSmoothing(50.0f);
+    filterCutoff >> audioModule->in_cutoff();
+    filterCutoff.enableSmoothing(50.0f);
+    detune >> audioModule->in_tune();
+    detune.enableSmoothing(50.0f);
+    0.25 >> audioModule->in_breathRate();
+
+    1.0 >> audioModule->in_bypass();
+    
+
+}
+
+
+
+//------------------------------------------------------------------
+void Breather::update()
+{
+
+            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Breather " + ofToString(this) + " is NAN!");
+
     adaptArousal(-0.01);
     adaptValence();
 
     grow();
     updatePosition();
-    if(mature) sync();
-    contract();
+    
+    if(mature) syncFrequency();
+    inflate();
 
     for (unsigned int i = 0; i < springs.size(); i++)
     {
@@ -112,69 +137,90 @@ void Pumper::update()
     }
 
 
-    // alternate the pitch slightly after each beat for variation
-    if(audioModule.impulseCount() > cycleCount) {
-        floor(ofRandom(-5, 5)) >> audioModule.in_pitch();
-        cycleCount++;
-    }
 
-
-
-    // SET THE IMPULSE RATE ACCORDING TO AROUSAL LEVEL
-    float impulseRate = arousal * arousal;   // use a squared curve for mapping
-    // impulseRate = (arousal > 0.1) ? ofMap(impulseRate, 0., 1., 0.25, 1.5) : 0.0;    // map the normalized and squared ratio to the desired frequency range
-    // map the arousal level to frequency
-    impulseRate = ofMap(impulseRate, 0.75, 1., 0.5, 1.5, true);  // map max arousal to 1.5 Hz and reach idle frequency at arousal level of 0.75. Idle frequency should be 0.5 Hz
-    impulseRate >> audioModule.in_impulseRate();    // set the rate
+    // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
+    float rate = arousal * arousal;   // use a squared curve for mapping
+    rate = ofMap(rate, 0.85, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
+    frequency = ofLerp(frequency, initFrequency, rate);     // interpolate between current frequency and initial untuned frequency
     
-    // if arousal level falls below 0.1: stop beating
-    if(arousal < 0.1) {
-        setPhase.set(0.9);      // beating is prevented by constantly resetting the phase
-        trigPhase.trigger(1.0); // the phase reset has to be retriggered in order to take effect
-    }
-
-    // set the sound velocity according to the arousal 
-    setVelocity.set(ofMap(arousal, 0., 1., -9., 0.));   // dB non-linear mapping is used. also dim the sound only until -9 dB
+    pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
 
-    if(mature && audioModule.impulseCount() >= maxNumCycles) die();
-   
+    // the input mapping values are arbitrary and derived from observation of the system
+    float newLevel  = ofMap(pressure, 0., 7., -36.0, 0.0, true);
+    ampCtrl.set(dB(newLevel));
+
+    float newCutoff = ofMap(pressure, 0., 7., -30., 30.);
+    filterCutoff.set(newCutoff);
+
+
+
+    // ALTERNATE SOUND ACCORDING TO VALENCE
+    // valence * 0.25 >> audioModule->in_roughness();
+    // detune.set(valence * 0.5);
+
+
+
+    float breathRate = arousal;     // map the breathRate to the amount of arousal
+    breathRate *= breathRate;     // then square it for squared mapping
+
+    breathRate = ofMap(breathRate, 0., 1., 0.25, 0.6);    // map the normalized and squared ratio to the desired frequency range
+    breathRate >> audioModule->in_breathRate();    // set the rate
+
+
+    if(mature && audioModule->cycleCount() >= maxNumCycles) die();
+
+
 }
 
-
-
 //------------------------------------------------------------------
-void Pumper::draw()
+void Breather::draw()
 {
 
     ofNoFill();
-
 
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
             ofSetLineWidth(1);
             ofSetColor(ofColor::indianRed);
-            ofDrawCircle(position, guiPtr->neuronSyncDistance);
-        }
+            // ofDrawCircle(dbgCellCenter, guiPtr->tuneBreatherExpansionRadius);
+                    // for Debug purpose (delete later)
 
+            ofDrawCircle(position, guiPtr->pumperSyncDistance);
+
+        }
 
     ofSetLineWidth(3);
 
-    ofColor col = ofColor::fromHex(0xf22571);
 
-    if(mature) {
-        float brtnss = col.getBrightness();
-        brtnss = ofMap( audioModule.impulseOut(), 0.0, 1.0, brtnss, 255.0 );
-        col.setBrightness(brtnss);
 
-        float sat = col.getSaturation();
-        sat = ofMap( audioModule.impulseOut(), 0.0, 1.0, sat, 55.0 );
-        col.setSaturation(sat);
-        // col = ofColor(255, 25, 0);
+    ofColor col = ofColor::fromHex(0x2bdbe6);
+
+    // ofColor col;
+    if(guiPtr->debugMode) {
+        if(maxGrowth == 17) {
+            col = ofColor::fromHex(0x2bdbe6);
+        } else if (maxGrowth == 18) {
+            col = ofColor::fromHex(0x2bdb00);
+        } else if (maxGrowth == 19) {
+            col = ofColor::fromHex(0x2b00e6);
+        } else {
+            col = ofColor::fromHex(0xff0000);
+        }
     }
 
 
-            
+    if(mature) {
+        float brtnss = col.getBrightness();
+        brtnss = ofMap( pressure, 0.0, 7.0, brtnss, 255.0 );
+        col.setBrightness(brtnss);
+
+        float sat = col.getSaturation();
+        sat = ofMap( pressure, 0.0, 7.0, sat, 15.0 );
+        col.setSaturation(sat);
+    }
+
+
     ofSetColor(col);
     ofBeginShape();
     for (int i = 0; i < cellMolecules.size(); i++)
@@ -203,19 +249,19 @@ void Pumper::draw()
     // {
     //     springs[i]->draw();
     // }
-    // for (unsigned int i = 0; i < cellMolecules.size(); i++)
-    // {
-    //     cellMolecules[i]->draw();
-    // }
+    for (unsigned int i = 0; i < cellMolecules.size(); i++)
+    {
+        cellMolecules[i]->draw();
+    }
 }
 
 
-
+// GROW FUNCTTION LETTING THE ORGAISM GROW
 //------------------------------------------------------------------
-void Pumper::grow()
+void Breather::grow()
 {
 
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
 
         Molecule *first = cellMolecules[0];
         Molecule *last  = cellMolecules[cellMolecules.size()-1];
@@ -239,12 +285,19 @@ void Pumper::grow()
         systemPtr->allSprings.push_back(s);
 
 
+        // add one Middle Spring for the Breathers
+        int middle = round(cellMolecules.size() / 2);    
+        
+        springs[0]->disconnect();
+        springs[0]->connect(cellMolecules[0], cellMolecules[middle]);
+
+
         nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
         
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {
-            audioModule.startImpulse();
             timeOfMaturity = ofGetElapsedTimef();
+            audioModule->startBreathing();
         }
 
     }
@@ -253,29 +306,32 @@ void Pumper::grow()
 
 
 
+// INFLATE 
 //------------------------------------------------------------------
-void Pumper::contract() {
+void Breather::inflate() {
 
-    
-    pressure = 1.0;
+    pressure = 1.0; // standard pressure level
+
 	
 	if (mature == true && guiPtr->switchOscillation ) {
 
 
-        // float oscillate = -audioModule.impulseOut() * guiPtr->pmprImpulseAmt;
-        // float oscillate = ofMap(audioModule.impulseOut(), 0., 1., -2. 1.)
-        float oscillate = audioModule.impulseOut() * 2.2;       // get the impulse envelope from the audioModule (values from 0. to 1.) factor them by certain amount
+        // get the control oscillation from the LFO in the audioModule
+        float oscillate = ofMap(audioModule->ctrlLfoOut(), -1., 1., -0.5, 5.);     // mapping it from -0.2 instead of 0. - 1. lets the Breather contract a bit between inflations
+        // float oscillate = 0.4;
+
+        // oscillate *= guiPtr->tuneBreatherOscillationAmount;
 
         // map the oscillator amount to the arousal level
         float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
-        oscillate *= oscAmount;     // apply the amount to the oscillation
+        oscillate *= oscAmount;
+
+        pressure = oscillate;
 
 
-        pressure = 1. - oscillate;      // substract the impulse value from the idle pressure (which is 1.)
 
 
 	}
-
 
     pressure *= guiPtr->tunePressureTest;
 
@@ -287,15 +343,21 @@ void Pumper::contract() {
 
 // CALCULATE AND APPLY (GAS) PRESSURE FORCE
 //------------------------------------------------------------------
-void Pumper::applyPressure()
+void Breather::applyPressure()
 {
     
     float volume = calculateVolume();
 
 
+    // float pressure = 2.0;
+    // float pressure = guiPtr->tunePressureTest;
+
+
+    // pressure = getPressure() * guiPtr->tunePressureTest;
+
     // calculating the pressure force
     // by the paper of Maciej Matyka (How To Implement a Pressure Soft Body Model)
-    for (int i = 0; i < springs.size(); i++) { 
+    for (int i = 1; i < springs.size(); i++) { 
 
         float pressureValue = springs[i]->currentLength * pressure * (1.0f/volume);
 
@@ -308,21 +370,22 @@ void Pumper::applyPressure()
         springs[i]->moleculeA->addForce(pressureForce);
         springs[i]->moleculeB->addForce(pressureForce);
 
-    } 
+    }
+    
 
 }
 
 
 // CALCULATE VOLUME OF ORGANISM
 //------------------------------------------------------------------
-float Pumper::calculateVolume()
+float Breather::calculateVolume()
 {
 
     float newVolume = 0.0;
 
     // Calculate Volume of the organizm (Gauss Theorem)
-    // implementation of the concept of Maciej Matyka
-    for (int i = 0; i < springs.size(); i++) { 
+    // implementation inspired by Maciej Matyka
+    for (int i = 1; i < springs.size(); i++) { 
 
         float x1 = springs[i]->moleculeA->position.x;
         float x2 = springs[i]->moleculeB->position.x;
@@ -339,48 +402,68 @@ float Pumper::calculateVolume()
 
 
 
+// SYNC FREQUENCY TO OTHER BREATHERS
 //------------------------------------------------------------------
-void Pumper::sync()
+void Breather::syncFrequency()
 {
 
+    if( arousal < 0.95) {   
 
-    for (int i = 0; i < systemPtr->pumpers.size(); i++) { 
-        Pumper * other = systemPtr->pumpers[i];
-        // glm::vec2 newForce = other->position - position;
-        if (other->mature) {
-            float distance = glm::length2(other->position - position);
-            float threshold = guiPtr->pumperSyncDistance;
+    // for (int i = 0; i < systemPtr->breathers.size(); i++) { 
+    //     Breather * other = systemPtr->breathers[i];
 
-            if (distance < threshold*threshold && distance > 0.) {
-                if (other->audioModule.meter() < 0.01 && (audioModule.meter() > 0.6 || audioModule.meter() < 0.4)) {        // before < 0.4 || > 0.6
+    //     if (other->mature) {
+    //         float distance = glm::length2(other->position - position);
+    //         float threshold = guiPtr->pumperSyncDistance;
 
-                    setPhase.set(0.5);      // before 0.5
-                    trigPhase.trigger(1.0);
+    //         if (distance < threshold*threshold && distance > 0.) {
 
+                float targetFreq = 0.0;
+                if (frequency < 275) {
+                    targetFreq = 220 + ofRandom(-2., 2.);
+                } 
+                else if (frequency < 385) {
+                    targetFreq = 330 + ofRandom(-3., 3.);
+                }
+                else if (frequency < 495) {
+                    targetFreq = 440 + ofRandom(-4., 4.);
+                }
+                else if (frequency < 605) {
+                    targetFreq = 550 + ofRandom(-5., 5.);
+                }
+                else {
+                    targetFreq = 660 + ofRandom(-6., 6.);
                 }
 
-            }
-        }
+
+                float difference = targetFreq - frequency;
+                difference *= 0.01;
+
+               
+
+                frequency += difference;
+
+    //         }
+    //     }
+    // }
+
+
     }
 }
 
 
 
 //------------------------------------------------------------------
-void Pumper::die()
+void Breather::die()
 {
+
+    0.0 >> audioModule->in_bypass();
     
     // get the position of the center of the cell aka the average position
     glm::vec2 cellCenter(0,0);
     for (int i = 0; i < cellMolecules.size(); i++) { 
         cellMolecules[i]->removeMe = true;      // mark the Molecules to be removed
-        // Molecule * other = cellMolecules.at(i);
         cellCenter += cellMolecules[i]->position;	// sum the positions of all cells
-
-            // also spawn new Liquid molecules at the former neuronMolecules positions
-            // float x = cellMolecules[i]->position.x + ofRandom(-10.0, 10.0);   // add some randomness to create more dynamic while spawning
-            // float y = cellMolecules[i]->position.y + ofRandom(-10.0, 10.0);
-            // systemPtr->addLiquid(x, y);
     }
     cellCenter /= cellMolecules.size(); 	// get the average / dividing by the total amount
 
@@ -388,67 +471,66 @@ void Pumper::die()
         springs[i]->removeMe = true;    // mark the Springs to be removed
     }
 
+
     if (position.x < systemPtr->worldSize.x) {
-        int numSpawnNeurons = 3;
+        int numSpawnNeurons = 5;
         for (int i = 0; i < numSpawnNeurons; i++) { 
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
-            systemPtr->addNeuron(x, y);
+            // systemPtr->addNeuron(x, y);
+            systemPtr->addOnNextFrame(NEURON, x, y);
         }
     }
 
+    // ofLogNotice("before dying breather: disconnect all");
 
-    // audioModule.disconnectAll();
+    // audioModule->disconnectAll();
     
 
     isDead = true;      // mark itself to be removed
-    // systemPtr->cleanUp = true;
-    // systemPtr->organismsToRemove = (subType == cellType::BREATHER) ? BREATHER : PUMPER;
-
-    systemPtr->organismsToRemove[PUMPER] = true;
+  
+    systemPtr->organismsToRemove[BREATHER] = true;
     systemPtr->thereAreCadavers = true;
 
-
 }
 
 
 
 //------------------------------------------------------------------
-void Pumper::adaptArousal(float amount)
+void Breather::adaptArousal(float amount)
 {
-    arousal += (amount / (float)cellMolecules.size()) * 0.5;
-    arousal = ofClamp(arousal, 0.0, 1.0);
-    // arousal = 1.0;
+    if(!systemPtr->flush) {
+        arousal += (amount / (float)cellMolecules.size()) * 0.5;
+        arousal = ofClamp(arousal, 0.0, 1.0);
+    } else {
+        arousal = 1.0;
+    }
 
 }
 
 //------------------------------------------------------------------
-void Pumper::adaptValence()
+void Breather::adaptValence()
 {
     valence = systemPtr->getSystemPressure();
 }
 
 
-
 //------------------------------------------------------------------
-void Pumper::updatePosition()
+void Breather::updatePosition()
 {
     position = glm::vec2(0,0);
     for (int i = 0; i < cellMolecules.size(); i++) { 
         position += cellMolecules[i]->position;	// sum the positions of all cells
     }
     position /= cellMolecules.size();
-    
-    if (position.x > systemPtr->worldSize.x) {
-        // ofLogNotice("Relieve me, I'm out of the screen!");
-        die();
-    }
+
+    if (position.x > systemPtr->worldSize.x) die();
 }
 
 
 
 //------------------------------------------------------------------
-float Pumper::getInflation() {
+float Breather::getInflation() {
 
     float averageStretch = 0.0;
     for(unsigned int i = 1; i < springs.size(); i++){   // i = 1 -> for the breathers exclude the middle spring
@@ -456,8 +538,24 @@ float Pumper::getInflation() {
     }
     averageStretch /= springs.size() - 1;    // without middle spring
 
+
     // the value scaling/mapping is based on observing the actual values in the simulation
     averageStretch = ofMap(averageStretch, -1.0, 3.5, 0.0, 1.0, false);
 
+
     return averageStretch;
+}
+
+//------------------------------------------------------------------
+float Breather::getVelocity() {
+
+    glm::vec2 averageVelocity(0., 0.);
+    for(unsigned int i = 0; i < cellMolecules.size(); i++){   // i = 1 -> for the breathers exclude the middle spring
+        averageVelocity += cellMolecules[i]->velocity;
+        
+    }
+    averageVelocity /= cellMolecules.size();    // without middle spring
+
+
+    return glm::length(averageVelocity);
 }
