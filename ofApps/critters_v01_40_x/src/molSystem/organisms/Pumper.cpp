@@ -197,28 +197,40 @@ void Pumper::draw(float resMultiplier)
             
     ofSetColor(col);
     ofBeginShape();
+
+    // int last = cellMolecules.size() - 1;
+    vector<glm::vec2> vertices;
+    vertices.push_back(cellMolecules[0]->position * resMultiplier);
     for (int i = 0; i < cellMolecules.size(); i++)
     {
-        glm::vec2 vertexPos = cellMolecules[i]->position;
-        vertexPos *= resMultiplier;
-        if (i == 0)
-        {
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-        }
-        else if (i == cellMolecules.size() - 1)
-        {
-            glm::vec2 firstVertexPos = cellMolecules[0]->position;
-            firstVertexPos *= resMultiplier;
-            ofCurveVertex(vertexPos);
-            ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
-            ofCurveVertex(firstVertexPos); // we duplicate the first point twice
-        }
-        else
-        {
-            ofCurveVertex(vertexPos);
-        }
+        vertices.push_back(cellMolecules[i]->position * resMultiplier);
     }
+    vertices.push_back(cellMolecules[0]->position * resMultiplier);
+    vertices.push_back(cellMolecules[1]->position * resMultiplier);
+    ofCurveVertices(vertices);
+
+    // for (int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     glm::vec2 vertexPos = cellMolecules[i]->position;
+    //     vertexPos *= resMultiplier;
+    //     if (i == 0)
+    //     {
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //     }
+    //     else if (i == cellMolecules.size() - 1)
+    //     {
+    //         glm::vec2 firstVertexPos = cellMolecules[0]->position;
+    //         firstVertexPos *= resMultiplier;
+    //         ofCurveVertex(vertexPos);
+    //         ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
+    //         ofCurveVertex(firstVertexPos); // we duplicate the first point twice
+    //     }
+    //     else
+    //     {
+    //         ofCurveVertex(vertexPos);
+    //     }
+    // }
     ofEndShape();
 
     // for (unsigned int i = 0; i < springs.size(); i++)

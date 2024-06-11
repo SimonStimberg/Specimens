@@ -24,6 +24,14 @@ void ofApp::setup() {
     audioMaster.setup(numScreens);
 
 
+    opengl = ofGetGLRenderer();
+    cairo = make_shared<ofCairoRenderer>();
+    cairo->setupMemoryOnly(ofCairoRenderer::IMAGE);
+    cairo_set_line_cap(cairo->getCairoContext(), CAIRO_LINE_CAP_ROUND);
+    cairo_set_line_join(cairo->getCairoContext(), CAIRO_LINE_JOIN_ROUND);
+    render.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+
+
     resMultiplier = 4.0;
 
     // sets the native resolution of the screens that are rendered to
@@ -170,13 +178,19 @@ void ofApp::update() {
 
 
         // draw the Molecular System to the frame buffer
-        vessel[i].begin();
+        ofSetCurrentRenderer(cairo, true);
+    
+        
+        // vessel[i].begin();
         
             ofBackground(0);
             if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
             // if(molSystem[i].drop && molSystem[i].dropTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
 
             // draw the Molecular System
+            // ofColor col = ofColor::fromHex(0x2bdbe6);
+            // ofSetColor(col);
+            cairo_set_source_rgb (cairo->getCairoContext(), 0.2, 1, 0.7);
             ofPushMatrix();
                 ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
                 molSystem[i].draw(resMultiplier);
@@ -196,9 +210,14 @@ void ofApp::update() {
             //         kinectToPoints.drawKinect(i);
             //         kinectToPoints.drawCalibrationAids(i);
             //     }
-            // }      
+            // }     
         
-        vessel[i].end();
+        render.loadData(cairo->getImageSurfacePixels());
+
+        ofSetCurrentRenderer(opengl);
+        // vessel[i].begin(); 
+        //     render.draw(0,0,ofGetWidth(), ofGetHeight());
+        // vessel[i].end();
 
 
 
@@ -294,7 +313,8 @@ void ofApp::draw(){
         // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
         for (int i = 0; i < numScreens; i++) {
             int xShift = i * screenResolution.x;
-            vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
+            // vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
+            render.draw(xShift,0,screenResolution.x, screenResolution.y);
             // vessel[i].draw(xShift, 0);
 
             // ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen

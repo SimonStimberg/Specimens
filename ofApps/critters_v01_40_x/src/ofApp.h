@@ -45,6 +45,10 @@ class ofApp : public ofBaseApp{
 		ofFbo 				vessel[numScreens];		// frame buffer object - the size amount of instances is defined by numScreens
 		glm::vec2 			screenResolution;
 
+		shared_ptr<ofBaseGLRenderer> opengl;
+      	shared_ptr<ofCairoRenderer> cairo;
+      	ofTexture render;
+
 		
 		// AUDIO UNITS		
 

@@ -175,6 +175,7 @@ class Neuron{
         void linkAudioModule(audioModule::Neuron & module);
         void update();
         void draw(float resMultiplier);
+        void drawConnections(float resMultiplier);
 
         void grow();
         void connect(Molecule * myMolecule, Molecule * otherMolecule);

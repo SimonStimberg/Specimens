@@ -202,14 +202,17 @@ void Neuron::draw(float resMultiplier)
     //     neuronMolecules[i]->draw();
     // }
     
+}
+
+//------------------------------------------------------------------
+void Neuron::drawConnections(float resMultiplier)
+{
     ofSetColor(ofColor::darkSlateGrey);
     ofSetLineWidth(3 * resMultiplier);
     for (unsigned int i = 0; i < connections.size(); i++)
     {
         connections[i]->draw(resMultiplier);
     }
-
-
 }
 
 
