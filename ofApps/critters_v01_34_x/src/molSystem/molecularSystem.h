@@ -24,7 +24,7 @@ class molecularSystem{
         
 
 		molecularSystem();
-        void setup(int width, int height);
+        void setup(int width, int height, int species);
         void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
         void draw();
@@ -84,6 +84,7 @@ class molecularSystem{
 
 
         glm::vec2 worldSize;
+        organismType mySpecies;
 
         bool flush;
         bool drop;

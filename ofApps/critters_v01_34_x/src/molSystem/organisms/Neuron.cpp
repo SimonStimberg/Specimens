@@ -127,7 +127,7 @@ void Neuron::update()
 
 
     signal();
-    if(signalCounter >= maxNumSignals) die();
+    if(signalCounter >= maxNumSignals && systemPtr->mySpecies == NONE) die();
 
 }
 

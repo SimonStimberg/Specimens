@@ -168,7 +168,7 @@ void Breather::update()
     breathRate >> audioModule->in_breathRate();    // set the rate
 
 
-    if(mature && audioModule->cycleCount() >= maxNumCycles) die();
+    if(mature && audioModule->cycleCount() >= maxNumCycles && systemPtr->mySpecies == NONE) die();
 
 
 }
@@ -478,7 +478,8 @@ void Breather::die()
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
             // systemPtr->addNeuron(x, y);
-            systemPtr->addOnNextFrame(NEURON, x, y);
+            organismType species = (systemPtr->mySpecies != NONE) ? LIQUID : NEURON;
+            systemPtr->addOnNextFrame(species, x, y);
         }
     }
 

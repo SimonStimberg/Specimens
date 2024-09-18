@@ -74,6 +74,8 @@ class ofApp : public ofBaseApp{
 		ofTexture mask[numScreens];
 		bool showMask;
 
+		bool singleSpeciesMode = false;
+
 
 		// kinect class that processes the incoming data from the Kinect for interaction
 		kinectHandler kinectToPoints;
@@ -82,6 +84,7 @@ class ofApp : public ofBaseApp{
 
 		bool mouseDown = false;
 		int mouseDownTime = 0;
+		int mouseDownButton;
 
 
 		int maxBreathers = 0;

@@ -153,7 +153,7 @@ void Pumper::update()
     setVelocity.set(ofMap(arousal, 0., 1., -9., 0.));   // dB non-linear mapping is used. also dim the sound only until -9 dB
 
 
-    if(mature && audioModule->impulseCount() >= maxNumCycles) die();
+    if(mature && audioModule->impulseCount() >= maxNumCycles && systemPtr->mySpecies == NONE) die();
    
 }
 
@@ -411,7 +411,8 @@ void Pumper::die()
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
             // systemPtr->addNeuron(x, y);
-            systemPtr->addOnNextFrame(NEURON, x, y);
+            organismType species = (systemPtr->mySpecies != NONE) ? LIQUID : NEURON;
+            systemPtr->addOnNextFrame(species, x, y);
         }
     }
 

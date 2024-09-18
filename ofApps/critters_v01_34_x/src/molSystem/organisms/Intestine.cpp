@@ -130,7 +130,7 @@ void Intestine::update()
     }
 
     // if (intestineMolecules.size() >= maxElements) die();
-    if (intestineMolecules.size() >= maxElements) bisect();
+    if (intestineMolecules.size() >= maxElements && systemPtr->mySpecies == NONE) bisect();
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
@@ -423,13 +423,18 @@ void Intestine::digest()
             systemPtr->doNotDigest = false;
             nextDigestion = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));    // choose the next signal timestamp 
 
-            if( floor( ofRandom(2)) == 0) {
-                // systemPtr->addBreather(digestionPos.x, digestionPos.y);
-                systemPtr->addOnNextFrame(BREATHER, digestionPos.x, digestionPos.y);
+            if(systemPtr->mySpecies == NONE) {
+                if( floor( ofRandom(2)) == 0) {
+                    // systemPtr->addBreather(digestionPos.x, digestionPos.y);
+                    systemPtr->addOnNextFrame(BREATHER, digestionPos.x, digestionPos.y);
+                } else {
+                    // systemPtr->addPumper(digestionPos.x, digestionPos.y);
+                    systemPtr->addOnNextFrame(PUMPER, digestionPos.x, digestionPos.y);
+                }
             } else {
-                // systemPtr->addPumper(digestionPos.x, digestionPos.y);
-                systemPtr->addOnNextFrame(PUMPER, digestionPos.x, digestionPos.y);
+                systemPtr->addOnNextFrame(LIQUID, digestionPos.x, digestionPos.y);
             }
+
 
             // systemPtr->addLiquid(digestionPos.x, digestionPos.y);
 

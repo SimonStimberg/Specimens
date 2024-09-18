@@ -13,6 +13,8 @@ void ofApp::setup() {
     // ofSetVerticalSync(true);
     ofSetFrameRate(50);
 
+    singleSpeciesMode = true;
+
 
     // initSynth();
     audioMaster.setup(numScreens);
@@ -54,8 +56,10 @@ void ofApp::setup() {
         mask[i].allocate(vessel[i].getWidth(), vessel[i].getHeight(), GL_LUMINANCE);
 
 
-        // initialize the Molecular System
-        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight());  
+        // initialize the Molecular System  
+        // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
+        int setSpecies = (singleSpeciesMode) ? i+1 : 5;
+        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight(), setSpecies);  
 
         molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
@@ -108,10 +112,13 @@ void ofApp::update() {
     if (mouseDown) {
         // ofLogNotice("still pressed");
         if (ofGetElapsedTimeMillis() > mouseDownTime + 5000 ) {
-            ofLogNotice("shutdown please");
-            // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
-            // ofSystem("sudo -S shutdown -h now < ./masterpw.txt");
-            ofSystem("echo \"samsara\" | sudo -S shutdown -h now");
+
+            if(mouseDownButton == 2) {
+                ofLogNotice("shutdown please");
+                // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
+                // ofSystem("sudo -S shutdown -h now < ./masterpw.txt");
+                ofSystem("echo \"samsara\" | sudo -S shutdown -h now");
+            }
             ofExit();
         }
     }
@@ -159,9 +166,10 @@ void ofApp::update() {
 
         #endif
 
-           
-        // glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        // if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
+        if(singleSpeciesMode) {
+            glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+            if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
+        }
         
         molSystem[i].update();
 
@@ -407,6 +415,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
     if (!mouseDown) {
         mouseDown = true;
+        mouseDownButton = button;
         mouseDownTime = ofGetElapsedTimeMillis();
         // ofLogNotice("first press");
     } 

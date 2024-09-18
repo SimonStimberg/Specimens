@@ -8,12 +8,16 @@ molecularSystem::molecularSystem() {
 
 
 //------------------------------------------------------------------
-void molecularSystem::setup(int width, int height) {
+void molecularSystem::setup(int width, int height, int species) {
 
     // masterPtr = ptr;
 
     worldSize.x = width;
     worldSize.y = height;
+
+    mySpecies = (organismType)species;
+
+    ofLogNotice("my Species type: " + ofToString(species));
 
     // ofLogNotice("width: " + ofToString(width));
     // ofLogNotice("height: " + ofToString(height));
@@ -238,6 +242,7 @@ void molecularSystem::addRandom(float x, float y) {
 
             float probability[4] = {0.2, 0.4, 0.9, 1.0};   // the probability for the different organism types      Breather: 0.2
             float dice = ofRandom(1.);
+            // float dice = (mySpecies == NONE) ? ofRandom(1.) : probability[(int)mySpecies-1]-0.05;
 
             if (dice < probability[0]) {
                 // addBreather(x, y);
@@ -263,11 +268,24 @@ void molecularSystem::addRandom(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addControlledRandom(float x, float y) {
 
-    int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
+    // int amountOrganisms = breathers.size() + pumpers.size() + neurons.size() + intestines.size();
 
-    if( amountOrganisms < 9) {
-        addRandom(x, y);
-    } else if (intestines.size() < 2) {
+    // if( amountOrganisms < 9) {
+    //     addRandom(x, y);
+    // } else if (intestines.size() < 2) {
+
+    //     // check if spawning position is within the vessel
+    //     Molecule * m = new Molecule(this);
+    //     m->reset(0,0,0,0);
+    //     float sdf = m->signedDistanceField(glm::vec2(x, y));
+
+    //     if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
+    //         // addIntestine(x, y);
+    //         addOnNextFrame(INTESTINE, x, y);
+    //     }
+    // }
+
+    if(mySpecies != NONE) {
 
         // check if spawning position is within the vessel
         Molecule * m = new Molecule(this);
@@ -275,11 +293,22 @@ void molecularSystem::addControlledRandom(float x, float y) {
         float sdf = m->signedDistanceField(glm::vec2(x, y));
 
         if(sdf <= -20.0 ) {     // -20 -> keep a border of 20px for safety
-            // addIntestine(x, y);
-            addOnNextFrame(INTESTINE, x, y);
+
+
+            int amount[4] = {2, 3, 5, 1};
+            // int amount = (mySpecies == NEURON) ? 4 : 1;
+
+            for(unsigned int i = 0; i < amount[mySpecies-1]; i++){ 
+
+                float xX = x + ofRandom(-15., 15.);
+                float yY = y + ofRandom(-15., 15.);
+                addOnNextFrame(mySpecies, xX, yY);
+
+            }
+
         }
     }
-
+    
 }
 
 
@@ -330,34 +359,47 @@ void molecularSystem::addInitialDrop(int vesselType) {
         
         int total = organsims[0] + organsims[1] + organsims[2] + organsims[3] + organsims[4];
 
-        while (total > 0) {
-            int pick = floor(ofRandom(5));
-            if (organsims[pick] > 0) {
-                organsims[pick] -= 1;
-                total -= 1;
+        // if(mySpecies == NONE) {
+            while (total > 0) {
+                int pick = floor(ofRandom(5));
+                if (organsims[pick] > 0) {
+                    organsims[pick] -= 1;
+                    total -= 1;
 
-                // spawn outside of the canvas to let the organisms drop into the vessel
-                float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
-                float x = -worldSize.x * 0.7 - ofRandom(150.);    
+                    // spawn outside of the canvas to let the organisms drop into the vessel
+                    float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+                    float x = -worldSize.x * 0.7 - ofRandom(150.);    
 
-                if (pick == 0) {
-                    // addOrganisms(LIQUID, 1);
-                    addOnNextFrame(LIQUID, x, y);
-                } else if (pick == 1) {
-                    // addOrganisms(BREATHER, 1);
-                    addOnNextFrame(BREATHER, x, y);
-                } else if (pick == 2) {
-                    // addOrganisms(PUMPER, 1); 
-                    addOnNextFrame(PUMPER, x, y);
-                } else if (pick == 3) {
-                    // addOrganisms(NEURON, 1);
-                    addOnNextFrame(NEURON, x, y);
-                } else if (pick == 4) {
-                    // addOrganisms(INTESTINE, 1);
-                    addOnNextFrame(INTESTINE, x, y);
+                    pick = (pick != 0 && mySpecies != NONE) ? (int)mySpecies : pick;
+
+                    if (pick == 0) {
+                        // addOrganisms(LIQUID, 1);
+                        addOnNextFrame(LIQUID, x, y);
+                    } else if (pick == 1) {
+                        // addOrganisms(BREATHER, 1);
+                        addOnNextFrame(BREATHER, x, y);
+                    } else if (pick == 2) {
+                        // addOrganisms(PUMPER, 1); 
+                        addOnNextFrame(PUMPER, x, y);
+                    } else if (pick == 3) {
+                        // addOrganisms(NEURON, 1);
+                        addOnNextFrame(NEURON, x, y);
+                    } else if (pick == 4) {
+                        // addOrganisms(INTESTINE, 1);
+                        addOnNextFrame(INTESTINE, x, y);
+                    }
                 }
             }
-        }
+        // } else {
+        //     for(unsigned int i = 0; i < total; i++){ 
+
+        //             // spawn outside of the canvas to let the organisms drop into the vessel
+        //             float y = ofRandom(-worldSize.y * 0.1, worldSize.y * 0.1);
+        //             float x = -worldSize.x * 0.7 - ofRandom(150.);  
+
+        //             addOnNextFrame(mySpecies, x, y);
+        //     }
+        // }
         
     }
 
