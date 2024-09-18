@@ -161,13 +161,17 @@ void molecularSystem::draw() {
 		intestines[i]->draw();
 	}
 
-    ofSetColor(ofColor::indianRed);
-    ofFill();
-    if (intrusionPoints.size() > 0) {
-        for(unsigned int i = 0; i < intrusionPoints.size(); i++){
-            ofDrawCircle(intrusionPoints[i], 10.);
-        }
-    }
+
+    // if (intrusionPoints.size() > 0) {
+    //     for(unsigned int i = 0; i < intrusionPoints.size(); i++){
+    //         ofFill();
+    //         ofSetColor(0);    
+    //         ofDrawCircle(intrusionPoints[i], 8.);
+    //         ofNoFill();
+    //         ofSetColor(ofColor::indianRed);    
+    //         ofDrawCircle(intrusionPoints[i], 8.);
+    //     }
+    // }
 
 }
 

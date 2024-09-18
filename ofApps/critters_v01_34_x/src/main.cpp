@@ -42,7 +42,7 @@ int main( ){
 	settings.windowMode = OF_WINDOW;
 	settings.resizable = false;
 	#ifdef SHOW_ON_CRT
-		// settings.visible = false;
+		settings.visible = false;
 	#endif
 	settings.monitor = 1;
 	shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);
