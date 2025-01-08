@@ -21,7 +21,7 @@ void ofApp::setup() {
 
 
     // initSynth();
-    audioMaster.setup(numScreens);
+    audioMaster.setup(numScreens, true);
 
 
     opengl = ofGetGLRenderer();
@@ -32,7 +32,7 @@ void ofApp::setup() {
     render.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 
 
-    resMultiplier = 4.0;
+    resMultiplier = 6.0;
 
     // sets the native resolution of the screens that are rendered to
     screenResolution.x = ofGetWidth(); 

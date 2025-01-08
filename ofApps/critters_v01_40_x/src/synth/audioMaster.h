@@ -30,6 +30,8 @@ namespace audioModule {     // all class reside within the name space audioModul
 
             pdsp::ParameterAmp      sumBus;
             pdsp::ParameterAmp      blackhole;
+            pdsp::Ducker            sideChainBreather;
+            pdsp::Ducker            sideChainIntestine;
 
             vector <audioModule::Breather>    breatherModules;
             vector <audioModule::Pumper>      pumperModules;
@@ -52,7 +54,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             Master(const Master& other){}
             // ~Master(){}        // destructor
 
-            void setup(int screens);
+            void setup(int screens, bool stereo);
             // void initSynth();
             void switchDistortion(bool state, int screen);
             void setReverbAmount(float amount, int screen);
@@ -84,6 +86,8 @@ namespace audioModule {     // all class reside within the name space audioModul
             std::vector <pdsp::ValueControl> reverbAmt;
 
             vector <audioModule::SubMaster> subMasterModules;
+
+            bool stereo;
 
 
 

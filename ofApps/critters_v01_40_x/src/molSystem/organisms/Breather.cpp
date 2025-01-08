@@ -23,8 +23,8 @@ void Breather::set(int num, int x, int y)
 {
 
     maxGrowth = floor(ofRandom(17, 21));
-    // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
-    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(2000, 5000));
+    // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
     
     uniqueVal = ofRandom(100);
@@ -470,7 +470,7 @@ void Breather::syncFrequency()
 
 
                 float difference = targetFreq - frequency;
-                difference *= 0.01;
+                difference *= 0.005;    // 0.01     originally
 
                
 

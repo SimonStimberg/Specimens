@@ -20,7 +20,8 @@ void Neuron::set(int arms, int elements, int x, int y)
 
     dendrites.resize(arms);
     maxArmElements = elements;
-    nextGrowth = ofGetElapsedTimeMillis() + (guiPtr->neuronGrowSpeed) + (int)(ofRandom(guiPtr->neuronGrowSpeed*0.5));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(2000, 5000));
+    // nextGrowth = ofGetElapsedTimeMillis() + (guiPtr->neuronGrowSpeed) + (int)(ofRandom(guiPtr->neuronGrowSpeed*0.5));
     mature = false;
     isDead = false;
     debugVal = 10000000;
@@ -94,7 +95,7 @@ void Neuron::linkAudioModule(audioModule::Neuron & module)
     pdsp::f2p(880) >> audioModule->in_pitch();
 
     impulse >> audioModule->in_trig();
-    impulse.trigger(1.0);   // trigger once on initialization
+    // impulse.trigger(1.0);   // trigger once on initialization
 
 }
 
@@ -165,7 +166,7 @@ void Neuron::draw(float resMultiplier)
     glm::vec2 centerPos = neuronMolecules[0]->position;
     centerPos *= resMultiplier;
 
-    ofDrawCircle(centerPos, 3 * resMultiplier);
+    ofDrawCircle(centerPos, 2.5 * resMultiplier);
 
 
     ofNoFill();
@@ -451,7 +452,7 @@ void Neuron::getSynced()
 void Neuron::sync()
 {
     // if my neighbouring Neuron is firing: reduce the time span to my next signal by a certain amount -> firefly effect
-    nextSignal -= guiPtr->neuronSignalInterval * 0.2;
+    nextSignal -= guiPtr->neuronSignalInterval * 0.1;
 }
 
 

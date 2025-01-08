@@ -40,17 +40,17 @@ void GuiApp::setup(){
 
 
     // LOAD DEFAULT SYNTH PRESETS FOR EACH ORGANISM TYPE
-    string defaultSynthPreset = "../../../../Presets/Synth/BreathingNew02.xml";
+    string defaultSynthPreset = "../../../../Presets/Synth/InstaRender01.xml";
     loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/PressurePumpers01.xml";
-    loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/NeuronsUnderWater01.xml";
-    loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/Intestines07.xml";
-    loadPreset(defaultSynthPreset, 2);
+    //     defaultSynthPreset = "../../../../Presets/Synth/PressurePumpers01.xml";
+    // loadPreset(defaultSynthPreset, 2);
+    //     defaultSynthPreset = "../../../../Presets/Synth/NeuronsUnderWater01.xml";
+    // loadPreset(defaultSynthPreset, 2);
+    //     defaultSynthPreset = "../../../../Presets/Synth/Intestines07.xml";
+    // loadPreset(defaultSynthPreset, 2);
 
-    string defaultFxPreset = "../../../../Presets/Synth/PostFX05.xml";    
-    loadPreset(defaultFxPreset, 2);
+    // string defaultFxPreset = "../../../../Presets/Synth/PostFX05.xml";    
+    // loadPreset(defaultFxPreset, 2);
 
 
 }

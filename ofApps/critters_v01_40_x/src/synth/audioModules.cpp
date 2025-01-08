@@ -161,6 +161,7 @@ void audioModule::Pumper::initiate(){
     addModuleOutput("signal", bypass ); 
     // addModuleOutput("signal", testOut ); 
     addModuleOutput("blackhole", intoVoid ); 
+    addModuleOutput("trigger", triggers ); 
 
 
     // bIsFree = true;
@@ -300,6 +301,7 @@ void audioModule::Neuron::init(){
 
     // OUTPUTS
     addModuleOutput("output", bypass );
+    addModuleOutput("trigger", trigger ); 
 
 
 

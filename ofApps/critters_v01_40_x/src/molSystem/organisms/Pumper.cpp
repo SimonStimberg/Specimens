@@ -22,8 +22,8 @@ void Pumper::set(int num, int x, int y)
 
     maxGrowth = ofRandom(13, 15);
     // maxGrowth = 15;
-    // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
-    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(2000, 5000));
+    // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
 
     
     uniqueVal = ofRandom(100);
@@ -89,7 +89,7 @@ void Pumper::linkAudioModule(audioModule::Pumper & module)
     // audioModule->reset();
     trigPhase >> audioModule->in_trigPhase();
     trig >> audioModule->in_trig();
-    trig.trigger(1.0);
+    // trig.trigger(1.0);
 
     setPhase >> audioModule->in_phase();
     setVelocity >> audioModule->in_velocity();

@@ -17,13 +17,14 @@ Intestine::Intestine(molecularSystem *system)
 void Intestine::set(int num, int x, int y)
 {
 
-    nextGrowth = ofGetElapsedTimeMillis() + 500 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(2000, 5000));
+    // nextGrowth = ofGetElapsedTimeMillis() + 500 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
     mature = false;
     isDead = false;
 
     isDigesting = false;
     // nextDigestion = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
-    nextDigestion = ofGetElapsedTimeMillis() + (int)ofRandom(5000, 10000);
+    nextDigestion = ofGetElapsedTimeMillis() + (int)ofRandom(6000, 7000);
     digestionPos = glm::vec2(0, 0);
     if(systemPtr->renderMode == 0) maxElements = 92;
     else maxElements = 92;
@@ -139,7 +140,7 @@ void Intestine::update()
         intestineMolecules[i]->update();
     }
 
-    if (intestineMolecules.size() >= maxElements) bisect();
+    // if (intestineMolecules.size() >= maxElements) bisect();
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
@@ -195,7 +196,7 @@ void Intestine::draw(float resMultiplier)
     ofSetColor(50);
     for (unsigned int i = 0; i < springs.size(); i++)
     {
-        springs[i]->draw(resMultiplier);
+        if (springs[i]->type == STRUCTURE) springs[i]->draw(resMultiplier);
     }
 
     ofSetColor(guiPtr->membraneColor);
@@ -296,7 +297,8 @@ void Intestine::grow()
 
 
 
-        nextGrowth = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+        // nextGrowth = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+        nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(100, 600));
 
     }
 

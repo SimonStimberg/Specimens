@@ -16,9 +16,10 @@ void molecularSystem::setup(int width, int height) {
     worldSize.y = height;
 
     // to switch settings for different screen resolutions
-    if (width > 1920) renderMode = 0;
-    else if (width > 1160) renderMode = 1;
-    else renderMode = 2;
+    // if (width > 1920) renderMode = 0;
+    // else if (width > 1160) renderMode = 1;
+    // else renderMode = 2;
+    renderMode = 2;
 
     ofLogNotice("render mode: " + ofToString(renderMode));
 
@@ -36,9 +37,12 @@ void molecularSystem::setup(int width, int height) {
     doNotDigest = false;
     freshlySpawned = false;
     // collapseThreshold = floor(1300 * width/800.0);
+    collapseThreshold = floor( (height / 15) * (width / 15) );
     if (renderMode == 0) collapseThreshold = floor( (height / 15) * (width / 15) );
     if (renderMode == 1) collapseThreshold = floor( (height / 15) * (width / 16) );
     if (renderMode == 2) collapseThreshold = floor( (height / 15) * (width / 15) );
+
+    ofLogNotice("collapse threshold: " + ofToString(collapseThreshold));
 
     setGui();
 
@@ -215,7 +219,7 @@ void molecularSystem::addOrganisms(organismType type, int num, float x, float y)
             if (type == LIQUID)    addLiquid(xPos, yPos);
             if (type == BREATHER)  addBreather(xPos, yPos);
             if (type == PUMPER)    addPumper(xPos, yPos);
-            if (type == NEURON)    addNeuron(xPos, yPos);
+            if (type == NEURON)    addNeuron(0, -worldSize.y * 0.7 - 25.);
             if (type == INTESTINE) addIntestine(xPos, yPos);
 
         }
@@ -346,6 +350,15 @@ void molecularSystem::addControlledRandom(float x, float y) {
             organsims[3] = 6;
             organsims[4] = 1;
        
+        } else if (renderMode == 3) {
+
+            // 1176px
+            organsims[0] = 27;
+            organsims[1] = 0;
+            organsims[2] = 0;
+            organsims[3] = 25;
+            organsims[4] = 0;
+       
         } else {
 
             // 672px
@@ -469,7 +482,7 @@ void molecularSystem::addNeuron(float x, float y) {
 //------------------------------------------------------------------
 void molecularSystem::addIntestine(float x, float y) {
 
-    int elements = 8;
+    int elements = 5;
 
 
     Intestine * n = new Intestine(this);

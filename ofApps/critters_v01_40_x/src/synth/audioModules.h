@@ -130,6 +130,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::Patchable & in_impulseRate() { return in("impulseRate"); }
             pdsp::Patchable & in_velocity() { return in("velocity"); }
             pdsp::Patchable & out_void() { return out("blackhole"); }
+            pdsp::Patchable & out_trig() { return out("trigger"); }
 
 
         private:
@@ -188,6 +189,7 @@ namespace audioModule {     // all class reside within the name space audioModul
             pdsp::Patchable & in_trig() { return in("trig"); }
             pdsp::Patchable & in_pitch() { return in("pitch"); }
             pdsp::Patchable & in_sigDuration() { return in("sigDuration"); }
+            pdsp::Patchable & out_trig() { return out("trigger"); }
 
 
         private:

@@ -96,6 +96,7 @@ class ofApp : public ofBaseApp{
 
 
 		float resMultiplier;
+		// float oversampling;
 		bool bSmoothing = true;
 		bool bAntialiasing = false;
 
