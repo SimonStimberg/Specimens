@@ -387,3 +387,9 @@
   - adds organisms on next frame 
 - performance optimizations (SDF collision checking -> less square roots!)
 - added Single Species Mode (each organism on a single screen)
+
+### v01.40.x
+version for rendering the simulation to a video file
+- implemented render mechanism
+- added cairo renderer for high quality render with anti aliasing
+- added resolution multiplier to achieve higher detailed renderings + custom resolutions
