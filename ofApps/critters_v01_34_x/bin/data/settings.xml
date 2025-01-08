@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<group>
+	<Tune_Forces>
+		<Friction>0.97</Friction>
+		<Repulsion_Radius>18</Repulsion_Radius>
+		<Tune_Repulsion_Force>0</Tune_Repulsion_Force>
+		<Flattening_Threshold__Distance_>5.88265</Flattening_Threshold__Distance_>
+		<Tune_Flattening_Force_Limit>-3</Tune_Flattening_Force_Limit>
+		<Spring_Length>22</Spring_Length>
+		<Tune_Spring_Elasticity__K_factor_>-5</Tune_Spring_Elasticity__K_factor_>
+		<Tune_Spring_Force_limit>0</Tune_Spring_Force_limit>
+		<Flattening_min_Thresh>7</Flattening_min_Thresh>
+		<Flattening_Distance>20</Flattening_Distance>
+		<Switch_breathing>0</Switch_breathing>
+	</Tune_Forces>
+</group>
+<SYNTH>
+	<master_gain>-16</master_gain>
+	<oscillator_control>
+		<oscillator_mix>0.5</oscillator_mix>
+		<oscillator_drift>0.13</oscillator_drift>
+		<vibrato_amount>0</vibrato_amount>
+		<vibrato_speed__hz_>7</vibrato_speed__hz_>
+		<osc_1__pulse_>
+			<pulse_width>0.5</pulse_width>
+			<pwm_amount>0.0729167</pwm_amount>
+			<pwm_speed__hz_>0.3</pwm_speed__hz_>
+		</osc_1__pulse_>
+		<osc_2__sine_>
+			<octave>-1</octave>
+			<fine_tune>0.078125</fine_tune>
+		</osc_2__sine_>
+	</oscillator_control>
+	<filter>
+		<cutoff_pitch>69</cutoff_pitch>
+		<resonance>0.352041</resonance>
+		<LFO_mod_amount>0</LFO_mod_amount>
+		<LFO_speed__hz_>0</LFO_speed__hz_>
+	</filter>
+	<stereo_chorus>
+		<speed__hz_>0.25</speed__hz_>
+		<depth__ms_>3.5</depth__ms_>
+		<delay__ms_>80</delay__ms_>
+		<dry___wet>0.30102</dry___wet>
+	</stereo_chorus>
+	<stereo_delay>
+		<input_gain>0</input_gain>
+		<L_16th_time>5</L_16th_time>
+		<L_feedback>0.14</L_feedback>
+		<R_16th_time>3</R_16th_time>
+		<R_feedback>0.156</R_feedback>
+		<damping>0.5</damping>
+		<dry___wet>0.214286</dry___wet>
+		<output_gain>0</output_gain>
+	</stereo_delay>
+</SYNTH>

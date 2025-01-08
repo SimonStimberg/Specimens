@@ -1,0 +1,8 @@
+ofxAudioFile
+ofxGui
+ofxKinect
+ofxLeapMotion2
+ofxMidi
+ofxOsc
+ofxPDSP
+ofxXmlSettings

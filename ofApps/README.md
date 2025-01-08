@@ -375,4 +375,15 @@
 
 ### v01.32.x
 - master presentation: onsite adjustments and tweaks
-- 
+
+### v01.33.x
+- adding Leap Motion
+- adding bin structure for optimized neighbor checking
+- added gas pressure force for balloon shaped organisms (Breather + Pumper)
+
+### v01.34.x
+- new audio setup with fixed audioModules in the synth class
+- fixed NAN errors - running absolute stable now!
+  - adds organisms on next frame 
+- performance optimizations (SDF collision checking -> less square roots!)
+- added Single Species Mode (each organism on a single screen)
