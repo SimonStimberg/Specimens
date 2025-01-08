@@ -2,10 +2,10 @@
 
 written in C++ with openFrameworks  
 
-the source files can be found in the ```./src``` folder  
+the source files can be found in the ```/src``` folder  
 
 ### compile the code
-- use the openFrameworks Project Generator and import the parent project folder
+- install openFrameworks and use its Project Generator to setup the project
 - following libraries (openFrameworks addOns) are required
   - ofxGui
   - ofxXmlSettings
