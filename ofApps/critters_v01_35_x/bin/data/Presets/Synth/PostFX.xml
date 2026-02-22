@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<SYNTH>
+	<POST_FX>
+        <stereo_chorus>
+            <speed__hz_>0.582908</speed__hz_>
+            <depth__ms_>3.5</depth__ms_>
+            <delay__ms_>80</delay__ms_>
+            <dry___wet>0.397959</dry___wet>
+        </stereo_chorus>
+        <stereo_delay>
+            <input_gain>0</input_gain>
+            <L_16th_time>2</L_16th_time>
+            <L_feedback>0.14</L_feedback>
+            <R_16th_time>1</R_16th_time>
+            <R_feedback>0.156</R_feedback>
+            <damping>0.5</damping>
+            <dry___wet>0.25</dry___wet>
+            <output_gain>0</output_gain>
+        </stereo_delay>
+    </POST_FX>
+</SYNTH>

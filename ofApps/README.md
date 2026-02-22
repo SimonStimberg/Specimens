@@ -388,6 +388,12 @@
 - performance optimizations (SDF collision checking -> less square roots!)
 - added Single Species Mode (each organism on a single screen)
 
+### v01.35.x
+- meant for Raspberry Pi simulation
+  - reduced Resolution, tiny Vessels, big Organisms
+  - no Sound -> movements triggered by SoundModules replaced by functions
+  - no Kinect -> interaction input from central host machine
+
 ### v01.40.x
 version for rendering the simulation to a video file
 - implemented render mechanism
