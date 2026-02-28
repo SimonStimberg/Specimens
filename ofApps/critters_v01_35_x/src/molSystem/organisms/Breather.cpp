@@ -37,7 +37,8 @@ void Breather::set(int num, int x, int y)
     sinePhase = 0.0f;
     sineFrequency = 0.25f; // Hz
 
-    arousal = 0.0;
+    // arousal = 0.0;
+    arousal = ofRandom(0.75, 0.1);
     valence = 0.0;
     pressure = 1.0;
     

@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 // #include "ofApp.h"
-#include "ofxPDSP.h"
+// #include "ofxPDSP.h"
 
 
 class ofApp;
@@ -15,7 +15,7 @@ class GuiApp: public ofBaseApp {
 
 		void setup();
 		void setSimulationGUI();
-		void setSynthGUI();
+		// void setSynthGUI();
 		void update();
 		void draw();
 		void savePreset(int panel);
@@ -114,71 +114,71 @@ class GuiApp: public ofBaseApp {
 
 
 		// GUI SYNTH
-		ofxPanel            guiSynth;
-		ofParameterGroup    guiSynthFX;
-		// pdsp::ParameterGain masterGain;
-		pdsp::Parameter     lowCutFreq;
-		pdsp::Parameter     compThreshold;
-		pdsp::Parameter     compKnee;
+		// ofxPanel            guiSynth;
+		// ofParameterGroup    guiSynthFX;
+		// // pdsp::ParameterGain masterGain;
+		// pdsp::Parameter     lowCutFreq;
+		// pdsp::Parameter     compThreshold;
+		// pdsp::Parameter     compKnee;
 
-		ofParameterGroup    guiSynthBrthrs;
-		pdsp::Parameter		brthGain;
-		pdsp::Parameter     brthFineTune;
-		pdsp::Parameter     brthOscMix;
-		pdsp::Parameter     brthPw;
-		pdsp::Parameter     brthPwmSpeed;
-		pdsp::ParameterAmp  brthPwmAmt;  
-		pdsp::Parameter     brthCutoff;
-		pdsp::Parameter     brthReso;	
+		// ofParameterGroup    guiSynthBrthrs;
+		// pdsp::Parameter		brthGain;
+		// pdsp::Parameter     brthFineTune;
+		// pdsp::Parameter     brthOscMix;
+		// pdsp::Parameter     brthPw;
+		// pdsp::Parameter     brthPwmSpeed;
+		// pdsp::ParameterAmp  brthPwmAmt;  
+		// pdsp::Parameter     brthCutoff;
+		// pdsp::Parameter     brthReso;	
 
-		ofParameterGroup    guiSynthPumpers;
-		pdsp::Parameter        pmprGainControl;  
-		pdsp::Parameter        pmprPitchControl;    
-		pdsp::Parameter        pmprPEnvAmtControl;
-		pdsp::Parameter        pmprPEnvAttackControl;
-		pdsp::Parameter        pmprPEnvReleaseControl;
-		pdsp::Parameter        pmprVeloToEnv;
-		pdsp::Parameter        pmprFbControl;
-		pdsp::Parameter        pmprFbModControl;
-		pdsp::Parameter        pmprEnvAttackControl;
-		pdsp::Parameter        pmprEnvHoldControl;
-		pdsp::Parameter        pmprEnvReleaseControl;
+		// ofParameterGroup    guiSynthPumpers;
+		// pdsp::Parameter        pmprGainControl;  
+		// pdsp::Parameter        pmprPitchControl;    
+		// pdsp::Parameter        pmprPEnvAmtControl;
+		// pdsp::Parameter        pmprPEnvAttackControl;
+		// pdsp::Parameter        pmprPEnvReleaseControl;
+		// pdsp::Parameter        pmprVeloToEnv;
+		// pdsp::Parameter        pmprFbControl;
+		// pdsp::Parameter        pmprFbModControl;
+		// pdsp::Parameter        pmprEnvAttackControl;
+		// pdsp::Parameter        pmprEnvHoldControl;
+		// pdsp::Parameter        pmprEnvReleaseControl;
 		
-		ofParameterGroup    guiSynthPumpersImpulse;
-		pdsp::Parameter        pmprImpulseEnvAttack;
-		pdsp::Parameter        pmprImpulseEnvHold;
-		pdsp::Parameter        pmprImpulseEnvRelease;
-		ofParameter<float> 	   pmprImpulseAmt;
+		// ofParameterGroup    guiSynthPumpersImpulse;
+		// pdsp::Parameter        pmprImpulseEnvAttack;
+		// pdsp::Parameter        pmprImpulseEnvHold;
+		// pdsp::Parameter        pmprImpulseEnvRelease;
+		// ofParameter<float> 	   pmprImpulseAmt;
 
-		ofParameterGroup    guiSynthNeurons;
-		pdsp::Parameter		   nronGain;
-		pdsp::Parameter		   nronEnvAttack;
-		pdsp::Parameter		   nronEnvRelease; 
-		pdsp::Parameter		   nronPitch;
-		pdsp::Parameter		   nronFineTune;
-		pdsp::Parameter		   nronOscMix;
-		pdsp::Parameter		   nronCutoff;
-		pdsp::Parameter		   nronReso;
-		ofParameter<float> 	   nronFilterModAmt;
-		pdsp::Parameter		   nronFEnvAttack;
-		pdsp::Parameter		   nronFEnvHold;
-		ofParameter<int> 	   nronSignalSpeed;
+		// ofParameterGroup    guiSynthNeurons;
+		// pdsp::Parameter		   nronGain;
+		// pdsp::Parameter		   nronEnvAttack;
+		// pdsp::Parameter		   nronEnvRelease; 
+		// pdsp::Parameter		   nronPitch;
+		// pdsp::Parameter		   nronFineTune;
+		// pdsp::Parameter		   nronOscMix;
+		// pdsp::Parameter		   nronCutoff;
+		// pdsp::Parameter		   nronReso;
+		// ofParameter<float> 	   nronFilterModAmt;
+		// pdsp::Parameter		   nronFEnvAttack;
+		// pdsp::Parameter		   nronFEnvHold;
+		// ofParameter<int> 	   nronSignalSpeed;
 		
-		ofParameterGroup    guiSynthIntestines;
-		pdsp::Parameter		   itstGain;
-		pdsp::Parameter		   itstEnvAttack;
-		pdsp::Parameter		   itstEnvDecay; 
-		pdsp::Parameter		   itstEnvSustain; 
-		pdsp::Parameter		   itstEnvRelease; 
-		pdsp::Parameter		   itstPitch;
-		pdsp::Parameter		   itstFineTune;
-		pdsp::Parameter        itstPw;
-		pdsp::Parameter        itstPwmAmt;  
-		pdsp::Parameter        itstLfoRate;
-		pdsp::Parameter		   itstOscMix;
-		pdsp::Parameter		   itstCutoff;
-		pdsp::Parameter		   itstReso;
-		pdsp::Parameter		   itstFilterModAmt;
+		// ofParameterGroup    guiSynthIntestines;
+		// pdsp::Parameter		   itstGain;
+		// pdsp::Parameter		   itstEnvAttack;
+		// pdsp::Parameter		   itstEnvDecay; 
+		// pdsp::Parameter		   itstEnvSustain; 
+		// pdsp::Parameter		   itstEnvRelease; 
+		// pdsp::Parameter		   itstPitch;
+		// pdsp::Parameter		   itstFineTune;
+		// pdsp::Parameter        itstPw;
+		// pdsp::Parameter        itstPwmAmt;  
+		// pdsp::Parameter        itstLfoRate;
+		// pdsp::Parameter		   itstOscMix;
+		// pdsp::Parameter		   itstCutoff;
+		// pdsp::Parameter		   itstReso;
+		// pdsp::Parameter		   itstFilterModAmt;
 
 
 		bool maskChanged;	

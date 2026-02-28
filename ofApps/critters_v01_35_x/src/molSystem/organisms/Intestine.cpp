@@ -76,31 +76,31 @@ void Intestine::set(int num, int x, int y)
 }
 
 
-void Intestine::linkAudioModule(audioModule::Intestine & module)
-{
+// void Intestine::linkAudioModule(audioModule::Intestine & module)
+// {
 
-    audioModule = &module;
-    audioModule->blockModule();
+//     audioModule = &module;
+//     audioModule->blockModule();
 
-    // ofLogNotice("linking audio module to intestine");
-
-
-    // INITIALIZE AUDIO MODULE
-
-    // audioModule->init();
-
-    float choosePitch[3] = {0, 7, 12};
-    pdsp::f2p(55) >> audioModule->in_pitch();
-    soundCtrl >> audioModule->in_trig();
-    pulseRate >> audioModule->in_LFOrate();
-    pulseRate.enableSmoothing(50.0f);
-    // soundCtrl.trigger(1.0);
-
-    soundCtrl.off();
+//     // ofLogNotice("linking audio module to intestine");
 
 
+//     // INITIALIZE AUDIO MODULE
 
-}
+//     // audioModule->init();
+
+//     float choosePitch[3] = {0, 7, 12};
+//     pdsp::f2p(55) >> audioModule->in_pitch();
+//     soundCtrl >> audioModule->in_trig();
+//     pulseRate >> audioModule->in_LFOrate();
+//     pulseRate.enableSmoothing(50.0f);
+//     // soundCtrl.trigger(1.0);
+
+//     soundCtrl.off();
+
+
+
+// }
 
 
 //------------------------------------------------------------------
@@ -136,7 +136,7 @@ void Intestine::update()
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
     float rate = arousal * arousal;   // use a squared curve for mapping
     rate = ofMap(rate, 0.75, 1., 0., 15., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
-    rate >> audioModule->in_cutoff();
+    // rate >> audioModule->in_cutoff();
 
 
     // float frequency = ofLerp(55, 55+freqDivergence, rate);     // interpolate between current frequency and initial untuned frequency
@@ -357,7 +357,7 @@ void Intestine::digest()
         isDigesting = true;
         systemPtr->doNotDigest = true;
         startTime = ofGetElapsedTimeMillis();
-        soundCtrl.trigger(1.0);
+        // soundCtrl.trigger(1.0);
   
     }
 
@@ -377,7 +377,7 @@ void Intestine::digest()
         float newPulseRate = getDigestionStatus();
         newPulseRate *= newPulseRate;   // square for cubic mapping
         newPulseRate = ofMap(newPulseRate, 0., 1., 0.8, 10.0);  // map position of digested molecule (aka digestionStatus) to the frequency of the lfo (in Hz)
-        pulseRate.set(newPulseRate);
+        // pulseRate.set(newPulseRate);
 
         // ofLogNotice("segIdx: " + ofToString(segmentIdx));
 
@@ -438,7 +438,7 @@ void Intestine::digest()
 
             // systemPtr->addLiquid(digestionPos.x, digestionPos.y);
 
-            soundCtrl.off();
+            // soundCtrl.off();
 
         }
 
@@ -459,12 +459,12 @@ void Intestine::getSynced()
             float threshold = guiPtr->intestineSyncDistance;
 
             if (distance < threshold*threshold) {
-                if (other->audioModule->meter() < 0.01) {
+                // if (other->audioModule->meter() < 0.01) {
 
-                    if(ofGetElapsedTimeMillis() >= nextDigestion - (int)(guiPtr->intestineDigestionInterval*0.5)) nextDigestion = ofGetElapsedTimeMillis();
+                //     if(ofGetElapsedTimeMillis() >= nextDigestion - (int)(guiPtr->intestineDigestionInterval*0.5)) nextDigestion = ofGetElapsedTimeMillis();
 
 
-                }
+                // }
 
             }
         }

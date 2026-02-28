@@ -3,7 +3,7 @@
 #include "molecularSystem.h"
 
 // #include "ofxPDSP.h"
-#include "../../synth/audioModules.h"
+// #include "../../synth/audioModules.h"
 
 
 // THIS HEADER FILE CONTAINS ALL CLASSES OF ORGANISMS
@@ -103,7 +103,7 @@ class Pumper{
         Pumper(molecularSystem * system);
 
         void set(int num, int x, int y);
-        void linkAudioModule(audioModule::Pumper & module);
+        // void linkAudioModule(audioModule::Pumper & module);
         void update();
         void draw();
 
@@ -147,16 +147,16 @@ class Pumper{
         int   maxNumCycles;
 
 
-        audioModule::Pumper * audioModule;
-        pdsp::ValueControl  ampCtrl;
-        pdsp::ValueControl  filterCutoff;
-        pdsp::TriggerControl  trig;
-        pdsp::ValueNode     impulseCtrl;
-        pdsp::ValueControl  impulseVal;
+        // audioModule::Pumper * audioModule;
+        // pdsp::ValueControl  ampCtrl;
+        // pdsp::ValueControl  filterCutoff;
+        // pdsp::TriggerControl  trig;
+        // pdsp::ValueNode     impulseCtrl;
+        // pdsp::ValueControl  impulseVal;
 
-        pdsp::TriggerControl  trigPhase;
-        pdsp::ValueControl  setPhase;
-        pdsp::ValueControl  setVelocity;
+        // pdsp::TriggerControl  trigPhase;
+        // pdsp::ValueControl  setPhase;
+        // pdsp::ValueControl  setVelocity;
 
 
         int bugTrack;
@@ -178,7 +178,7 @@ class Neuron{
         Neuron(molecularSystem * system);
 
         void set(int arms, int elements, int x, int y);
-        void linkAudioModule(audioModule::Neuron & module);
+        // void linkAudioModule(audioModule::Neuron & module);
         void update();
         void draw();
 
@@ -229,8 +229,8 @@ class Neuron{
         float freqDivergence;
 
 
-        audioModule::Neuron * audioModule;
-        pdsp::TriggerControl  impulse;
+        // audioModule::Neuron * audioModule;
+        // pdsp::TriggerControl  impulse;
         // pdsp::ValueControl  signalDuration;
         
 
@@ -248,7 +248,7 @@ class Intestine{
         Intestine(molecularSystem * system);
 
         void set(int num, int x, int y);
-        void linkAudioModule(audioModule::Intestine & module);
+        // void linkAudioModule(audioModule::Intestine & module);
         void update();
         void draw();
         
@@ -293,9 +293,9 @@ class Intestine{
         float freqDivergence;
 
 
-        audioModule::Intestine * audioModule;
-        pdsp::TriggerControl     soundCtrl;
-        pdsp::ValueControl       pulseRate;
+        // audioModule::Intestine * audioModule;
+        // pdsp::TriggerControl     soundCtrl;
+        // pdsp::ValueControl       pulseRate;
 
 
     private:

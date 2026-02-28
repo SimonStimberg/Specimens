@@ -1,13 +1,13 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxGui.h"
-#include "ofxPDSP.h"
+// #include "ofxGui.h"
+// #include "ofxPDSP.h"
 #include "GuiApp.h"
 
 #include "molSystem/molecularSystem.h"
 // #include "synth/synthFX.h"
-#include "synth/audioMaster.h"
+// #include "synth/audioMaster.h"
 // #include "interaction/kinect.h"
 
 
@@ -65,7 +65,7 @@ class ofApp : public ofBaseApp{
 		// // pdsp::Compressor		compressorA;
 		// // pdsp::Compressor		compressorB;
 		
-		audioModule::Master audioMaster;
+		// audioModule::Master audioMaster;
 
 
 
@@ -75,6 +75,9 @@ class ofApp : public ofBaseApp{
 		bool showMask;
 
 		bool singleSpeciesMode = false;
+
+
+		bool testBool = false;
 
 
 		// kinect class that processes the incoming data from the Kinect for interaction

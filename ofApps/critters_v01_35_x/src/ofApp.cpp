@@ -17,7 +17,7 @@ void ofApp::setup() {
 
 
     // initSynth();
-    audioMaster.setup(numScreens);
+    // audioMaster.setup(numScreens);
 
 
 
@@ -59,10 +59,10 @@ void ofApp::setup() {
         // initialize the Molecular System  
         // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
         // int setSpecies = (singleSpeciesMode) ? i+1 : 5;
-        int setSpecies = 2;
+        int setSpecies = 1;
         molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight(), setSpecies);  
 
-        molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
+        // molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
         // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
         // the Molecular System creates stems for each organism type
@@ -96,7 +96,7 @@ void ofApp::setup() {
     // kinectToPoints.setup(screenSizeFactor);
 
 
-    ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
+    // ofLogNotice("Gain -47dB: " + ofToString(dB(-47)));
 
     #ifdef SHOW_ON_CRT
         ofHideCursor();     // hide mouse cursor
@@ -160,8 +160,14 @@ void ofApp::update() {
             mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;
             mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
             
-            float angle = glm::radians(-90.0);
+            // float angle = glm::radians(-90.0);
             // mousePos[0] = glm::rotate(mousePos[0], angle);
+            if (testBool) {
+                mousePos[0].x = 0.0;
+                mousePos[0].y = 0.0;
+            }
+
+            // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
             
             molSystem[i].setIntrusionPoints(mousePos);
 
@@ -189,9 +195,9 @@ void ofApp::update() {
 
 
             // draw mask for screen shape mapping when activated
-            if(guiPtr->switchScreenMask) {
-                mask[i].draw(0, 0);
-            }
+            // if(guiPtr->switchScreenMask) {
+            //     mask[i].draw(0, 0);
+            // }
 
             
             // draw kinect callibration guides
@@ -216,23 +222,23 @@ void ofApp::update() {
         // }
 
         
-        audioMaster.switchDistortion(molSystem[i].flush, i);
+        // audioMaster.switchDistortion(molSystem[i].flush, i);
 
-        if(molSystem[i].flush) {
-            audioMaster.switchDistortion(true, i);
-        } else {
-            float pressure = molSystem[i].getSystemPressure();
-            pressure = pressure * pressure * 0.65;
-            audioMaster.setReverbAmount(pressure, i);
+        // if(molSystem[i].flush) {
+        //     audioMaster.switchDistortion(true, i);
+        // } else {
+        //     float pressure = molSystem[i].getSystemPressure();
+        //     pressure = pressure * pressure * 0.65;
+        //     audioMaster.setReverbAmount(pressure, i);
             
-            audioMaster.switchDistortion(false, i);
-        }
+        //     audioMaster.switchDistortion(false, i);
+        // }
 
 
 
 
 
-        if(guiPtr->maskChanged) { setTVmask(); }
+        // if(guiPtr->maskChanged) { setTVmask(); }
 
 
 
@@ -266,8 +272,8 @@ void ofApp::draw(){
 
         #ifndef SHOW_ON_CRT
             // simulate upright orientation of the CRT screens when in window mode
-            ofTranslate(600, 0);
-            ofRotateDeg(90);
+            // ofTranslate(600, 0);
+            // ofRotateDeg(90);
         #endif
 
         // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
@@ -346,7 +352,7 @@ void ofApp::setTVmask() {
 
     }
 
-    guiPtr->maskChanged = false;
+    // guiPtr->maskChanged = false;
 }
 
 
@@ -354,21 +360,38 @@ void ofApp::setTVmask() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){  
     
-    if( key == OF_KEY_RETURN && guiPtr->switchKinectCalibration ){
-        int iScreen = floor(ofGetMouseX() / screenResolution.x);
+    // if( key == OF_KEY_RETURN && guiPtr->switchKinectCalibration ){
+    //     int iScreen = floor(ofGetMouseX() / screenResolution.x);
         
-        if (iScreen % 2 == 0) {
-            // kinectToPoints.calibrateKinect(iScreen);       
-        } else {
-            // kinectToPoints.calibrateLeap(iScreen);         
-        }
-    }
+    //     if (iScreen % 2 == 0) {
+    //         // kinectToPoints.calibrateKinect(iScreen);       
+    //     } else {
+    //         // kinectToPoints.calibrateLeap(iScreen);         
+    //     }
+    // }
     if( key == ' ' ) {
         ofToggleFullscreen();
     }
 
-    if( key == 'c' && guiPtr->switchKinectCalibration ){
-        // kinectToPoints.calibrateLeap();        
+    // if( key == 'c' && guiPtr->switchKinectCalibration ){
+    //     // kinectToPoints.calibrateLeap();        
+    // }
+    if (key == 'a') {
+        testBool = !testBool;
+        // vector <glm::vec2> intrusion;
+        // intrusion.assign(1, glm::vec2(0.0, 0.0) );
+
+        // // float scalingFactor = vessel[0].getWidth() / screenResolution.x;
+        // // intrusion[0].x = (0.5 - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;
+        // // intrusion[0].y = (- screenResolution.y * 0.5 ) * scalingFactor;
+
+        // // intrusion[0].x = 0.0;
+        // // intrusion[0].y = 0.0;       
+        
+        
+        // molSystem[0].setIntrusionPoints(intrusion);
+        if (testBool) ofLogNotice("intrusion point set to mouse position");
+        else ofLogNotice("intrusion point set to center");
     }
 
 
@@ -427,50 +450,50 @@ void ofApp::mousePressed(int x, int y, int button){
 void ofApp::mouseReleased(int x, int y, int button){
 
 
-    if(guiPtr->switchKinectCalibration) {
-        int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-        if (iScreen % 2 == 0) {
-            // kinectToPoints.calibrateKinect(iScreen);       
-        } else {
-            // kinectToPoints.calibrateLeap(iScreen);         
-        }
-        ofLogNotice("screenNumber: " + ofToString(iScreen));
-        ofLogNotice("mousePosX: " + ofToString(ofGetMouseX()));      
-    } else {
+    // if(guiPtr->switchKinectCalibration) {
+    //     int iScreen = floor(ofGetMouseX()/ screenResolution.x);
+    //     if (iScreen % 2 == 0) {
+    //         // kinectToPoints.calibrateKinect(iScreen);       
+    //     } else {
+    //         // kinectToPoints.calibrateLeap(iScreen);         
+    //     }
+    //     ofLogNotice("screenNumber: " + ofToString(iScreen));
+    //     ofLogNotice("mousePosX: " + ofToString(ofGetMouseX()));      
+    // } else {
 
-        // INTERACTION
-        // SPAWN A RANDOM ORGANISM ON MOUSE CLICK
-        // the same will happen if a person's finger will rest at one position for a longer time
+    //     // INTERACTION
+    //     // SPAWN A RANDOM ORGANISM ON MOUSE CLICK
+    //     // the same will happen if a person's finger will rest at one position for a longer time
 
-        #ifndef SHOW_ON_CRT 
+    //     #ifndef SHOW_ON_CRT 
 
-            int screenIdx = floor(x / screenResolution.x);
-            float scalingFactor = vessel[screenIdx].getWidth() / screenResolution.x;
-            float xScaled = (x - screenResolution.x * 0.5 ) * scalingFactor - vessel[screenIdx].getWidth() * screenIdx;     // vessel[i].getWidth()
-            float yScaled = (y - screenResolution.y * 0.5 ) * scalingFactor;
+    //         int screenIdx = floor(x / screenResolution.x);
+    //         float scalingFactor = vessel[screenIdx].getWidth() / screenResolution.x;
+    //         float xScaled = (x - screenResolution.x * 0.5 ) * scalingFactor - vessel[screenIdx].getWidth() * screenIdx;     // vessel[i].getWidth()
+    //         float yScaled = (y - screenResolution.y * 0.5 ) * scalingFactor;
 
-            int screenID = floor(ofGetMouseX()/ screenResolution.x);
+    //         int screenID = floor(ofGetMouseX()/ screenResolution.x);
 
-            // molSystem[screenID].addRandom(xScaled, yScaled);
-            molSystem[screenID].addControlledRandom(xScaled, yScaled);
-            // molSystem[screenID].addLiquid(xScaled, yScaled);
+    //         // molSystem[screenID].addRandom(xScaled, yScaled);
+    //         molSystem[screenID].addControlledRandom(xScaled, yScaled);
+    //         // molSystem[screenID].addLiquid(xScaled, yScaled);
 
-            // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
-            // float dice = ofRandom(1.);
+    //         // float probability[4] = {0.2, 0.4, 0.95, 1.0};   // the probability for the different organism types
+    //         // float dice = ofRandom(1.);
 
-            // if (dice < probability[0]) {
-            //     molSystem[screenIdx].addBreather(xScaled, yScaled);
-            // } else if (dice < probability[1]) {
-            //     molSystem[screenIdx].addPumper(xScaled, yScaled);
-            // } else if (dice < probability[2]) {
-            //     molSystem[screenIdx].addNeuron(xScaled, yScaled);
-            // } else {
-            //     molSystem[screenIdx].addIntestine(xScaled, yScaled);
-            // }
+    //         // if (dice < probability[0]) {
+    //         //     molSystem[screenIdx].addBreather(xScaled, yScaled);
+    //         // } else if (dice < probability[1]) {
+    //         //     molSystem[screenIdx].addPumper(xScaled, yScaled);
+    //         // } else if (dice < probability[2]) {
+    //         //     molSystem[screenIdx].addNeuron(xScaled, yScaled);
+    //         // } else {
+    //         //     molSystem[screenIdx].addIntestine(xScaled, yScaled);
+    //         // }
 
-        #endif
+    //     #endif
 
-    }
+    // }
 
     mouseDown = false;
     // ofLogNotice("mouse press released");

@@ -16,7 +16,7 @@ void GuiApp::setup(){
 
 
     setSimulationGUI();
-    setSynthGUI();
+    // setSynthGUI();
 	
     maskChanged = false;
     debugMode = false;
@@ -200,129 +200,129 @@ void GuiApp::setSimulationGUI() {
 
 //----------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------
-void GuiApp::setSynthGUI() {
+// void GuiApp::setSynthGUI() {
 
-    guiSynth.setup("SYNTH");
-    guiSynth.setPosition(300, 10);
-        guiSynth.add( mainPtr->audioMaster.gain.set("master gain", -12, -48, 12) ); 
-        // masterGain.enableSmoothing(50.f);
-        guiSynth.add( lowCutFreq.set("low cut frequency", 150, 20, 500) ); 
-        guiSynth.add( compThreshold.set("compressor threshold", -20, -36, 0) ); 
-        guiSynth.add( compKnee.set("compressor knee", 0.0, 0.0, 3.0) ); 
+//     guiSynth.setup("SYNTH");
+//     guiSynth.setPosition(300, 10);
+//         guiSynth.add( mainPtr->audioMaster.gain.set("master gain", -12, -48, 12) ); 
+//         // masterGain.enableSmoothing(50.f);
+//         guiSynth.add( lowCutFreq.set("low cut frequency", 150, 20, 500) ); 
+//         guiSynth.add( compThreshold.set("compressor threshold", -20, -36, 0) ); 
+//         guiSynth.add( compKnee.set("compressor knee", 0.0, 0.0, 3.0) ); 
         
 
 
-    // guiSumFx.setName("SUM FX");
+//     // guiSumFx.setName("SUM FX");
 
-    // guiSynth.add( guiSynthFX );
-    // guiSynth.getGroup("FX CHAIN").minimize();
+//     // guiSynth.add( guiSynthFX );
+//     // guiSynth.getGroup("FX CHAIN").minimize();
 
 
-    guiSynthFX.setName("FX CHAIN");
-        guiSynthFX.add(mainPtr->audioMaster.chorus.parameters);
-        guiSynthFX.add(mainPtr->audioMaster.delay.parameters);
-    guiSynth.add( guiSynthFX );
-    guiSynth.getGroup("FX CHAIN").minimize();
+//     guiSynthFX.setName("FX CHAIN");
+//         guiSynthFX.add(mainPtr->audioMaster.chorus.parameters);
+//         guiSynthFX.add(mainPtr->audioMaster.delay.parameters);
+//     guiSynth.add( guiSynthFX );
+//     guiSynth.getGroup("FX CHAIN").minimize();
     
 
 
-    guiSynthBrthrs.setName("BREATHERS");
-        guiSynthBrthrs.add(brthGain.set("gain", -12, -48, 24) );
-        guiSynthBrthrs.add(brthFineTune.set("fine tune Sine-Osc", 0.078125f, -0.5f, 0.5f) );
-        guiSynthBrthrs.add(brthOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-        guiSynthBrthrs.add(brthPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
-        guiSynthBrthrs.add(brthPwmAmt.set("PWM amount", 0.0729167f, 0.0f, 0.5f) );
-        guiSynthBrthrs.add(brthPwmSpeed.set("PWM speed (hz)", 0.3f, 0.005f, 1.5f));
-        guiSynthBrthrs.add(brthCutoff.set("Filter cutoff", 69, 20, 136));
-        guiSynthBrthrs.add(brthReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-        brthCutoff.enableSmoothing(100.0f);   
+//     guiSynthBrthrs.setName("BREATHERS");
+//         guiSynthBrthrs.add(brthGain.set("gain", -12, -48, 24) );
+//         guiSynthBrthrs.add(brthFineTune.set("fine tune Sine-Osc", 0.078125f, -0.5f, 0.5f) );
+//         guiSynthBrthrs.add(brthOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
+//         guiSynthBrthrs.add(brthPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
+//         guiSynthBrthrs.add(brthPwmAmt.set("PWM amount", 0.0729167f, 0.0f, 0.5f) );
+//         guiSynthBrthrs.add(brthPwmSpeed.set("PWM speed (hz)", 0.3f, 0.005f, 1.5f));
+//         guiSynthBrthrs.add(brthCutoff.set("Filter cutoff", 69, 20, 136));
+//         guiSynthBrthrs.add(brthReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
+//         brthCutoff.enableSmoothing(100.0f);   
 
-    guiSynth.add( guiSynthBrthrs );
-    guiSynth.getGroup("BREATHERS").setHeaderBackgroundColor(ofColor::fromHex(0x2bdbe6));
-    guiSynth.getGroup("BREATHERS").setBorderColor(ofColor::fromHex(0x2bdbe6));
-    guiSynth.getGroup("BREATHERS").minimize();
-
-
-
-    guiSynthPumpers.setName("PUMPERS");
-        guiSynthPumpers.add( pmprGainControl.set("gain", -12, -48, 24) );
-        guiSynthPumpers.add( pmprPitchControl.set("pitch", 36, 24, 132 ));
-        guiSynthPumpers.add( pmprPEnvAmtControl.set("pitch env", 48, 0, 72 ) );
-        guiSynthPumpers.add( pmprPEnvAttackControl.set("p env attack",  0, 0, 200 ) );
-        guiSynthPumpers.add( pmprPEnvReleaseControl.set("p env release", 50, 5, 500 ) );
-        guiSynthPumpers.add( pmprVeloToEnv.set( "p env dyn amt", 0.5f, 0.0f, 1.0f ) );
-        guiSynthPumpers.add( pmprFbControl.set( "feedback", 0.0f, 0.0f, 0.25f ) );
-        guiSynthPumpers.add( pmprFbModControl.set( "env to fb", 0.0f, 0.0f, 0.25f ) );
-        guiSynthPumpers.add( pmprEnvAttackControl.set("attack",  3, 0, 200 ) );
-        guiSynthPumpers.add( pmprEnvHoldControl.set( "hold",  40, 0, 300 ) );
-        guiSynthPumpers.add( pmprEnvReleaseControl.set("release", 20, 5, 600 ) );
-
-        guiSynthPumpersImpulse.setName("Control Params");
-            guiSynthPumpersImpulse.add( pmprImpulseEnvAttack.set("Impulse attack",  3, 0, 200 ) );
-            guiSynthPumpersImpulse.add( pmprImpulseEnvHold.set( "Impulsehold",  40, 0, 300 ) );
-            guiSynthPumpersImpulse.add( pmprImpulseEnvRelease.set("Impulse release", 20, 5, 600 ) );
-            guiSynthPumpersImpulse.add( pmprImpulseAmt.set("Impulse Amount", 0.15f, 0.0f, 0.3f) );
-        guiSynthPumpers.add( guiSynthPumpersImpulse );
-
-    guiSynth.add( guiSynthPumpers );
-    guiSynth.getGroup("PUMPERS").setHeaderBackgroundColor(ofColor::fromHex(0xf22571));
-    guiSynth.getGroup("PUMPERS").setBorderColor(ofColor::fromHex(0xf22571));
-    guiSynth.getGroup("PUMPERS").minimize();
+//     guiSynth.add( guiSynthBrthrs );
+//     guiSynth.getGroup("BREATHERS").setHeaderBackgroundColor(ofColor::fromHex(0x2bdbe6));
+//     guiSynth.getGroup("BREATHERS").setBorderColor(ofColor::fromHex(0x2bdbe6));
+//     guiSynth.getGroup("BREATHERS").minimize();
 
 
 
-    guiSynthNeurons.setName("NEURONS");
-        guiSynthNeurons.add(nronGain.set("gain", -24, -48, 24) );
-        guiSynthNeurons.add( nronEnvAttack.set("Amp attack",  0, 0, 30 ) );
-        guiSynthNeurons.add( nronEnvRelease.set("Amp release", 10, 5, 600 ) );
-        guiSynthNeurons.add(nronPitch.set("pitch", 60, 24, 132 ));
-        guiSynthNeurons.add(nronFineTune.set("fine tune 2nd osc", 0.078125f, -0.5f, 0.5f) );
-        guiSynthNeurons.add(nronOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-        guiSynthNeurons.add(nronCutoff.set("Filter cutoff", 69, 20, 136));
-        brthCutoff.enableSmoothing(100.0f);   
-        guiSynthNeurons.add(nronReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-        guiSynthNeurons.add(nronFilterModAmt.set("Filter Mod Amount", 75.f, 20.f, 150.f) );
-        guiSynthNeurons.add(nronFEnvAttack.set("filter attack",  3, 0, 200 ) );
-        guiSynthNeurons.add(nronFEnvHold.set( "filter hold",  40, 0, 300 ) );
-        guiSynthNeurons.add(nronSignalSpeed.set("Signal Speed", 50, 20, 100) );
+//     guiSynthPumpers.setName("PUMPERS");
+//         guiSynthPumpers.add( pmprGainControl.set("gain", -12, -48, 24) );
+//         guiSynthPumpers.add( pmprPitchControl.set("pitch", 36, 24, 132 ));
+//         guiSynthPumpers.add( pmprPEnvAmtControl.set("pitch env", 48, 0, 72 ) );
+//         guiSynthPumpers.add( pmprPEnvAttackControl.set("p env attack",  0, 0, 200 ) );
+//         guiSynthPumpers.add( pmprPEnvReleaseControl.set("p env release", 50, 5, 500 ) );
+//         guiSynthPumpers.add( pmprVeloToEnv.set( "p env dyn amt", 0.5f, 0.0f, 1.0f ) );
+//         guiSynthPumpers.add( pmprFbControl.set( "feedback", 0.0f, 0.0f, 0.25f ) );
+//         guiSynthPumpers.add( pmprFbModControl.set( "env to fb", 0.0f, 0.0f, 0.25f ) );
+//         guiSynthPumpers.add( pmprEnvAttackControl.set("attack",  3, 0, 200 ) );
+//         guiSynthPumpers.add( pmprEnvHoldControl.set( "hold",  40, 0, 300 ) );
+//         guiSynthPumpers.add( pmprEnvReleaseControl.set("release", 20, 5, 600 ) );
 
-    guiSynth.add( guiSynthNeurons );
-    guiSynth.getGroup("NEURONS").setHeaderBackgroundColor(ofColor::fromHex(0xfcfdbd));
-    guiSynth.getGroup("NEURONS").setBorderColor(ofColor::fromHex(0xfcfdbd));
-    guiSynth.getGroup("NEURONS").minimize();
+//         guiSynthPumpersImpulse.setName("Control Params");
+//             guiSynthPumpersImpulse.add( pmprImpulseEnvAttack.set("Impulse attack",  3, 0, 200 ) );
+//             guiSynthPumpersImpulse.add( pmprImpulseEnvHold.set( "Impulsehold",  40, 0, 300 ) );
+//             guiSynthPumpersImpulse.add( pmprImpulseEnvRelease.set("Impulse release", 20, 5, 600 ) );
+//             guiSynthPumpersImpulse.add( pmprImpulseAmt.set("Impulse Amount", 0.15f, 0.0f, 0.3f) );
+//         guiSynthPumpers.add( guiSynthPumpersImpulse );
+
+//     guiSynth.add( guiSynthPumpers );
+//     guiSynth.getGroup("PUMPERS").setHeaderBackgroundColor(ofColor::fromHex(0xf22571));
+//     guiSynth.getGroup("PUMPERS").setBorderColor(ofColor::fromHex(0xf22571));
+//     guiSynth.getGroup("PUMPERS").minimize();
 
 
-    guiSynthIntestines.setName("INTESTINES");
-        guiSynthIntestines.add(itstGain.set("gain", 6, -48, 24) );
-        guiSynthIntestines.add(itstPitch.set("pitch", 24, 12, 84 ));
-        guiSynthIntestines.add(itstFineTune.set("fine tune 2nd osc", 0.085f, -0.5f, 0.5f) );
-        guiSynthIntestines.add(itstOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-        guiSynthIntestines.add(itstLfoRate.set("LFO rate (hz)", 1.2f, 0.005f, 20.0f));    
-        guiSynthIntestines.add(itstPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
-        guiSynthIntestines.add(itstPwmAmt.set("PWM amount (LFO)", 0.4f, 0.0f, 0.5f) );
-        guiSynthIntestines.add(itstCutoff.set("Filter cutoff", 69, 20, 136));
-        itstCutoff.enableSmoothing(100.0f);   
-        guiSynthIntestines.add(itstReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-        guiSynthIntestines.add(itstFilterModAmt.set("Filter Mod amt (LFO)", 48, 0, 84) );
-        guiSynthIntestines.add(itstEnvAttack.set("Amp attack",  200, 0, 500 ) );
-        guiSynthIntestines.add(itstEnvDecay.set("Amp decay",  200, 0, 500 ) );
-        guiSynthIntestines.add(itstEnvSustain.set("Amp sustain",  0.5, 0., 1. ) );
-        guiSynthIntestines.add(itstEnvRelease.set("Amp release", 700, 0, 2000 ) );
+
+//     guiSynthNeurons.setName("NEURONS");
+//         guiSynthNeurons.add(nronGain.set("gain", -24, -48, 24) );
+//         guiSynthNeurons.add( nronEnvAttack.set("Amp attack",  0, 0, 30 ) );
+//         guiSynthNeurons.add( nronEnvRelease.set("Amp release", 10, 5, 600 ) );
+//         guiSynthNeurons.add(nronPitch.set("pitch", 60, 24, 132 ));
+//         guiSynthNeurons.add(nronFineTune.set("fine tune 2nd osc", 0.078125f, -0.5f, 0.5f) );
+//         guiSynthNeurons.add(nronOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
+//         guiSynthNeurons.add(nronCutoff.set("Filter cutoff", 69, 20, 136));
+//         brthCutoff.enableSmoothing(100.0f);   
+//         guiSynthNeurons.add(nronReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
+//         guiSynthNeurons.add(nronFilterModAmt.set("Filter Mod Amount", 75.f, 20.f, 150.f) );
+//         guiSynthNeurons.add(nronFEnvAttack.set("filter attack",  3, 0, 200 ) );
+//         guiSynthNeurons.add(nronFEnvHold.set( "filter hold",  40, 0, 300 ) );
+//         guiSynthNeurons.add(nronSignalSpeed.set("Signal Speed", 50, 20, 100) );
+
+//     guiSynth.add( guiSynthNeurons );
+//     guiSynth.getGroup("NEURONS").setHeaderBackgroundColor(ofColor::fromHex(0xfcfdbd));
+//     guiSynth.getGroup("NEURONS").setBorderColor(ofColor::fromHex(0xfcfdbd));
+//     guiSynth.getGroup("NEURONS").minimize();
+
+
+//     guiSynthIntestines.setName("INTESTINES");
+//         guiSynthIntestines.add(itstGain.set("gain", 6, -48, 24) );
+//         guiSynthIntestines.add(itstPitch.set("pitch", 24, 12, 84 ));
+//         guiSynthIntestines.add(itstFineTune.set("fine tune 2nd osc", 0.085f, -0.5f, 0.5f) );
+//         guiSynthIntestines.add(itstOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
+//         guiSynthIntestines.add(itstLfoRate.set("LFO rate (hz)", 1.2f, 0.005f, 20.0f));    
+//         guiSynthIntestines.add(itstPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
+//         guiSynthIntestines.add(itstPwmAmt.set("PWM amount (LFO)", 0.4f, 0.0f, 0.5f) );
+//         guiSynthIntestines.add(itstCutoff.set("Filter cutoff", 69, 20, 136));
+//         itstCutoff.enableSmoothing(100.0f);   
+//         guiSynthIntestines.add(itstReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
+//         guiSynthIntestines.add(itstFilterModAmt.set("Filter Mod amt (LFO)", 48, 0, 84) );
+//         guiSynthIntestines.add(itstEnvAttack.set("Amp attack",  200, 0, 500 ) );
+//         guiSynthIntestines.add(itstEnvDecay.set("Amp decay",  200, 0, 500 ) );
+//         guiSynthIntestines.add(itstEnvSustain.set("Amp sustain",  0.5, 0., 1. ) );
+//         guiSynthIntestines.add(itstEnvRelease.set("Amp release", 700, 0, 2000 ) );
  
-    guiSynth.add( guiSynthIntestines );
-    guiSynth.getGroup("INTESTINES").setHeaderBackgroundColor(ofColor::fromHex(0xe690a4));
-    guiSynth.getGroup("INTESTINES").setBorderColor(ofColor::fromHex(0xe690a4));
-    guiSynth.getGroup("INTESTINES").minimize();
+//     guiSynth.add( guiSynthIntestines );
+//     guiSynth.getGroup("INTESTINES").setHeaderBackgroundColor(ofColor::fromHex(0xe690a4));
+//     guiSynth.getGroup("INTESTINES").setBorderColor(ofColor::fromHex(0xe690a4));
+//     guiSynth.getGroup("INTESTINES").minimize();
 
 
 
 
 
-    // guiSynth.add(mainPtr->mixFader.set("Mix Reverb Dry/Wet", 0.0f, 0.0f, 1.0f));
-    // guiSynth.add(mainPtr->reverb.parameters);
-    // guiSynth.add(mainPtr->bitCrush.parameters);
+//     // guiSynth.add(mainPtr->mixFader.set("Mix Reverb Dry/Wet", 0.0f, 0.0f, 1.0f));
+//     // guiSynth.add(mainPtr->reverb.parameters);
+//     // guiSynth.add(mainPtr->bitCrush.parameters);
 
-}
+// }
 
 
 
@@ -347,7 +347,7 @@ void GuiApp::draw(){
     ofDrawBitmapString(infoTxt, 20, ofGetHeight()-50);
 
 	gui.draw();
-    guiSynth.draw();
+    // guiSynth.draw();
 
 
 }
@@ -361,11 +361,11 @@ void GuiApp::savePreset(int panel) {
             gui.saveToFile(saveFileResult.filePath);
         }
     } else if(panel == 2) {
-        ofFileDialogResult saveFileResult = ofSystemSaveDialog(ofGetTimestampString() + "." + ofToLower("xml"), "Save SYNTH parameters");
-        if (saveFileResult.bSuccess){
-            // mainPtr->synth.gui.saveToFile(saveFileResult.filePath);
-            guiSynth.saveToFile(saveFileResult.filePath);
-        }
+        // ofFileDialogResult saveFileResult = ofSystemSaveDialog(ofGetTimestampString() + "." + ofToLower("xml"), "Save SYNTH parameters");
+        // if (saveFileResult.bSuccess){
+        //     // mainPtr->synth.gui.saveToFile(saveFileResult.filePath);
+        //     guiSynth.saveToFile(saveFileResult.filePath);
+        // }
     }
 }
 
@@ -383,7 +383,7 @@ void GuiApp::loadPreset(string filePath, int panel)
             gui.loadFromFile(filePath);
         } else if (fileExtension == "XML" && panel == 2) {
             // mainPtr->synth.gui.loadFromFile(filePath);
-            guiSynth.loadFromFile(filePath);
+            // guiSynth.loadFromFile(filePath);
         }
     } else {
         ofLogError("The file " + filePath + " is missing");

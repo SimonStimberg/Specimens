@@ -3,8 +3,8 @@
 #include "Molecule.h"
 #include "Spring.h"
 #include "organisms.h"
-#include "ofxPDSP.h"
-#include "../synth/audioMaster.h"
+// #include "ofxPDSP.h"
+// #include "../synth/audioMaster.h"
 
 
 
@@ -25,7 +25,7 @@ class molecularSystem{
 
 		molecularSystem();
         void setup(int width, int height, int species);
-        void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
+        // void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
         void draw();
 
@@ -104,7 +104,7 @@ class molecularSystem{
         // audio master bus containing the stems for each organism type
         // pdsp::ParameterAmp      masterBus;
         // pdsp::ParameterAmp      blackhole;
-        audioModule::SubMaster * audioLink;
+        // audioModule::SubMaster * audioLink;
 
 
         // gui parameters for the canvas shape
