@@ -1,443 +1,376 @@
-/*
- * GuiApp.cpp
- *
- *  Created on: Oct 28, 2014
- *      Author: arturo
- */
-
 #include "GuiApp.h"
+
 #include "ofApp.h"
+#include "ofxXmlSettings.h"
 
+// #include <algorithm>
+#include <array>
+#include <sstream>
 
-void GuiApp::setup(){
+namespace {
 
-    ofBackground(0);
-	ofSetVerticalSync(false);
+std::string trim(const std::string& value) {
+    const auto first = value.find_first_not_of(" \t\n\r");
+    if (first == std::string::npos) return "";
+    const auto last = value.find_last_not_of(" \t\n\r");
+    return value.substr(first, last - first + 1);
+}
 
+std::vector<std::string> splitAndTrim(const std::string& value) {
+    std::vector<std::string> parts;
+    std::stringstream stream(value);
+    std::string token;
+    while (std::getline(stream, token, ',')) {
+        parts.push_back(trim(token));
+    }
+    return parts;
+}
 
-    setSimulationGUI();
-    // setSynthGUI();
-	
-    maskChanged = false;
-    debugMode = false;
+} // namespace
 
+void GuiApp::setup(ofApp* app) {
+    mainPtr = app;
+    applyDefaults();
 
-
-
-    // LOAD DEFAULT SIMULATION PRESETS
-    // string defaultSimulationPreset = "../../../../Presets/Simulation/lab30_01.xml";   
-    string defaultSimulationPreset = "../../../../Presets/Simulation/friesTV-physics_01.xml"; 
-    // string defaultSimulationPreset = "../../../../Presets/Simulation/KinectInteraction01.xml"; 
+    const std::string defaultSimulationPreset = resolveFirstExistingPath({
+        "../../../../Presets/Simulation/friesTV-physics_01.xml",
+        "../../../../Presets/Simulation/lab30_01.xml",
+        "bin/data/Presets/Simulation/SimulationPreset.xml",
+        ofToDataPath("Presets/Simulation/SimulationPreset.xml", true)
+    });
     loadPreset(defaultSimulationPreset, 1);
 
-
-
-    // LOAD DEFAULT TUBE CALIBRATION PRESETS
-    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/24-09-18_PaceFestival.xml";
-    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_lab30_01.xml";
-    // string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/4screens_Laptop03d.xml";
-    string defaultTubeCalibration = "../../../../Presets/TubeCalibrations/TinyScreen01.xml";
+    const std::string defaultTubeCalibration = resolveFirstExistingPath({
+        "../../../../Presets/TubeCalibrations/TinyScreen01.xml",
+        "../../../../Presets/TubeCalibrations/24-09-18_PaceFestival.xml",
+        "bin/data/Presets/TubeCalibrations/PhilipsCRT.xml",
+        ofToDataPath("Presets/TubeCalibrations/PhilipsCRT.xml", true)
+    });
     loadPreset(defaultTubeCalibration, 1);
 
-
-    // LOAD DEFAULT SYNTH PRESETS FOR EACH ORGANISM TYPE
-    string defaultSynthPreset = "../../../../Presets/Synth/BreathingNew02.xml";
-    loadPreset(defaultSynthPreset, 2);
-        // defaultSynthPreset = "../../../../Presets/Synth/PressurePumpers01.xml";
-        defaultSynthPreset = "../../../../Presets/Synth/Pumpers11.xml";
-    loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/NeuronsUnderWater01.xml";
-    loadPreset(defaultSynthPreset, 2);
-        defaultSynthPreset = "../../../../Presets/Synth/Intestines07.xml";
-    loadPreset(defaultSynthPreset, 2);
-
-    string defaultFxPreset = "../../../../Presets/Synth/PostFX05.xml";    
-    loadPreset(defaultFxPreset, 2);
-
-
+    publishValues();
 }
 
-
-
-
-//----------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------
-void GuiApp::setSimulationGUI() {
-
-
-    gui.setup();
-    gui.setPosition(10, 10);
-    gui.setSize(280, 280);
-
-
-    guiTune.setName("Tune Forces");
-    guiTune.add(tuneFriction.set("Friction", 0.97, 0.9, 0.98));
-    
-    guiTune.add(tuneRepulsionThresh.set("Repulsion Radius", 18.0, 1., 70.));
-    guiTune.add(tuneRepulsionForce.set("Tune Repulsion Force", 0, -10, 10));
-
-    guiTune.add(tuneFlatThresh.set("Flattening min Thresh", 7.0, 1., 30.));
-    guiTune.add(tuneFlatDistance.set("Flattening Distance", 20.0, 1., 30.));
-    guiTune.add(tuneFlatLimitForce.set("Tune Flattening Force Limit", -3., -10, 10));
-
-    guiTune.add(tuneSpringLength.set("Spring Length", 22.0, 1., 30.));
-    guiTune.add(tuneSpringElasticity.set("Tune Spring Elasticity", -5., -10, 10));
-    guiTune.add(tuneSpringLimitForce.set("Tune Spring Force limit", 0, -10, 10));
-
-    guiTune.add(switchOscillation.set("Switch breathing", false));
-    guiTune.add(tuneExpansionForce.set("Tune Expansion Force", 0.0, -10., 10.));
-    guiTune.add(tuneExpansionRadius.set("Tune Expansion Radius Factor", 3.0, 1., 5.));
-    guiTune.add(tuneOscillationAmount.set("Tune Oscillation Amount", 0.1, 0., 0.2));
-
-    guiTune.add(tuneIntrusionThresh.set("Interaction Repul Radius", 62.0, 10., 100.));
-    guiTune.add(tuneIntrusionForce.set("Interaction Repul Force", -1.0, -5, 5));
-
-    guiTune.add(switchConnections.set("Switch connections", false));
-
-    guiTune.add(tunePressureTest.set("Pressure Test", 1.0, -5.0, 4.0));
-    
-
-    gui.add(guiTune);
-    gui.getGroup("Tune Forces").minimize();
-
-
-
-    guiBreather.setName("Tune Breather Shape");
-    guiBreather.add(tuneBreatherExpansionForce.set("Tune Expansion Force", 0.0, -10., 10.));
-    guiBreather.add(tuneBreatherExpansionRadius.set("Tune Expansion Radius Factor", 25.0, 1., 80.));
-    guiBreather.add(tuneJointLength.set("Joint Length", 22.0, 1., 30.));
-    guiBreather.add(tuneJointElasticity.set("Joint Elasticity", -5., -10, 10));
-    guiBreather.add(tuneJointLimitForce.set("Joint Force limit", 0, -10, 10));
-    gui.add(guiBreather);
-    gui.getGroup("Tune Breather Shape").minimize();
-
-
-    guiIntestine.setName("Tune Intestine Shape");
-    guiIntestine.add(tuneMembraneLength.set("Membrane Length", 22.0, 1., 30.));
-    guiIntestine.add(tuneMembraneElasticity.set("Membrane Elasticity", -5., -10, 10));
-    guiIntestine.add(tuneMembraneLimitForce.set("Membrane Force limit", 0, -10, 10));
-    guiIntestine.add(tuneStructureLength.set("Structure Length", 22.0, 1., 30.));
-    guiIntestine.add(tuneStructureElasticity.set("Structure Elasticity", -5., -10, 10));
-    guiIntestine.add(tuneStructureLimitForce.set("Structure Force limit", 0, -10, 10));
-    guiIntestine.add(membraneColor.set("Membrane Color", ofColor(40, 40, 130), ofColor(0, 0), 255));
-    gui.add(guiIntestine);
-    gui.getGroup("Tune Intestine Shape").minimize();
-
-    guiNeuron.setName("Tune Neuron Shape");
-    guiNeuron.add(tuneDendriteLength.set("Dendrite Length", 22.0, 1., 30.));
-    guiNeuron.add(tuneDendriteElasticity.set("Dendrite Elasticity", -5., -10, 10));
-    guiNeuron.add(tuneDendriteLimitForce.set("Dendrite Force limit", 0, -10, 10));
-    gui.add(guiNeuron);
-    // gui.getGroup("Tune Neuron Shape").minimize();
-
-
-
-    for (int i = 0; i < mainPtr->numScreens; i++) {
-        mainPtr->molSystem[i].gui.setName("Shape Tube " + ofToString(i));
-        guiCanvas.add(mainPtr->molSystem[i].gui);
-
-        mainPtr->molSystem[i].tuneCanvasWidth.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneCanvasHeight.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneVerticalBow.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneHorizontalBow.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneEdges.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneXpos.addListener(this, &GuiApp::maskListener);
-        mainPtr->molSystem[i].tuneYpos.addListener(this, &GuiApp::maskListener);
-
+bool GuiApp::loadPreset(const std::string& filePath, int panel) {
+    if (filePath.empty()) {
+        ofLogWarning("GuiApp") << "Skipping empty preset path";
+        return false;
     }
 
-    guiCanvas.setName("Tune Canvas");
-    gui.add(guiCanvas);
-    gui.getGroup("Tune Canvas").minimize();
-
-
-    guiGeneral.setName("General Settings");
-    guiGeneral.add(switchKinectCalibration.set("Kinect Calibration Mode", false));
-    guiGeneral.add(switchScreenMask.set("Screen Mask Calibration Mode", false));
-    gui.add(guiGeneral);
-    gui.getGroup("General Settings").minimize();
-
-
-    guiTimings.setName("Timings");
-    
-    guiTimingsCells.setName("Breathers");
-    guiTimingsCells.add(cellNextGrowth.set("Cell Next Growth", glm::vec2(100, 0.5), glm::vec2(100, 0.), glm::vec2(3000, 1.)));
-    guiTimingsCells.add(cellFreqMultiplier.set("Cell Freq Multiplier", 1.0, 1.0, 2.0));
-    guiTimings.add(guiTimingsCells);
-
-    guiTimingsPumpers.setName("Pumpers");
-    guiTimingsPumpers.add(pumperSyncDistance.set("Pumper Sync Distance", 100, 10, 1000));
-    guiTimings.add(guiTimingsPumpers);
-    
-    guiTimingsNeurons.setName("Neurons");
-    // guiTimingsNeurons.setFillColor(ofColor::yellowGreen);
-    guiTimingsNeurons.add(neuronGrowSpeed.set("Neuron Grow Speed", 500, 100, 3000));
-    guiTimingsNeurons.add(neuronSignalInterval.set("Neuron Signal Inteval", 2000, 100, 3000));
-    guiTimingsNeurons.add(neuronSyncDistance.set("Neuron Sync Distance", 100, 10, 1000));
-    guiTimings.add(guiTimingsNeurons);
-    
-    guiTimingsIntestines.setName("Intestines");
-    guiTimingsIntestines.add(intestineGrowInterval.set("Intestine Grow Interval", 700, 100, 3000.));
-    guiTimingsIntestines.add(intestineDigestionInterval.set("Intestine Digestion Interval", 4000, 1000, 7000));
-    guiTimingsIntestines.add(intestineDigestionSpeed.set("Intestine Digestion Speed", 300, 100, 1000)); 
-    guiTimingsIntestines.add(intestineSyncDistance.set("Intestine Sync Distance", 150, 10, 1000));
-    guiTimings.add(guiTimingsIntestines);
-
-    gui.add(guiTimings);
-    gui.getGroup("Timings").minimize();
-
-    gui.getGroup("Timings").getGroup("Cells").setHeaderBackgroundColor(ofColor::fromHex(0x2bdbe6));
-    gui.getGroup("Timings").getGroup("Cells").setBorderColor(ofColor::fromHex(0x2bdbe6));
-    gui.getGroup("Timings").getGroup("Neurons").setHeaderBackgroundColor(ofColor::fromHex(0xfcfdbd));
-    gui.getGroup("Timings").getGroup("Neurons").setBorderColor(ofColor::fromHex(0xfcfdbd));
-    gui.getGroup("Timings").getGroup("Intestines").setHeaderBackgroundColor(ofColor::fromHex(0xe690a4));
-    gui.getGroup("Timings").getGroup("Intestines").setBorderColor(ofColor::fromHex(0xe690a4));
-
-}
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------
-// void GuiApp::setSynthGUI() {
-
-//     guiSynth.setup("SYNTH");
-//     guiSynth.setPosition(300, 10);
-//         guiSynth.add( mainPtr->audioMaster.gain.set("master gain", -12, -48, 12) ); 
-//         // masterGain.enableSmoothing(50.f);
-//         guiSynth.add( lowCutFreq.set("low cut frequency", 150, 20, 500) ); 
-//         guiSynth.add( compThreshold.set("compressor threshold", -20, -36, 0) ); 
-//         guiSynth.add( compKnee.set("compressor knee", 0.0, 0.0, 3.0) ); 
-        
-
-
-//     // guiSumFx.setName("SUM FX");
-
-//     // guiSynth.add( guiSynthFX );
-//     // guiSynth.getGroup("FX CHAIN").minimize();
-
-
-//     guiSynthFX.setName("FX CHAIN");
-//         guiSynthFX.add(mainPtr->audioMaster.chorus.parameters);
-//         guiSynthFX.add(mainPtr->audioMaster.delay.parameters);
-//     guiSynth.add( guiSynthFX );
-//     guiSynth.getGroup("FX CHAIN").minimize();
-    
-
-
-//     guiSynthBrthrs.setName("BREATHERS");
-//         guiSynthBrthrs.add(brthGain.set("gain", -12, -48, 24) );
-//         guiSynthBrthrs.add(brthFineTune.set("fine tune Sine-Osc", 0.078125f, -0.5f, 0.5f) );
-//         guiSynthBrthrs.add(brthOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-//         guiSynthBrthrs.add(brthPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
-//         guiSynthBrthrs.add(brthPwmAmt.set("PWM amount", 0.0729167f, 0.0f, 0.5f) );
-//         guiSynthBrthrs.add(brthPwmSpeed.set("PWM speed (hz)", 0.3f, 0.005f, 1.5f));
-//         guiSynthBrthrs.add(brthCutoff.set("Filter cutoff", 69, 20, 136));
-//         guiSynthBrthrs.add(brthReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-//         brthCutoff.enableSmoothing(100.0f);   
-
-//     guiSynth.add( guiSynthBrthrs );
-//     guiSynth.getGroup("BREATHERS").setHeaderBackgroundColor(ofColor::fromHex(0x2bdbe6));
-//     guiSynth.getGroup("BREATHERS").setBorderColor(ofColor::fromHex(0x2bdbe6));
-//     guiSynth.getGroup("BREATHERS").minimize();
-
-
-
-//     guiSynthPumpers.setName("PUMPERS");
-//         guiSynthPumpers.add( pmprGainControl.set("gain", -12, -48, 24) );
-//         guiSynthPumpers.add( pmprPitchControl.set("pitch", 36, 24, 132 ));
-//         guiSynthPumpers.add( pmprPEnvAmtControl.set("pitch env", 48, 0, 72 ) );
-//         guiSynthPumpers.add( pmprPEnvAttackControl.set("p env attack",  0, 0, 200 ) );
-//         guiSynthPumpers.add( pmprPEnvReleaseControl.set("p env release", 50, 5, 500 ) );
-//         guiSynthPumpers.add( pmprVeloToEnv.set( "p env dyn amt", 0.5f, 0.0f, 1.0f ) );
-//         guiSynthPumpers.add( pmprFbControl.set( "feedback", 0.0f, 0.0f, 0.25f ) );
-//         guiSynthPumpers.add( pmprFbModControl.set( "env to fb", 0.0f, 0.0f, 0.25f ) );
-//         guiSynthPumpers.add( pmprEnvAttackControl.set("attack",  3, 0, 200 ) );
-//         guiSynthPumpers.add( pmprEnvHoldControl.set( "hold",  40, 0, 300 ) );
-//         guiSynthPumpers.add( pmprEnvReleaseControl.set("release", 20, 5, 600 ) );
-
-//         guiSynthPumpersImpulse.setName("Control Params");
-//             guiSynthPumpersImpulse.add( pmprImpulseEnvAttack.set("Impulse attack",  3, 0, 200 ) );
-//             guiSynthPumpersImpulse.add( pmprImpulseEnvHold.set( "Impulsehold",  40, 0, 300 ) );
-//             guiSynthPumpersImpulse.add( pmprImpulseEnvRelease.set("Impulse release", 20, 5, 600 ) );
-//             guiSynthPumpersImpulse.add( pmprImpulseAmt.set("Impulse Amount", 0.15f, 0.0f, 0.3f) );
-//         guiSynthPumpers.add( guiSynthPumpersImpulse );
-
-//     guiSynth.add( guiSynthPumpers );
-//     guiSynth.getGroup("PUMPERS").setHeaderBackgroundColor(ofColor::fromHex(0xf22571));
-//     guiSynth.getGroup("PUMPERS").setBorderColor(ofColor::fromHex(0xf22571));
-//     guiSynth.getGroup("PUMPERS").minimize();
-
-
-
-//     guiSynthNeurons.setName("NEURONS");
-//         guiSynthNeurons.add(nronGain.set("gain", -24, -48, 24) );
-//         guiSynthNeurons.add( nronEnvAttack.set("Amp attack",  0, 0, 30 ) );
-//         guiSynthNeurons.add( nronEnvRelease.set("Amp release", 10, 5, 600 ) );
-//         guiSynthNeurons.add(nronPitch.set("pitch", 60, 24, 132 ));
-//         guiSynthNeurons.add(nronFineTune.set("fine tune 2nd osc", 0.078125f, -0.5f, 0.5f) );
-//         guiSynthNeurons.add(nronOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-//         guiSynthNeurons.add(nronCutoff.set("Filter cutoff", 69, 20, 136));
-//         brthCutoff.enableSmoothing(100.0f);   
-//         guiSynthNeurons.add(nronReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-//         guiSynthNeurons.add(nronFilterModAmt.set("Filter Mod Amount", 75.f, 20.f, 150.f) );
-//         guiSynthNeurons.add(nronFEnvAttack.set("filter attack",  3, 0, 200 ) );
-//         guiSynthNeurons.add(nronFEnvHold.set( "filter hold",  40, 0, 300 ) );
-//         guiSynthNeurons.add(nronSignalSpeed.set("Signal Speed", 50, 20, 100) );
-
-//     guiSynth.add( guiSynthNeurons );
-//     guiSynth.getGroup("NEURONS").setHeaderBackgroundColor(ofColor::fromHex(0xfcfdbd));
-//     guiSynth.getGroup("NEURONS").setBorderColor(ofColor::fromHex(0xfcfdbd));
-//     guiSynth.getGroup("NEURONS").minimize();
-
-
-//     guiSynthIntestines.setName("INTESTINES");
-//         guiSynthIntestines.add(itstGain.set("gain", 6, -48, 24) );
-//         guiSynthIntestines.add(itstPitch.set("pitch", 24, 12, 84 ));
-//         guiSynthIntestines.add(itstFineTune.set("fine tune 2nd osc", 0.085f, -0.5f, 0.5f) );
-//         guiSynthIntestines.add(itstOscMix.set("Oscillator Mix", 0.5f, 0.0f, 1.0f) );
-//         guiSynthIntestines.add(itstLfoRate.set("LFO rate (hz)", 1.2f, 0.005f, 20.0f));    
-//         guiSynthIntestines.add(itstPw.set("Pulse Width", 0.5f, 0.0f, 1.0f) );
-//         guiSynthIntestines.add(itstPwmAmt.set("PWM amount (LFO)", 0.4f, 0.0f, 0.5f) );
-//         guiSynthIntestines.add(itstCutoff.set("Filter cutoff", 69, 20, 136));
-//         itstCutoff.enableSmoothing(100.0f);   
-//         guiSynthIntestines.add(itstReso.set("Filter resonance", 0.352041f, 0.0f, 1.0f) );
-//         guiSynthIntestines.add(itstFilterModAmt.set("Filter Mod amt (LFO)", 48, 0, 84) );
-//         guiSynthIntestines.add(itstEnvAttack.set("Amp attack",  200, 0, 500 ) );
-//         guiSynthIntestines.add(itstEnvDecay.set("Amp decay",  200, 0, 500 ) );
-//         guiSynthIntestines.add(itstEnvSustain.set("Amp sustain",  0.5, 0., 1. ) );
-//         guiSynthIntestines.add(itstEnvRelease.set("Amp release", 700, 0, 2000 ) );
- 
-//     guiSynth.add( guiSynthIntestines );
-//     guiSynth.getGroup("INTESTINES").setHeaderBackgroundColor(ofColor::fromHex(0xe690a4));
-//     guiSynth.getGroup("INTESTINES").setBorderColor(ofColor::fromHex(0xe690a4));
-//     guiSynth.getGroup("INTESTINES").minimize();
-
-
-
-
-
-//     // guiSynth.add(mainPtr->mixFader.set("Mix Reverb Dry/Wet", 0.0f, 0.0f, 1.0f));
-//     // guiSynth.add(mainPtr->reverb.parameters);
-//     // guiSynth.add(mainPtr->bitCrush.parameters);
-
-// }
-
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------
-void GuiApp::update(){
-
-}
-
-void GuiApp::draw(){
-
-    ofSetWindowTitle(ofToString(ofGetFrameRate()));
-
-    int numMolecules = 0;
-    for (int i = 0; i < mainPtr->numScreens; i++) {
-        numMolecules += mainPtr->molSystem[i].allMolecules.size();
+    ofFile presetFile(filePath);
+    if (!presetFile.exists()) {
+        ofLogWarning("GuiApp") << "Preset file not found: " << filePath;
+        return false;
     }
 
-    string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules);
-    ofDrawBitmapString(infoTxt, 20, ofGetHeight()-50);
+    const std::string extension = ofToUpper(presetFile.getExtension());
+    if (extension != "XML") {
+        ofLogWarning("GuiApp") << "Unsupported preset extension: " << filePath;
+        return false;
+    }
 
-	gui.draw();
-    // guiSynth.draw();
+    bool loaded = false;
+    if (panel == 1) {
+        loaded = loadSimulationPreset(filePath);
+        loaded = loadTubeCalibrationPreset(filePath) || loaded;
+    } else if (panel == 2) {
+        ofLogNotice("GuiApp") << "Synth preset loading is currently disabled: " << filePath;
+    }
 
+    if (loaded) {
+        publishValues();
+    }
 
+    return loaded;
 }
 
-//--------------------------------------------------------------
-void GuiApp::savePreset(int panel) {
-    
-    if(panel == 1) {
-        ofFileDialogResult saveFileResult = ofSystemSaveDialog(ofGetTimestampString() + "." + ofToLower("xml"), "Save SIMULATION parameters");
-        if (saveFileResult.bSuccess){
-            gui.saveToFile(saveFileResult.filePath);
+void GuiApp::applyDefaults() {
+    tuneFriction = 0.97f;
+    tuneRepulsionThresh = 18.0f;
+    tuneRepulsionForce = 0.0f;
+    tuneFlatThresh = 7.0f;
+    tuneFlatDistance = 20.0f;
+    tuneFlatLimitForce = -3.0f;
+    tuneSpringLength = 22.0f;
+    tuneSpringElasticity = -5.0f;
+    tuneSpringLimitForce = 0.0f;
+    switchOscillation = false;
+    tuneExpansionForce = 0.0f;
+    tuneExpansionRadius = 3.0f;
+    tuneOscillationAmount = 0.1f;
+    tuneIntrusionThresh = 62.0f;
+    tuneIntrusionForce = -1.0f;
+    switchConnections = false;
+    switchKinectCalibration = false;
+    switchScreenMask = false;
+    tunePressureTest = 1.0f;
+
+    tuneBreatherExpansionForce = 0.0f;
+    tuneBreatherExpansionRadius = 25.0f;
+    tuneBreatherOscillationAmount = 0.1f;
+    tuneJointLength = 22.0f;
+    tuneJointElasticity = -5.0f;
+    tuneJointLimitForce = 0.0f;
+
+    tuneMembraneLength = 22.0f;
+    tuneMembraneElasticity = -5.0f;
+    tuneMembraneLimitForce = 0.0f;
+    tuneStructureLength = 22.0f;
+    tuneStructureElasticity = -5.0f;
+    tuneStructureLimitForce = 0.0f;
+    membraneColor = ofColor(40, 40, 130, 255);
+
+    tuneDendriteLength = 22.0f;
+    tuneDendriteElasticity = -5.0f;
+    tuneDendriteLimitForce = 0.0f;
+
+    cellNextGrowth = glm::vec2(100.0f, 0.5f);
+    cellFreqMultiplier = 1.0f;
+
+    pumperSyncDistance = 100;
+
+    neuronGrowSpeed = 500;
+    neuronSignalInterval = 2000;
+    neuronSyncDistance = 100;
+
+    intestineGrowInterval = 700;
+    intestineDigestionInterval = 4000;
+    intestineDigestionSpeed = 300;
+    intestineSyncDistance = 150;
+
+    maskChanged = false;
+    debugMode = false;
+}
+
+void GuiApp::publishValues() {
+    values.clear();
+
+    values["tuneFriction"] = tuneFriction;
+    values["tuneRepulsionThresh"] = tuneRepulsionThresh;
+    values["tuneRepulsionForce"] = tuneRepulsionForce;
+    values["tuneFlatThresh"] = tuneFlatThresh;
+    values["tuneFlatDistance"] = tuneFlatDistance;
+    values["tuneFlatLimitForce"] = tuneFlatLimitForce;
+    values["tuneSpringLength"] = tuneSpringLength;
+    values["tuneSpringElasticity"] = tuneSpringElasticity;
+    values["tuneSpringLimitForce"] = tuneSpringLimitForce;
+    values["switchOscillation"] = switchOscillation;
+    values["tuneExpansionForce"] = tuneExpansionForce;
+    values["tuneExpansionRadius"] = tuneExpansionRadius;
+    values["tuneOscillationAmount"] = tuneOscillationAmount;
+    values["tuneIntrusionThresh"] = tuneIntrusionThresh;
+    values["tuneIntrusionForce"] = tuneIntrusionForce;
+    values["switchConnections"] = switchConnections;
+    values["switchKinectCalibration"] = switchKinectCalibration;
+    values["switchScreenMask"] = switchScreenMask;
+    values["tunePressureTest"] = tunePressureTest;
+
+    values["tuneBreatherExpansionForce"] = tuneBreatherExpansionForce;
+    values["tuneBreatherExpansionRadius"] = tuneBreatherExpansionRadius;
+    values["tuneBreatherOscillationAmount"] = tuneBreatherOscillationAmount;
+    values["tuneJointLength"] = tuneJointLength;
+    values["tuneJointElasticity"] = tuneJointElasticity;
+    values["tuneJointLimitForce"] = tuneJointLimitForce;
+
+    values["tuneMembraneLength"] = tuneMembraneLength;
+    values["tuneMembraneElasticity"] = tuneMembraneElasticity;
+    values["tuneMembraneLimitForce"] = tuneMembraneLimitForce;
+    values["tuneStructureLength"] = tuneStructureLength;
+    values["tuneStructureElasticity"] = tuneStructureElasticity;
+    values["tuneStructureLimitForce"] = tuneStructureLimitForce;
+    values["membraneColor"] = membraneColor;
+
+    values["tuneDendriteLength"] = tuneDendriteLength;
+    values["tuneDendriteElasticity"] = tuneDendriteElasticity;
+    values["tuneDendriteLimitForce"] = tuneDendriteLimitForce;
+
+    values["cellNextGrowth"] = cellNextGrowth;
+    values["cellFreqMultiplier"] = cellFreqMultiplier;
+
+    values["pumperSyncDistance"] = pumperSyncDistance;
+
+    values["neuronGrowSpeed"] = neuronGrowSpeed;
+    values["neuronSignalInterval"] = neuronSignalInterval;
+    values["neuronSyncDistance"] = neuronSyncDistance;
+
+    values["intestineGrowInterval"] = intestineGrowInterval;
+    values["intestineDigestionInterval"] = intestineDigestionInterval;
+    values["intestineDigestionSpeed"] = intestineDigestionSpeed;
+    values["intestineSyncDistance"] = intestineSyncDistance;
+
+    values["maskChanged"] = maskChanged;
+    values["debugMode"] = debugMode;
+}
+
+bool GuiApp::loadSimulationPreset(const std::string& filePath) {
+    ofxXmlSettings xml;
+    if (!xml.load(filePath)) {
+        return false;
+    }
+
+    auto getFloat = [&xml](const std::string& tag, float currentValue) {
+        return xml.tagExists(tag) ? xml.getValue(tag, currentValue) : currentValue;
+    };
+
+    auto getInt = [&xml](const std::string& tag, int currentValue) {
+        return xml.tagExists(tag) ? xml.getValue(tag, currentValue) : currentValue;
+    };
+
+    auto getBool = [&xml](const std::string& tag, bool currentValue) {
+        if (!xml.tagExists(tag)) return currentValue;
+        return parseBool(xml.getValue(tag, std::string(currentValue ? "1" : "0")), currentValue);
+    };
+
+    auto getVec2 = [&xml](const std::string& tag, const glm::vec2& currentValue) {
+        if (!xml.tagExists(tag)) return currentValue;
+        return parseVec2(xml.getValue(tag, std::string("")), currentValue);
+    };
+
+    auto getColor = [&xml](const std::string& tag, const ofColor& currentValue) {
+        if (!xml.tagExists(tag)) return currentValue;
+        return parseColor(xml.getValue(tag, std::string("")), currentValue);
+    };
+
+    tuneFriction = getFloat("group:Tune_Forces:Friction", tuneFriction);
+    tuneRepulsionThresh = getFloat("group:Tune_Forces:Repulsion_Radius", tuneRepulsionThresh);
+    tuneRepulsionForce = getFloat("group:Tune_Forces:Tune_Repulsion_Force", tuneRepulsionForce);
+    tuneFlatThresh = getFloat("group:Tune_Forces:Flattening_min_Thresh", tuneFlatThresh);
+    tuneFlatDistance = getFloat("group:Tune_Forces:Flattening_Distance", tuneFlatDistance);
+    tuneFlatLimitForce = getFloat("group:Tune_Forces:Tune_Flattening_Force_Limit", tuneFlatLimitForce);
+    tuneSpringLength = getFloat("group:Tune_Forces:Spring_Length", tuneSpringLength);
+    tuneSpringElasticity = getFloat("group:Tune_Forces:Tune_Spring_Elasticity", tuneSpringElasticity);
+    tuneSpringLimitForce = getFloat("group:Tune_Forces:Tune_Spring_Force_limit", tuneSpringLimitForce);
+    switchOscillation = getBool("group:Tune_Forces:Switch_breathing", switchOscillation);
+    tuneExpansionForce = getFloat("group:Tune_Forces:Tune_Expansion_Force", tuneExpansionForce);
+    tuneExpansionRadius = getFloat("group:Tune_Forces:Tune_Expansion_Radius_Factor", tuneExpansionRadius);
+    tuneOscillationAmount = getFloat("group:Tune_Forces:Tune_Oscillation_Amount", tuneOscillationAmount);
+    tuneIntrusionThresh = getFloat("group:Tune_Forces:Interaction_Repul_Radius", tuneIntrusionThresh);
+    tuneIntrusionForce = getFloat("group:Tune_Forces:Interaction_Repul_Force", tuneIntrusionForce);
+    switchConnections = getBool("group:Tune_Forces:Switch_connections", switchConnections);
+
+    tuneBreatherExpansionForce = getFloat("group:Tune_Breather_Shape:Tune_Expansion_Force", tuneBreatherExpansionForce);
+    tuneBreatherExpansionRadius = getFloat("group:Tune_Breather_Shape:Tune_Expansion_Radius_Factor", tuneBreatherExpansionRadius);
+    tuneJointLength = getFloat("group:Tune_Breather_Shape:Joint_Length", tuneJointLength);
+    tuneJointElasticity = getFloat("group:Tune_Breather_Shape:Joint_Elasticity", tuneJointElasticity);
+    tuneJointLimitForce = getFloat("group:Tune_Breather_Shape:Joint_Force_limit", tuneJointLimitForce);
+
+    tuneMembraneLength = getFloat("group:Tune_Intestine_Shape:Membrane_Length", tuneMembraneLength);
+    tuneMembraneElasticity = getFloat("group:Tune_Intestine_Shape:Membrane_Elasticity", tuneMembraneElasticity);
+    tuneMembraneLimitForce = getFloat("group:Tune_Intestine_Shape:Membrane_Force_limit", tuneMembraneLimitForce);
+    tuneStructureLength = getFloat("group:Tune_Intestine_Shape:Structure_Length", tuneStructureLength);
+    tuneStructureElasticity = getFloat("group:Tune_Intestine_Shape:Structure_Elasticity", tuneStructureElasticity);
+    tuneStructureLimitForce = getFloat("group:Tune_Intestine_Shape:Structure_Force_limit", tuneStructureLimitForce);
+    membraneColor = getColor("group:Tune_Intestine_Shape:Membrane_Color", membraneColor);
+
+    tuneDendriteLength = getFloat("group:Tune_Neuron_Shape:Dendrite_Length", tuneDendriteLength);
+    tuneDendriteElasticity = getFloat("group:Tune_Neuron_Shape:Dendrite_Elasticity", tuneDendriteElasticity);
+    tuneDendriteLimitForce = getFloat("group:Tune_Neuron_Shape:Dendrite_Force_limit", tuneDendriteLimitForce);
+
+    switchKinectCalibration = getBool("group:General_Settings:Kinect_Calibration_Mode", switchKinectCalibration);
+    switchScreenMask = getBool("group:General_Settings:Screen_Mask_Calibration_Mode", switchScreenMask);
+
+    cellNextGrowth = getVec2("group:Timings:Breathers:Cell_Next_Growth", cellNextGrowth);
+    cellFreqMultiplier = getFloat("group:Timings:Breathers:Cell_Freq_Multiplier", cellFreqMultiplier);
+
+    pumperSyncDistance = getInt("group:Timings:Pumpers:Pumper_Sync_Distance", pumperSyncDistance);
+
+    neuronGrowSpeed = getInt("group:Timings:Neurons:Neuron_Grow_Speed", neuronGrowSpeed);
+    neuronSignalInterval = getInt("group:Timings:Neurons:Neuron_Signal_Inteval", neuronSignalInterval);
+    neuronSyncDistance = getInt("group:Timings:Neurons:Neuron_Sync_Distance", neuronSyncDistance);
+
+    intestineGrowInterval = getInt("group:Timings:Intestines:Intestine_Grow_Interval", intestineGrowInterval);
+    intestineDigestionInterval = getInt("group:Timings:Intestines:Intestine_Digestion_Interval", intestineDigestionInterval);
+    intestineDigestionSpeed = getInt("group:Timings:Intestines:Intestine_Digestion_Speed", intestineDigestionSpeed);
+    intestineSyncDistance = getInt("group:Timings:Intestines:Intestine_Sync_Distance", intestineSyncDistance);
+
+    tunePressureTest = getFloat("group:Tune_Forces:Pressure_Test", tunePressureTest);
+
+    return true;
+}
+
+bool GuiApp::loadTubeCalibrationPreset(const std::string& filePath) {
+    if (mainPtr == nullptr) {
+        return false;
+    }
+
+    ofxXmlSettings xml;
+    if (!xml.load(filePath)) {
+        return false;
+    }
+
+    if (!xml.tagExists("group:Tune_Canvas")) {
+        return false;
+    }
+
+    bool foundAny = false;
+
+    for (int i = 0; i < mainPtr->numScreens; ++i) {
+        const std::string prefix = "group:Tune_Canvas:Shape_Tube_" + ofToString(i) + ":";
+
+        if (!xml.tagExists(prefix + "Canvas_Width")) {
+            continue;
         }
-    } else if(panel == 2) {
-        // ofFileDialogResult saveFileResult = ofSystemSaveDialog(ofGetTimestampString() + "." + ofToLower("xml"), "Save SYNTH parameters");
-        // if (saveFileResult.bSuccess){
-        //     // mainPtr->synth.gui.saveToFile(saveFileResult.filePath);
-        //     guiSynth.saveToFile(saveFileResult.filePath);
-        // }
-    }
-}
 
-//--------------------------------------------------------------
-void GuiApp::loadPreset(string filePath, int panel)
-{
- 
-    ofFile presetFile = ofFile(filePath);
-    if (presetFile.exists()) {
+        mainPtr->molSystem[i].tuneCanvasWidth = xml.getValue(prefix + "Canvas_Width", (float)mainPtr->molSystem[i].tuneCanvasWidth);
+        mainPtr->molSystem[i].tuneCanvasHeight = xml.getValue(prefix + "Canvas_Height", (float)mainPtr->molSystem[i].tuneCanvasHeight);
+        mainPtr->molSystem[i].tuneVerticalBow = xml.getValue(prefix + "Vertical_Bow", (float)mainPtr->molSystem[i].tuneVerticalBow);
+        mainPtr->molSystem[i].tuneHorizontalBow = xml.getValue(prefix + "Horizontal_Bow", (float)mainPtr->molSystem[i].tuneHorizontalBow);
+        mainPtr->molSystem[i].tuneEdges = xml.getValue(prefix + "Smooth_Edges", (float)mainPtr->molSystem[i].tuneEdges);
+        mainPtr->molSystem[i].tuneXpos = xml.getValue(prefix + "X_Position", (float)mainPtr->molSystem[i].tuneXpos);
+        mainPtr->molSystem[i].tuneYpos = xml.getValue(prefix + "Y_Position", (float)mainPtr->molSystem[i].tuneYpos);
 
-        string fileExtension = ofToUpper(presetFile.getExtension());
-        
-        //We only want wav + mp3
-        if (fileExtension == "XML" && panel == 1) {
-            gui.loadFromFile(filePath);
-        } else if (fileExtension == "XML" && panel == 2) {
-            // mainPtr->synth.gui.loadFromFile(filePath);
-            // guiSynth.loadFromFile(filePath);
+        if (xml.tagExists(prefix + "Rotation")) {
+            mainPtr->molSystem[i].tuneRotation = xml.getValue(prefix + "Rotation", (float)mainPtr->molSystem[i].tuneRotation);
         }
-    } else {
-        ofLogError("The file " + filePath + " is missing");
+
+        foundAny = true;
+    }
+
+    maskChanged = foundAny;
+    return foundAny;
+}
+
+bool GuiApp::parseBool(const std::string& value, bool fallback) {
+    const std::string lower = ofToLower(trim(value));
+    if (lower == "1" || lower == "true" || lower == "yes") return true;
+    if (lower == "0" || lower == "false" || lower == "no") return false;
+    return fallback;
+}
+
+glm::vec2 GuiApp::parseVec2(const std::string& value, const glm::vec2& fallback) {
+    const std::vector<std::string> parts = splitAndTrim(value);
+    if (parts.size() < 2) return fallback;
+
+    try {
+        return glm::vec2(std::stof(parts[0]), std::stof(parts[1]));
+    } catch (...) {
+        return fallback;
     }
 }
 
-//--------------------------------------------------------------
-void GuiApp::keyPressed(int key)
-{
-    if (key == '1')
-    {
-        savePreset(1);
+ofColor GuiApp::parseColor(const std::string& value, const ofColor& fallback) {
+    const std::vector<std::string> parts = splitAndTrim(value);
+    if (parts.size() < 3) return fallback;
+
+    try {
+        const int r = ofClamp(std::stoi(parts[0]), 0, 255);
+        const int g = ofClamp(std::stoi(parts[1]), 0, 255);
+        const int b = ofClamp(std::stoi(parts[2]), 0, 255);
+        const int a = (parts.size() > 3) ? ofClamp(std::stoi(parts[3]), 0, 255) : 255;
+        return ofColor(r, g, b, a);
+    } catch (...) {
+        return fallback;
     }
-    if (key == '2')
-    {
-        savePreset(2);
-    }
-    if (key == '5')   mainPtr->molSystem[1].addOrganisms(INTESTINE, 1);
-    if (key == '6')   mainPtr->molSystem[0].addOrganisms(LIQUID,   50);
-    if (key == '7')   {
-        for (int i = 0; i < mainPtr->numScreens; i++) {
-            mainPtr->molSystem[i].addOrganisms(INTESTINE, 1);
+}
+
+std::string GuiApp::resolveFirstExistingPath(const std::vector<std::string>& candidates) {
+    for (const std::string& candidate : candidates) {
+        if (candidate.empty()) continue;
+        ofFile file(candidate);
+        if (file.exists()) {
+            return candidate;
         }
     }
-    if (key == '8')   mainPtr->molSystem[0].addOrganisms(BREATHER,  1);
-    if (key == '9')   mainPtr->molSystem[0].addOrganisms(PUMPER,    1);
-    if (key == '0')   mainPtr->molSystem[0].addOrganisms(NEURON,    1);
 
-    if( key == 'd' ){ 
-        debugMode = !debugMode;
-    }
-    
+    return "";
 }
-
-//--------------------------------------------------------------
-void GuiApp::dragEvent(ofDragInfo dragInfo)
-{
-    if( dragInfo.files.size() > 0 ){
-        // ofFile droppedFile = ofFile(dragInfo.files[0]);
-        if(dragInfo.position.x < ofGetWidth()*0.5) {
-            loadPreset(dragInfo.files[0], 1);
-        } else {
-            loadPreset(dragInfo.files[0], 2);
-        }
-        
-    }
-}
-
-//--------------------------------------------------------------
-void GuiApp::maskListener(float & val)
-{
-    if(ofGetMousePressed(0) == false && ofGetMousePressed(2) == false) {
-        maskChanged = true;
-    }
-    
-}
-

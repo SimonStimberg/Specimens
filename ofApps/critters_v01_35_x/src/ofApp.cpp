@@ -90,6 +90,11 @@ void ofApp::setup() {
     }
 
     
+        if (!guiPtr) {
+            guiPtr = make_shared<GuiApp>();
+        }
+        guiPtr->setup(this);
+
     setTVmask();
     showMask = false;
 

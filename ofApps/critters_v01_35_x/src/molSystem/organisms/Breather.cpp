@@ -24,7 +24,7 @@ void Breather::set(int num, int x, int y)
 
     maxGrowth = floor(ofRandom(17, 21));
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
-    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth.x, guiPtr->cellNextGrowth.x + guiPtr->cellNextGrowth.x * guiPtr->cellNextGrowth.y));
 
     
     uniqueVal = ofRandom(100);
@@ -297,7 +297,7 @@ void Breather::grow()
         springs[0]->connect(cellMolecules[0], cellMolecules[middle]);
 
 
-        nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+        nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth.x, guiPtr->cellNextGrowth.x + guiPtr->cellNextGrowth.x * guiPtr->cellNextGrowth.y));
         
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {

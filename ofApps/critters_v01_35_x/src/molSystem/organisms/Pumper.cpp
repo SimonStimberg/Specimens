@@ -23,7 +23,7 @@ void Pumper::set(int num, int x, int y)
     maxGrowth = ofRandom(13, 15);
     // maxGrowth = 15;
     // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(3000, 4000));
-    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth.x, guiPtr->cellNextGrowth.x + guiPtr->cellNextGrowth.x * guiPtr->cellNextGrowth.y));
 
     
     uniqueVal = ofRandom(100);
@@ -255,7 +255,7 @@ void Pumper::grow()
         systemPtr->allSprings.push_back(s);
 
 
-        nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth->x, guiPtr->cellNextGrowth->x + guiPtr->cellNextGrowth->x*guiPtr->cellNextGrowth->y));
+        nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(guiPtr->cellNextGrowth.x, guiPtr->cellNextGrowth.x + guiPtr->cellNextGrowth.x * guiPtr->cellNextGrowth.y));
         
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {

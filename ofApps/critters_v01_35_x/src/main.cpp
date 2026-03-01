@@ -10,7 +10,10 @@
 //========================================================================
 int main( ){
 	
-	ofGLFWWindowSettings settings;
+	
+	ofGLWindowSettings settings;
+	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
+	// ofGLFWWindowSettings settings;
 
 
 	// setup the main simulation (ofApp)
@@ -19,7 +22,7 @@ int main( ){
 		// this will run the app in fullscreen mode spanning over all connected monitors
 		// settings.multiMonitorFullScreen = true;
 		settings.windowMode = OF_FULLSCREEN;
-		settings.monitor = 0;
+		// settings.monitor = 0;
 	#else
 	
 		// run the app in a window on the computer screen
@@ -32,32 +35,31 @@ int main( ){
 		settings.setPosition(glm::vec2(600,0));	
 	#endif
 
-	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+	// shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+	auto window = ofCreateWindow(settings);
 
 
-
-	// setup the GuiApp, a second window containting the control panels
-	settings.setSize(600, 800);
-	settings.setPosition(glm::vec2(0,0));
-	settings.windowMode = OF_WINDOW;
-	settings.resizable = false;
-	// #ifdef SHOW_ON_CRT
-		settings.visible = false;
-	// #endif
-	settings.monitor = 1;
-	shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);
-
-
-	shared_ptr<ofApp> mainApp(new ofApp);
-	shared_ptr<GuiApp> guiApp(new GuiApp);
-	// mainApp->guiPtr = guiApp;
-	guiPtr = guiApp;
-	guiApp->mainPtr = mainApp;	// create a pointer for intercommunication between the apps
+	// shared_ptr<ofApp> mainApp(new ofApp);
+	guiPtr = make_shared<GuiApp>();
 
 
 	// run the apps	
-	ofRunApp(mainWindow, mainApp);
-	ofRunApp(guiWindow, guiApp);
+	// ofRunApp(mainWindow, mainApp);
+	ofRunApp(window, make_shared<ofApp>());
 	ofRunMainLoop();
+
+
+
+
+
+	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
+	// ofGLWindowSettings settings;
+	// settings.setSize(1024, 768);
+	// settings.windowMode = OF_WINDOW; //can also be OF_FULLSCREEN
+
+	// auto window = ofCreateWindow(settings);
+
+	// ofRunApp(window, make_shared<ofApp>());
+	// ofRunMainLoop();
 
 }

@@ -1,115 +1,106 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxGui.h"
-// #include "ofApp.h"
-// #include "ofxPDSP.h"
+#include <string>
+#include <unordered_map>
+#include <variant>
 
 
 class ofApp;
 
 
-class GuiApp: public ofBaseApp {
+class GuiApp {
 
 	public:
 
-		void setup();
-		void setSimulationGUI();
-		// void setSynthGUI();
-		void update();
-		void draw();
-		void savePreset(int panel);
-		void loadPreset(string filePath, int panel);
-		void keyPressed(int key);
-		void dragEvent(ofDragInfo dragInfo);
-		void maskListener(float & val);
+		using ParamValue = std::variant<int, float, bool, glm::vec2, ofColor, std::string>;
 
+		void setup(ofApp* app);
+		bool loadPreset(const std::string& filePath, int panel);
 
+		const std::unordered_map<std::string, ParamValue>& getValues() const { return values; }
 
-		ofxPanel gui;
-		ofParameterGroup guiTune;	
-		ofParameterGroup guiCanvas;
-		ofParameterGroup guiGeneral;
+		template <typename T>
+		bool getValue(const std::string& key, T& output) const {
+			auto it = values.find(key);
+			if (it == values.end()) return false;
+			if (const T* value = std::get_if<T>(&it->second)) {
+				output = *value;
+				return true;
+			}
+			return false;
+		}
 		
 
 
 		// GENERAL SIMULATION PARAMETERS
-		ofParameter<float> tuneFriction;
+		float tuneFriction;
 
-		ofParameter<float> tuneRepulsionThresh;
-		ofParameter<float> tuneRepulsionForce;
+		float tuneRepulsionThresh;
+		float tuneRepulsionForce;
 
-		ofParameter<float> tuneFlatThresh;
-		ofParameter<float> tuneFlatDistance;
-		ofParameter<float> tuneFlatLimitForce;
+		float tuneFlatThresh;
+		float tuneFlatDistance;
+		float tuneFlatLimitForce;
 
-		ofParameter<float> tuneSpringLength;
-		ofParameter<float> tuneSpringElasticity;
-		ofParameter<float> tuneSpringLimitForce;
+		float tuneSpringLength;
+		float tuneSpringElasticity;
+		float tuneSpringLimitForce;
 
-		ofParameter<bool>  switchOscillation;
-		ofParameter<float> tuneExpansionForce;
-		ofParameter<float> tuneExpansionRadius;
-		ofParameter<float> tuneOscillationAmount;
+		bool  switchOscillation;
+		float tuneExpansionForce;
+		float tuneExpansionRadius;
+		float tuneOscillationAmount;
 
-		ofParameter<float> tuneIntrusionThresh;
-		ofParameter<float> tuneIntrusionForce;
+		float tuneIntrusionThresh;
+		float tuneIntrusionForce;
 
-		ofParameter<bool> switchConnections;
-		ofParameter<bool> switchKinectCalibration;
-		ofParameter<bool> switchScreenMask;
+		bool switchConnections;
+		bool switchKinectCalibration;
+		bool switchScreenMask;
 
-		ofParameter<float> tunePressureTest;
+		float tunePressureTest;
 
 
 		// BREATHER SHAPE
-		ofParameterGroup guiBreather;
-		ofParameter<float> tuneBreatherExpansionForce;
-		ofParameter<float> tuneBreatherExpansionRadius;
-		ofParameter<float> tuneBreatherOscillationAmount;
-		ofParameter<float> tuneJointLength;
-		ofParameter<float> tuneJointElasticity;
-		ofParameter<float> tuneJointLimitForce;
+		float tuneBreatherExpansionForce;
+		float tuneBreatherExpansionRadius;
+		float tuneBreatherOscillationAmount;
+		float tuneJointLength;
+		float tuneJointElasticity;
+		float tuneJointLimitForce;
 
 
 		// INTESTINE SHAPE
-		ofParameterGroup guiIntestine;
-		ofParameter<float> tuneMembraneLength;
-		ofParameter<float> tuneMembraneElasticity;
-		ofParameter<float> tuneMembraneLimitForce;
-		ofParameter<float> tuneStructureLength;
-		ofParameter<float> tuneStructureElasticity;
-		ofParameter<float> tuneStructureLimitForce;
-		ofParameter<ofColor> membraneColor;
+		float tuneMembraneLength;
+		float tuneMembraneElasticity;
+		float tuneMembraneLimitForce;
+		float tuneStructureLength;
+		float tuneStructureElasticity;
+		float tuneStructureLimitForce;
+		ofColor membraneColor;
 
 
 		// NEURON SHAPE
-		ofParameterGroup guiNeuron;
-		ofParameter<float> tuneDendriteLength;
-		ofParameter<float> tuneDendriteElasticity;
-		ofParameter<float> tuneDendriteLimitForce;
+		float tuneDendriteLength;
+		float tuneDendriteElasticity;
+		float tuneDendriteLimitForce;
 
 
 		// TIMINGS
-		ofParameterGroup guiTimings;
+		glm::vec2 cellNextGrowth;
+		float cellFreqMultiplier;
 
-		ofParameterGroup guiTimingsCells;
-		ofParameter<glm::vec2> cellNextGrowth;
-		ofParameter<float> 	   cellFreqMultiplier;
+		int pumperSyncDistance;
 
-		ofParameterGroup guiTimingsPumpers;
-		ofParameter<int> pumperSyncDistance;
+		int neuronGrowSpeed;
+		int neuronSignalInterval;
+		int neuronSyncDistance;
 
-		ofParameterGroup guiTimingsNeurons;
-		ofParameter<int> neuronGrowSpeed;
-		ofParameter<int> neuronSignalInterval;
-		ofParameter<int> neuronSyncDistance;
-
-		ofParameterGroup guiTimingsIntestines;
-		ofParameter<int> intestineGrowInterval;
-		ofParameter<int> intestineDigestionInterval;
-		ofParameter<int> intestineDigestionSpeed;
-		ofParameter<int> intestineSyncDistance;
+		int intestineGrowInterval;
+		int intestineDigestionInterval;
+		int intestineDigestionSpeed;
+		int intestineSyncDistance;
 
 
 
@@ -184,7 +175,19 @@ class GuiApp: public ofBaseApp {
 		bool maskChanged;	
 		bool debugMode;
 
-		shared_ptr<ofApp> mainPtr;
+		ofApp* mainPtr;
+
+	private:
+		std::unordered_map<std::string, ParamValue> values;
+
+		void applyDefaults();
+		void publishValues();
+		bool loadSimulationPreset(const std::string& filePath);
+		bool loadTubeCalibrationPreset(const std::string& filePath);
+		static bool parseBool(const std::string& value, bool fallback);
+		static glm::vec2 parseVec2(const std::string& value, const glm::vec2& fallback);
+		static ofColor parseColor(const std::string& value, const ofColor& fallback);
+		static std::string resolveFirstExistingPath(const std::vector<std::string>& candidates);
 		
 };
 
