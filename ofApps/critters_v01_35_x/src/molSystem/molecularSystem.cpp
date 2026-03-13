@@ -8,12 +8,13 @@ molecularSystem::molecularSystem() {
 
 
 //------------------------------------------------------------------
-void molecularSystem::setup(int width, int height, int species) {
+void molecularSystem::setup(int width, int height, float scalingFactor, int species) {
 
     // masterPtr = ptr;
 
     worldSize.x = width;
     worldSize.y = height;
+    this->scalingFactor = scalingFactor;
 
     mySpecies = (organismType)species;
 
@@ -33,7 +34,7 @@ void molecularSystem::setup(int width, int height, int species) {
     freshlySpawned = false;
     collapseThreshold = floor(1300 * width/800.0);
 
-    setGui();
+    // setGui();
 
     // masterBus.set(1.0);
     // blackhole.set(1.0);
@@ -149,21 +150,27 @@ void molecularSystem::update() {
 //------------------------------------------------------------------
 void molecularSystem::draw() {
 
-    for(unsigned int i = 0; i < liquid.size(); i++){
-		liquid[i]->draw();
-	}
-    for(unsigned int i = 0; i < breathers.size(); i++){
-		breathers[i]->draw();
-	}
-    for(unsigned int i = 0; i < pumpers.size(); i++){
-		pumpers[i]->draw();
-	}
-    for(unsigned int i = 0; i < neurons.size(); i++){
-		neurons[i]->draw();
-	}
-    for(unsigned int i = 0; i < intestines.size(); i++){
-		intestines[i]->draw();
-	}
+    ofPushMatrix();
+    
+        ofScale(scalingFactor, scalingFactor, 1.0f);
+
+        for(unsigned int i = 0; i < liquid.size(); i++){
+            liquid[i]->draw();
+        }
+        for(unsigned int i = 0; i < breathers.size(); i++){
+            breathers[i]->draw();
+        }
+        for(unsigned int i = 0; i < pumpers.size(); i++){
+            pumpers[i]->draw();
+        }
+        for(unsigned int i = 0; i < neurons.size(); i++){
+            neurons[i]->draw();
+        }
+        for(unsigned int i = 0; i < intestines.size(); i++){
+            intestines[i]->draw();
+        }
+
+    ofPopMatrix();
 
 
     // if (intrusionPoints.size() > 0) {
@@ -848,13 +855,20 @@ void molecularSystem::reset(bool random) {
 //------------------------------------------------------------------
 void molecularSystem::setGui() {
 
-    gui.add(tuneCanvasWidth.set("Canvas Width", 330, 40, 360));
-    gui.add(tuneCanvasHeight.set("Canvas Height", 240, 40, 288));
-    gui.add(tuneVerticalBow.set("Vertical Bow", 760, 600, 2000));
-    gui.add(tuneHorizontalBow.set("Horizontal Bow", 740, 600, 2000));
-    gui.add(tuneEdges.set("Smooth Edges", 25, 0, 60));
-    gui.add(tuneXpos.set("X Position", 0.0, -50.0, 50.0));
-    gui.add(tuneYpos.set("Y Position", 0.0, -50.0, 50.0));
-    gui.add(tuneRotation.set("Rotation", 0.0, -15.0, 15.0));
+    float screenSizeFactor = 1.0 / scalingFactor;
+
+    tuneCanvasWidth *= screenSizeFactor;
+    tuneCanvasHeight *= screenSizeFactor;
+    tuneXpos *= screenSizeFactor;
+    tuneYpos *= screenSizeFactor;
+
+    // gui.add(tuneCanvasWidth.set("Canvas Width", 330, 40, 360));
+    // gui.add(tuneCanvasHeight.set("Canvas Height", 240, 40, 288));
+    // gui.add(tuneVerticalBow.set("Vertical Bow", 760, 600, 2000));
+    // gui.add(tuneHorizontalBow.set("Horizontal Bow", 740, 600, 2000));
+    // gui.add(tuneEdges.set("Smooth Edges", 25, 0, 60));
+    // gui.add(tuneXpos.set("X Position", 0.0, -50.0, 50.0));
+    // gui.add(tuneYpos.set("Y Position", 0.0, -50.0, 50.0));
+    // gui.add(tuneRotation.set("Rotation", 0.0, -15.0, 15.0));
 
 }

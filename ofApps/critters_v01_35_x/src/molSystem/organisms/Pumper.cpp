@@ -168,13 +168,13 @@ void Pumper::draw()
 
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
-            ofSetLineWidth(1);
+            ofSetLineWidth(systemPtr->scaledLineWidth(1.0f));
             ofSetColor(ofColor::indianRed);
             ofDrawCircle(position, guiPtr->neuronSyncDistance);
         }
 
 
-    ofSetLineWidth(3);
+    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
     ofColor col = ofColor::fromHex(0xf22571);
 

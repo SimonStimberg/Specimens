@@ -186,7 +186,7 @@ void Breather::draw()
 
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
-            ofSetLineWidth(1);
+            ofSetLineWidth(systemPtr->scaledLineWidth(1.0f));
             ofSetColor(ofColor::indianRed);
             // ofDrawCircle(dbgCellCenter, guiPtr->tuneBreatherExpansionRadius);
                     // for Debug purpose (delete later)
@@ -195,7 +195,7 @@ void Breather::draw()
 
         }
 
-    ofSetLineWidth(3);
+    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
 
 
@@ -254,10 +254,14 @@ void Breather::draw()
     // {
     //     springs[i]->draw();
     // }
-    for (unsigned int i = 0; i < cellMolecules.size(); i++)
-    {
-        cellMolecules[i]->draw();
-    }
+
+    // ofFill();
+
+    // for (unsigned int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     // cellMolecules[i]->draw();
+    //     ofDrawCircle(cellMolecules[i]->position, 1.5);
+    // }
 }
 
 

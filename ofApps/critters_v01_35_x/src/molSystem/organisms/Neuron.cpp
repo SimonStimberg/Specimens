@@ -147,7 +147,7 @@ void Neuron::draw()
     // for Debug purpose (delete later)
     if(guiPtr->debugMode) {
         ofNoFill();
-        ofSetLineWidth(1);
+        ofSetLineWidth(systemPtr->scaledLineWidth(1.0f));
         ofSetColor(ofColor::limeGreen);
         ofDrawCircle(position, guiPtr->neuronSyncDistance);
     }
@@ -160,7 +160,7 @@ void Neuron::draw()
 
 
     ofNoFill();
-    ofSetLineWidth(3);
+    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
     for (int i = 0; i < dendrites.size(); i++) {
         ofBeginShape();
@@ -191,7 +191,7 @@ void Neuron::draw()
     // }
     
     ofSetColor(ofColor::darkSlateGrey);
-    ofSetLineWidth(3);
+    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
     for (unsigned int i = 0; i < connections.size(); i++)
     {
         connections[i]->draw();

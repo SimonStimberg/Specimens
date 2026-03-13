@@ -153,7 +153,7 @@ void Intestine::draw()
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
             ofNoFill();
-            ofSetLineWidth(1);
+            ofSetLineWidth(systemPtr->scaledLineWidth(1.0f));
             ofSetColor(ofColor::mediumPurple);
             ofDrawCircle(position, guiPtr->intestineSyncDistance);
         }
@@ -181,7 +181,7 @@ void Intestine::draw()
     }
 
     ofNoFill();
-    ofSetLineWidth(3);
+    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
     ofSetColor(50);
     for (unsigned int i = 0; i < springs.size(); i++)

@@ -24,7 +24,7 @@ class molecularSystem{
         
 
 		molecularSystem();
-        void setup(int width, int height, int species);
+        void setup(int width, int height, float scalingFactor, int species);
         // void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
         void draw();
@@ -33,6 +33,8 @@ class molecularSystem{
         void updateBins();
         vector<Molecule *> getNeighbors(float x, float y, float radius);
 
+        float getScalingFactor() const { return scalingFactor; }
+        float scaledLineWidth(float lineWidth) const { return lineWidth * scalingFactor; }
         vector <float> getCellInflation();
         vector <int> getCellSizes();
         float getSystemPressure();
@@ -85,6 +87,7 @@ class molecularSystem{
 
         glm::vec2 worldSize;
         organismType mySpecies;
+        float scalingFactor;
 
         bool flush;
         bool drop;
@@ -108,15 +111,15 @@ class molecularSystem{
 
 
         // gui parameters for the canvas shape
-        ofParameter<float> tuneCanvasWidth;		
-		ofParameter<float> tuneCanvasHeight;
-		ofParameter<float> tuneVerticalBow;
-		ofParameter<float> tuneHorizontalBow;
-		ofParameter<float> tuneEdges;
-		ofParameter<float> tuneXpos;
-		ofParameter<float> tuneYpos;
-		ofParameter<float> tuneRotation;
-		ofParameterGroup gui;
+        float tuneCanvasWidth;		
+		float tuneCanvasHeight;
+		float tuneVerticalBow;
+		float tuneHorizontalBow;
+		float tuneEdges;
+		float tuneXpos;
+		float tuneYpos;
+		float tuneRotation;
+		// ofParameterGroup gui;
 
 
         // ofApp * masterPtr;

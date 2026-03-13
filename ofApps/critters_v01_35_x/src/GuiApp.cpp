@@ -32,20 +32,24 @@ void GuiApp::setup(ofApp* app) {
     mainPtr = app;
     applyDefaults();
 
-    const std::string defaultSimulationPreset = resolveFirstExistingPath({
-        "../../../../Presets/Simulation/friesTV-physics_01.xml",
-        "../../../../Presets/Simulation/lab30_01.xml",
-        "bin/data/Presets/Simulation/SimulationPreset.xml",
-        ofToDataPath("Presets/Simulation/SimulationPreset.xml", true)
-    });
+    const string defaultSimulationPreset = "Presets/Simulation/friesTV-physics_01.xml"; 
+
+    // const std::string defaultSimulationPreset = resolveFirstExistingPath({
+    //     "../../../../Presets/Simulation/friesTV-physics_01.xml",
+    //     "../../../../Presets/Simulation/lab30_01.xml",
+    //     "bin/data/Presets/Simulation/SimulationPreset.xml",
+    //     ofToDataPath("Presets/Simulation/SimulationPreset.xml", true)
+    // });
     loadPreset(defaultSimulationPreset, 1);
 
-    const std::string defaultTubeCalibration = resolveFirstExistingPath({
-        "../../../../Presets/TubeCalibrations/TinyScreen01.xml",
-        "../../../../Presets/TubeCalibrations/24-09-18_PaceFestival.xml",
-        "bin/data/Presets/TubeCalibrations/PhilipsCRT.xml",
-        ofToDataPath("Presets/TubeCalibrations/PhilipsCRT.xml", true)
-    });
+    const string defaultTubeCalibration = "Presets/TubeCalibrations/TinyScreen02.xml";
+
+    // const std::string defaultTubeCalibration = resolveFirstExistingPath({
+    //     "../../../../Presets/TubeCalibrations/TinyScreen01.xml",
+    //     "../../../../Presets/TubeCalibrations/24-09-18_PaceFestival.xml",
+    //     "bin/data/Presets/TubeCalibrations/PhilipsCRT.xml",
+    //     ofToDataPath("Presets/TubeCalibrations/PhilipsCRT.xml", true)
+    // });
     loadPreset(defaultTubeCalibration, 1);
 
     publishValues();

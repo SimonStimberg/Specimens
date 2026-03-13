@@ -21,7 +21,10 @@ int main( ){
 
 		// this will run the app in fullscreen mode spanning over all connected monitors
 		// settings.multiMonitorFullScreen = true;
-		settings.windowMode = OF_FULLSCREEN;
+		// settings.windowMode = OF_FULLSCREEN;
+		settings.windowMode = OF_WINDOW; //can also be OF_FULLSCREEN	
+		settings.setSize(720, 576);
+
 		// settings.monitor = 0;
 	#else
 	

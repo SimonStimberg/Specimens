@@ -22,8 +22,8 @@ void ofApp::setup() {
 
 
     // sets the native resolution of the screens that are rendered to
-    screenResolution.x = 800; 
-    screenResolution.y = 600; 
+    screenResolution.x = 720; 
+    screenResolution.y = 576; 
 
 
     // a resizing factor to account for different CRT screen sizes 
@@ -44,8 +44,8 @@ void ofApp::setup() {
 
         // anti-aliasing FBOs by multisampling! watch out: needs more performance
         ofFbo::Settings settings;
-            settings.numSamples = 1;    // also try 8, if your GPU supports it
-            settings.useDepth = false; 
+            // settings.numSamples = 1;    // also try 8, if your GPU supports it
+            // settings.useDepth = false; 
             settings.width = screenResolution.x * screenSizeFactor[i];
             settings.height = screenResolution.y * screenSizeFactor[i];
 
@@ -56,11 +56,14 @@ void ofApp::setup() {
         mask[i].allocate(vessel[i].getWidth(), vessel[i].getHeight(), GL_LUMINANCE);
 
 
+        float scalingFactor = 1.0 / screenSizeFactor[i];
+
+
         // initialize the Molecular System  
         // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
         // int setSpecies = (singleSpeciesMode) ? i+1 : 5;
         int setSpecies = 1;
-        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight(), setSpecies);  
+        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight(), scalingFactor, setSpecies);  
 
         // molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
@@ -187,34 +190,34 @@ void ofApp::update() {
 
 
         // draw the Molecular System to the frame buffer
-        vessel[i].begin();
+        // vessel[i].begin();
         
-            ofBackground(0);
-            if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+        //     ofBackground(0);
+        //     if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
 
-            // draw the Molecular System
-            ofPushMatrix();
-                ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
-                molSystem[i].draw();
-            ofPopMatrix();
+        //     // draw the Molecular System
+        //     ofPushMatrix();
+        //         ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
+        //         molSystem[i].draw();
+        //     ofPopMatrix();
 
 
-            // draw mask for screen shape mapping when activated
-            // if(guiPtr->switchScreenMask) {
-            //     mask[i].draw(0, 0);
-            // }
+        //     // draw mask for screen shape mapping when activated
+        //     // if(guiPtr->switchScreenMask) {
+        //     //     mask[i].draw(0, 0);
+        //     // }
 
             
-            // draw kinect callibration guides
-            // if(guiPtr->switchKinectCalibration) {
-            //     int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-            //     if(iScreen == i) {
-            //         kinectToPoints.drawKinect(i);
-            //         kinectToPoints.drawCalibrationAids(i);
-            //     }
-            // }      
+        //     // draw kinect callibration guides
+        //     // if(guiPtr->switchKinectCalibration) {
+        //     //     int iScreen = floor(ofGetMouseX()/ screenResolution.x);
+        //     //     if(iScreen == i) {
+        //     //         kinectToPoints.drawKinect(i);
+        //     //         kinectToPoints.drawCalibrationAids(i);
+        //     //     }
+        //     // }      
         
-        vessel[i].end();
+        // vessel[i].end();
 
 
 
@@ -282,11 +285,19 @@ void ofApp::draw(){
         #endif
 
         // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
-        for (int i = 0; i < numScreens; i++) {
-            int xShift = i * screenResolution.x;
-            vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
-            // vessel[i].draw(xShift, 0);
-        }   
+        // for (int i = 0; i < numScreens; i++) {
+        //     int xShift = i * screenResolution.x;
+        //     vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
+        //     // vessel[i].draw(xShift, 0);
+        // }   
+        ofBackground(0);
+        // if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+
+        // draw the Molecular System
+        ofPushMatrix();
+            ofTranslate(ofGetWidth()*0.5, ofGetHeight()*0.5);   // translate to the center of the screen
+            molSystem[0].draw();
+        ofPopMatrix();
 
         
 
@@ -306,7 +317,7 @@ void ofApp::draw(){
             ofPushMatrix();
                 string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
                 ofRotateDeg(-90);
-                ofDrawBitmapString(infoTxt, -500, ofGetWidth()-700);
+                ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
                 // ofDrawBitmapString(infoTxt, 50, 50);
             ofPopMatrix();
         #endif
@@ -317,6 +328,9 @@ void ofApp::draw(){
         // ofDrawCircle(ofGetMouseX(), ofGetMouseY(), 4.);
 
     ofPopMatrix();
+    
+    // ofSetColor(ofColor::white);
+    // ofDrawRectangle(10, 10, 100, 100);
 
 }
 
