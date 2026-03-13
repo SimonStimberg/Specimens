@@ -136,6 +136,11 @@ void Neuron::update()
 //------------------------------------------------------------------
 void Neuron::draw()
 {
+    float lineWidth = 1.5f; // define global line width
+    lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
+
+
+    // draw the signal
     if(isSignaling) 
     {
         ofSetColor(ofColor::white);
@@ -147,39 +152,49 @@ void Neuron::draw()
     // for Debug purpose (delete later)
     if(guiPtr->debugMode) {
         ofNoFill();
-        ofSetLineWidth(systemPtr->scaledLineWidth(1.0f));
+        ofSetLineWidth(lineWidth);
         ofSetColor(ofColor::limeGreen);
         ofDrawCircle(position, guiPtr->neuronSyncDistance);
     }
     
 
+    // Draw the Neuron Body
     ofSetHexColor(0xfcfdbd);    // very bright yellow
-    ofFill();
 
+    // Draw the center molecule
+    ofFill();
     ofDrawCircle(neuronMolecules[0]->position, 3);
 
-
+    // Draw the arms (dendrites)
     ofNoFill();
-    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
-
-    for (int i = 0; i < dendrites.size(); i++) {
-        ofBeginShape();
-        ofCurveVertex(neuronMolecules[0]->position);
-        ofCurveVertex(neuronMolecules[0]->position);
-
-        for (int j = 0; j < dendrites[i].size(); j++) { 
-            
-            if (j == dendrites[i].size()-1) {
-                ofCurveVertex(dendrites[i][j]->position);
-                ofCurveVertex(dendrites[i][j]->position);
-            } else {
-                ofCurveVertex(dendrites[i][j]->position);
-            }
-            
-        }
-        ofEndShape();
-
+    vector<glm::vec2> pts;
+    // ofSetHexColor(0xfcfdbd);
+    for (int i = 0; i < (int)dendrites.size(); i++) {
+        pts.clear();
+        pts.push_back(neuronMolecules[0]->position); // center as start point
+        for (auto* m : dendrites[i]) pts.push_back(m->position);
+        DrawUtils::thickOpenCurve(spline, ring, pts, lineWidth * 0.5, 10, true);
     }
+
+
+    // original drawing code (showing glitches when using CurvedVertex)
+    // for (int i = 0; i < dendrites.size(); i++) {
+    //     ofBeginShape();
+    //     ofCurveVertex(neuronMolecules[0]->position);
+    //     ofCurveVertex(neuronMolecules[0]->position);
+
+    //     for (int j = 0; j < dendrites[i].size(); j++) { 
+            
+    //         if (j == dendrites[i].size()-1) {
+    //             ofCurveVertex(dendrites[i][j]->position);
+    //             ofCurveVertex(dendrites[i][j]->position);
+    //         } else {
+    //             ofCurveVertex(dendrites[i][j]->position);
+    //         }
+            
+    //     }
+    //     ofEndShape();
+    // }
 
     // for (unsigned int i = 0; i < springs.size(); i++)
     // {
@@ -189,15 +204,29 @@ void Neuron::draw()
     // {
     //     neuronMolecules[i]->draw();
     // }
+
+    // draw the connections to other Neurons (aka Synapses)
+    // ofSetColor(ofColor::darkSlateGrey);
+    // ofSetLineWidth(lineWidth * 2.0f);
+    // for (unsigned int i = 0; i < connections.size(); i++)
+    // {
+    //     connections[i]->draw();
+    // }
     
+}
+
+//------------------------------------------------------------------
+void Neuron::drawConnections()
+{
+    float lineWidth = 1.5f; // define global line width
+    lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
+
     ofSetColor(ofColor::darkSlateGrey);
-    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
+    ofSetLineWidth(lineWidth * 2.0f);
     for (unsigned int i = 0; i < connections.size(); i++)
     {
         connections[i]->draw();
     }
-
-
 }
 
 

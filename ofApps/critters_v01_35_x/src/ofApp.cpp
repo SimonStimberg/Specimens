@@ -317,6 +317,7 @@ void ofApp::draw(){
             ofPushMatrix();
                 string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
                 ofRotateDeg(-90);
+                ofSetColor(ofColor::white);
                 ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
                 // ofDrawBitmapString(infoTxt, 50, 50);
             ofPopMatrix();

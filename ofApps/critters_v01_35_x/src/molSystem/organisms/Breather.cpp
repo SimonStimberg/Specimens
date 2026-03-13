@@ -181,6 +181,9 @@ void Breather::update()
 //------------------------------------------------------------------
 void Breather::draw()
 {
+    float lineWidth = 1.5f; // define global line width
+    lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
+
 
     ofNoFill();
 
@@ -194,9 +197,6 @@ void Breather::draw()
             ofDrawCircle(position, guiPtr->pumperSyncDistance);
 
         }
-
-    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
-
 
 
     ofColor col = ofColor::fromHex(0x2bdbe6);
@@ -214,7 +214,7 @@ void Breather::draw()
         }
     }
 
-
+    // adjust color according to pressure level
     if(mature) {
         float brtnss = col.getBrightness();
         brtnss = ofMap( pressure, 0.0, 7.0, brtnss, 255.0 );
@@ -225,38 +225,52 @@ void Breather::draw()
         col.setSaturation(sat);
     }
 
-
     ofSetColor(col);
-    ofBeginShape();
-    for (int i = 0; i < cellMolecules.size(); i++)
-    {
-        glm::vec2 vertexPos = cellMolecules[i]->position;
-        if (i == 0)
-        {
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-        }
-        else if (i == cellMolecules.size() - 1)
-        {
-            glm::vec2 firstVertexPos = cellMolecules[0]->position;
-            ofCurveVertex(vertexPos);
-            ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
-            ofCurveVertex(firstVertexPos); // we duplicate the first point twice
-        }
-        else
-        {
-            ofCurveVertex(vertexPos);
-        }
-    }
-    ofEndShape();
+
+
+
+    // Draw Breather Membrane
+
+    // get the positions of the cell molecules
+    vector<glm::vec2> pts;
+    pts.reserve(cellMolecules.size());
+    for (auto* m : cellMolecules) pts.push_back(m->position);
+
+    // use them to draw a thick closed curve - use this custom function to avoid glitch of interrupted line when useing CurvedVertex
+    DrawUtils::thickClosedCurve(spline, ring, pts, lineWidth * 0.5f);
+
+
+    
+    // Original drawing code (showing glitches)
+    // ofBeginShape();
+    // for (int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     glm::vec2 vertexPos = cellMolecules[i]->position;
+    //     if (i == 0)
+    //     {
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //     }
+    //     else if (i == cellMolecules.size() - 1)
+    //     {
+    //         glm::vec2 firstVertexPos = cellMolecules[0]->position;
+    //         ofCurveVertex(vertexPos);
+    //         ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
+    //         ofCurveVertex(firstVertexPos); // we duplicate the first point twice
+    //     }
+    //     else
+    //     {
+    //         ofCurveVertex(vertexPos);
+    //     }
+    // }
+    // ofEndShape();
+
 
     // for (unsigned int i = 0; i < springs.size(); i++)
     // {
     //     springs[i]->draw();
     // }
-
     // ofFill();
-
     // for (unsigned int i = 0; i < cellMolecules.size(); i++)
     // {
     //     // cellMolecules[i]->draw();

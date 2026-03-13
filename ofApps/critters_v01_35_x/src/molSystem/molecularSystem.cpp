@@ -164,6 +164,9 @@ void molecularSystem::draw() {
             pumpers[i]->draw();
         }
         for(unsigned int i = 0; i < neurons.size(); i++){
+		    neurons[i]->drawConnections();
+	    }
+        for(unsigned int i = 0; i < neurons.size(); i++){
             neurons[i]->draw();
         }
         for(unsigned int i = 0; i < intestines.size(); i++){

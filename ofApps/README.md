@@ -393,6 +393,7 @@
   - reduced Resolution, tiny Vessels, big Organisms
   - no Sound -> movements triggered by SoundModules replaced by functions
   - no Kinect -> interaction input from central host machine
+- improved line rendering in OpenGL without glitches (no Cairo renderer needed)
 
 ### v01.40.x
 version for rendering the simulation to a video file

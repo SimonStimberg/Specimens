@@ -1,6 +1,7 @@
 #pragma once
 #include "ofMain.h"
 #include "molecularSystem.h"
+#include "utils.h"
 
 // #include "ofxPDSP.h"
 // #include "../../synth/audioModules.h"
@@ -48,6 +49,9 @@ class Breather{
 
         vector <Molecule *> cellMolecules;
         vector <Spring *> springs;
+
+        ofPolyline spline;
+        ofMesh     ring;
 
         glm::vec2 position;
         float pressure;
@@ -125,6 +129,9 @@ class Pumper{
         vector <Molecule *> cellMolecules;
         vector <Spring *> springs;
 
+        ofPolyline spline;
+        ofMesh     ring;
+
         glm::vec2 position;
         float pressure;
 
@@ -181,6 +188,7 @@ class Neuron{
         // void linkAudioModule(audioModule::Neuron & module);
         void update();
         void draw();
+        void drawConnections();
 
         void grow();
         void connect(Molecule * myMolecule, Molecule * otherMolecule);
@@ -203,6 +211,10 @@ class Neuron{
         vector <vector <Molecule *>> dendrites;
         vector <Spring *> springs;
         vector <Spring *> connections;
+
+        ofPolyline spline;
+        ofMesh     ring;
+
         // int numDendrites;
         int maxArmElements;
         int nextGrowth;
@@ -272,6 +284,10 @@ class Intestine{
 
         vector <Molecule *> intestineMolecules;
         vector <Spring *> springs;
+
+        ofPolyline spline;
+        ofMesh     ring;
+
         // vector <Spring *> hiddenSprings;
         int nextGrowth;
         int maxElements;

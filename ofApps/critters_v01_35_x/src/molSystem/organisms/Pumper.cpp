@@ -162,6 +162,9 @@ void Pumper::update()
 //------------------------------------------------------------------
 void Pumper::draw()
 {
+    float lineWidth = 1.5f; // define global line width
+    lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
+
 
     ofNoFill();
 
@@ -174,10 +177,10 @@ void Pumper::draw()
         }
 
 
-    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
     ofColor col = ofColor::fromHex(0xf22571);
 
+    // adjust color according to pressure level
     if(mature) {
         float brtnss = col.getBrightness();
         // brtnss = ofMap( audioModule->impulseOut(), 0.0, 1.0, brtnss, 255.0 );
@@ -188,32 +191,46 @@ void Pumper::draw()
         col.setSaturation(sat);
         // col = ofColor(255, 25, 0);
     }
-
-
-            
+     
     ofSetColor(col);
-    ofBeginShape();
-    for (int i = 0; i < cellMolecules.size(); i++)
-    {
-        glm::vec2 vertexPos = cellMolecules[i]->position;
-        if (i == 0)
-        {
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-            ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-        }
-        else if (i == cellMolecules.size() - 1)
-        {
-            glm::vec2 firstVertexPos = cellMolecules[0]->position;
-            ofCurveVertex(vertexPos);
-            ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
-            ofCurveVertex(firstVertexPos); // we duplicate the first point twice
-        }
-        else
-        {
-            ofCurveVertex(vertexPos);
-        }
-    }
-    ofEndShape();
+
+
+    // Draw Pumper Membrane
+
+    // get the positions of the cell molecules
+    vector<glm::vec2> pts;
+    pts.reserve(cellMolecules.size());
+    for (auto* m : cellMolecules) pts.push_back(m->position);
+
+    // use them to draw a thick closed curve - use this custom function to avoid glitch of interrupted line when useing CurvedVertex
+    DrawUtils::thickClosedCurve(spline, ring, pts, lineWidth * 0.5f);
+
+
+
+    // Original drawing code (showing glitches)
+    // ofBeginShape();
+    // for (int i = 0; i < cellMolecules.size(); i++)
+    // {
+    //     glm::vec2 vertexPos = cellMolecules[i]->position;
+    //     if (i == 0)
+    //     {
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //         ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //     }
+    //     else if (i == cellMolecules.size() - 1)
+    //     {
+    //         glm::vec2 firstVertexPos = cellMolecules[0]->position;
+    //         ofCurveVertex(vertexPos);
+    //         ofCurveVertex(firstVertexPos); // to draw a curve from pt 6 to pt 0
+    //         ofCurveVertex(firstVertexPos); // we duplicate the first point twice
+    //     }
+    //     else
+    //     {
+    //         ofCurveVertex(vertexPos);
+    //     }
+    // }
+    // ofEndShape();
+
 
     // for (unsigned int i = 0; i < springs.size(); i++)
     // {

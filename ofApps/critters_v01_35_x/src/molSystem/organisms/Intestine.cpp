@@ -150,6 +150,11 @@ void Intestine::update()
 //------------------------------------------------------------------
 void Intestine::draw()
 {
+
+    float lineWidth = 1.5f; // define global line width
+    lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
+
+    
         // for Debug purpose (delete later)
         if(guiPtr->debugMode) {
             ofNoFill();
@@ -181,42 +186,60 @@ void Intestine::draw()
     }
 
     ofNoFill();
-    ofSetLineWidth(systemPtr->scaledLineWidth(3.0f));
 
+
+
+    // Draw Structure
     ofSetColor(50);
+    ofSetLineWidth(lineWidth * 2.0f);
+
     for (unsigned int i = 0; i < springs.size(); i++)
     {
         springs[i]->draw();
     }
 
+    // Draw Intestine Membrane
     ofSetColor(guiPtr->membraneColor);
-    for (int membrane = 0; membrane < 2; membrane++) 
-    {
 
-        ofBeginShape();
-        for (int i = 0 + membrane; i < intestineMolecules.size(); i+=2)
-        {
-            glm::vec2 vertexPos = intestineMolecules[i]->position;
-            if (i == 0 + membrane || i == intestineMolecules.size() - 2 + membrane)
-            {
-                ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-                ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
-            }
-            else
-            {
-                ofCurveVertex(vertexPos);
-            }
-        }
-        ofEndShape();
-
+    vector<glm::vec2> pts;
+    for (int membrane = 0; membrane < 2; membrane++) {
+        int n = (int)intestineMolecules.size();
+        if (n < 4) continue;
+        pts.clear();
+        for (int i = membrane; i < n; i += 2)
+            pts.push_back(intestineMolecules[i]->position);
+        DrawUtils::thickOpenCurve(spline, ring, pts, lineWidth * 0.5, 10, true);
     }
 
 
 
-    for (unsigned int i = 0; i < intestineMolecules.size(); i++)
-    {
-        intestineMolecules[i]->draw();
-    }
+    // original drawing code for intestine membrane (showing glitches)
+    // for (int membrane = 0; membrane < 2; membrane++) 
+    // {
+
+    //     ofBeginShape();
+    //     for (int i = 0 + membrane; i < intestineMolecules.size(); i+=2)
+    //     {
+    //         glm::vec2 vertexPos = intestineMolecules[i]->position;
+    //         if (i == 0 + membrane || i == intestineMolecules.size() - 2 + membrane)
+    //         {
+    //             ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //             ofCurveVertex(vertexPos); // we need to duplicate 0 for the curve to start at point 0
+    //         }
+    //         else
+    //         {
+    //             ofCurveVertex(vertexPos);
+    //         }
+    //     }
+    //     ofEndShape();
+
+    // }
+
+
+    // for (unsigned int i = 0; i < intestineMolecules.size(); i++)
+    // {
+    //     intestineMolecules[i]->draw();
+    // }
 }
 
 
