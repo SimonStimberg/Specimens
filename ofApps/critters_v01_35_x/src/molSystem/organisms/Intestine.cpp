@@ -151,7 +151,7 @@ void Intestine::update()
 void Intestine::draw()
 {
 
-    float lineWidth = 1.5f; // define global line width
+    float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
     lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 
     
@@ -180,7 +180,7 @@ void Intestine::draw()
         ofSetColor(col);
         ofFill();
 
-        float radius = ofMap( getDigestionStatus(), 0.0, 1.0, 3.0, 5.0 );
+        float radius = ofMap( getDigestionStatus(), 0.0, 1.0, lineWidth * 0.75, lineWidth * 2.);
        
         ofDrawCircle(digestionPos, radius);
     }
@@ -482,10 +482,9 @@ void Intestine::getSynced()
             float threshold = guiPtr->intestineSyncDistance;
 
             if (distance < threshold*threshold) {
-                // if (other->audioModule->meter() < 0.01) {
+                // if (other->lfoFired) {
 
                 //     if(ofGetElapsedTimeMillis() >= nextDigestion - (int)(guiPtr->intestineDigestionInterval*0.5)) nextDigestion = ofGetElapsedTimeMillis();
-
 
                 // }
 

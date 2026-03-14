@@ -154,6 +154,31 @@ class Pumper{
         int   maxNumCycles;
 
 
+        // public to be accesible for other Organisms to sync
+        float lfoPhase        = 0.0f;   // 0..1
+        bool  lfoFired        = false;  // true for exactly one frame per cycle
+
+
+    private:
+
+        void updateImpulseLFO(float dt);
+        void updateImpulseEnvelope(float dt);
+        void fireImpulseEnvelope();
+
+        bool  lfoActive       = false;
+        float lfoFrequency    = 0.5f;   // Hz
+        int   lfoTriggerCount = 0;
+
+        enum EnvStage { ENV_IDLE, ENV_ATTACK, ENV_HOLD, ENV_RELEASE };
+        EnvStage envStage  = ENV_IDLE;
+        float    envValue  = 0.0f;      // 0..1 — this is impulseOut()
+        float    envTimer  = 0.0f;
+
+        float    envAttack  = 0.012f;   // seconds (50ms)
+        float    envHold    = 0.214f;   // seconds (100ms)
+        float    envRelease = 0.51f;   // seconds (350ms)
+
+
         // audioModule::Pumper * audioModule;
         // pdsp::ValueControl  ampCtrl;
         // pdsp::ValueControl  filterCutoff;
@@ -172,7 +197,7 @@ class Pumper{
         
 
 
-    private:
+    
 
 };
 

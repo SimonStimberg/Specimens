@@ -137,9 +137,11 @@ void Molecule::draw() {
 	ofFill();
 
 	if (type == moleculeType::LIQUID) {
+		float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
+    	lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 		ofFill();
 		ofSetHexColor(0x1b9080);
-    	ofDrawCircle(position.x, position.y, 2.6);
+    	ofDrawCircle(position.x, position.y, lineWidth * 0.75);   // the center molecule is drawn bigger than the others to make it visible and to emphasize its role as the "soma" of the Neuron
 	}
 
 	// OR WHEN IN DEBUG MODE
@@ -340,7 +342,7 @@ glm::vec2 Molecule::gravity() {
 
 	// 	// make the liquid molecules (or suspended solid particles) to differ a bit in their weight to look less homogeneous
 	// 	gravity = uniqueVal * 0.000001;
-	gravity += 0.01;
+	// gravity += 0.01;
 	if(systemPtr->flush) gravity += 0.11;	// add a additional drag to the bottom, once the system collapsed
 	if(systemPtr->drop && position.x < -0.5 * systemPtr->worldSize.x) gravity += 0.71;
 
@@ -501,27 +503,27 @@ void Molecule::checkBounds() {
 //------------------------------------------------------------------
 float Molecule::signedDistanceField( glm::vec2 p)
 { 
-	p.x -= systemPtr->tuneXpos;
-	p.y -= systemPtr->tuneYpos;
+	p.x -= systemPtr->vesselXpos;
+	p.y -= systemPtr->vesselYpos;
 
 	// the shape of the CRT screen is composed of the intersection area of two elippses
 	// the parameters for the shape can be adjusted via the gui app with help of the screen mask
-	glm::vec2 r1(systemPtr->tuneHorizontalBow, systemPtr->tuneCanvasHeight);	
-	glm::vec2 r2(systemPtr->tuneCanvasWidth, systemPtr->tuneVerticalBow);		
+	glm::vec2 r1(systemPtr->vesselHorizontalBow, systemPtr->vesselCanvasHeight);	
+	glm::vec2 r2(systemPtr->vesselCanvasWidth, systemPtr->vesselVerticalBow);		
 
-	float sdf = opSmoothIntersection( sdEllipse(p, r1), sdEllipse(p, r2), systemPtr->tuneEdges );
+	float sdf = opSmoothIntersection( sdEllipse(p, r1), sdEllipse(p, r2), systemPtr->vesselEdges );
 	if(systemPtr->flush) {
 		// p.y -= 750.0;
 		p.x -= 1000.0;
 		glm::vec2 rad(1000.0, systemPtr->worldSize.y*0.4);
 		// glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
-		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
+		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->vesselEdges );
 	}
 	if(systemPtr->drop) {
 		p.x += 550.0;
 		// p.x -= 1500.0;
 		glm::vec2 rad(500.0, systemPtr->worldSize.y*0.1);
-		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->tuneEdges );
+		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->vesselEdges );
 	}
 
 	return sdf;

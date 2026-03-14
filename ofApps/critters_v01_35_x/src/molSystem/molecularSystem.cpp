@@ -1,4 +1,5 @@
 #include "molecularSystem.h"
+#include "ofApp.h"
 
 //------------------------------------------------------------------
 molecularSystem::molecularSystem() {
@@ -856,14 +857,30 @@ void molecularSystem::reset(bool random) {
 
 
 //------------------------------------------------------------------
-void molecularSystem::setGui() {
+void molecularSystem::setVesselShape() {
 
-    float screenSizeFactor = 1.0 / scalingFactor;
+    if (!guiPtr) return;
 
-    tuneCanvasWidth *= screenSizeFactor;
-    tuneCanvasHeight *= screenSizeFactor;
-    tuneXpos *= screenSizeFactor;
-    tuneYpos *= screenSizeFactor;
+    // float ssf = 1.0f / scalingFactor;   // screen-to-world scale factor
+
+    // vesselCanvasWidth   = guiPtr->tuneCanvasWidth   * ssf * 2.0f;
+    // vesselCanvasHeight  = guiPtr->tuneCanvasHeight  * ssf;
+    // vesselVerticalBow   = guiPtr->tuneVerticalBow;
+    // vesselHorizontalBow = guiPtr->tuneHorizontalBow;
+    // vesselEdges         = guiPtr->tuneEdges;
+    // vesselXpos          = guiPtr->tuneXpos          * ssf;
+    // vesselYpos          = guiPtr->tuneYpos          * ssf;
+    // vesselRotation      = guiPtr->tuneRotation;
+
+
+    vesselCanvasWidth   = guiPtr->tuneCanvasWidth   * worldSize.x * 0.5f;
+    vesselCanvasHeight  = guiPtr->tuneCanvasHeight  * worldSize.y * 0.5f;
+    vesselVerticalBow   = guiPtr->tuneVerticalBow   * worldSize.y * 0.5f;
+    vesselHorizontalBow = guiPtr->tuneHorizontalBow * worldSize.x * 0.5f;
+    vesselEdges         = guiPtr->tuneEdges;          // absolute, no scaling
+    vesselXpos          = guiPtr->tuneXpos          * worldSize.x;
+    vesselYpos          = guiPtr->tuneYpos          * worldSize.y;
+    vesselRotation      = guiPtr->tuneRotation;       // degrees, no scaling
 
     // gui.add(tuneCanvasWidth.set("Canvas Width", 330, 40, 360));
     // gui.add(tuneCanvasHeight.set("Canvas Height", 240, 40, 288));

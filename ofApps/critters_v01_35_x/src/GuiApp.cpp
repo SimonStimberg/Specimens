@@ -32,7 +32,8 @@ void GuiApp::setup(ofApp* app) {
     mainPtr = app;
     applyDefaults();
 
-    const string defaultSimulationPreset = "Presets/Simulation/friesTV-physics_01.xml"; 
+    // const string defaultSimulationPreset = "Presets/Simulation/friesTV-physics_01.xml"; 
+    defaultSimulationPreset = "Presets/Simulation/friesTV-physics_02+noSoundCtrl.xml"; 
 
     // const std::string defaultSimulationPreset = resolveFirstExistingPath({
     //     "../../../../Presets/Simulation/friesTV-physics_01.xml",
@@ -42,7 +43,7 @@ void GuiApp::setup(ofApp* app) {
     // });
     loadPreset(defaultSimulationPreset, 1);
 
-    const string defaultTubeCalibration = "Presets/TubeCalibrations/TinyScreen02.xml";
+    defaultTubeCalibration = "Presets/TubeCalibrations/TinyScreen03_relative.xml";
 
     // const std::string defaultTubeCalibration = resolveFirstExistingPath({
     //     "../../../../Presets/TubeCalibrations/TinyScreen01.xml",
@@ -55,10 +56,16 @@ void GuiApp::setup(ofApp* app) {
     publishValues();
 }
 
-bool GuiApp::loadPreset(const std::string& filePath, int panel) {
+bool GuiApp::loadPreset(std::string filePath, int panel) {
     if (filePath.empty()) {
         ofLogWarning("GuiApp") << "Skipping empty preset path";
         return false;
+    } else if (filePath == "DEFAULT_TUBE" && !defaultTubeCalibration.empty()) {
+        filePath = defaultTubeCalibration;
+        ofLogNotice("GuiApp") << "Loading default tube calibration preset: " << filePath;
+    } else if (filePath == "DEFAULT_SIMULATION" && !defaultSimulationPreset.empty()) {
+        filePath = defaultSimulationPreset;
+        ofLogNotice("GuiApp") << "Loading default simulation preset: " << filePath;
     }
 
     ofFile presetFile(filePath);
@@ -124,6 +131,17 @@ void GuiApp::applyDefaults() {
     tuneStructureLimitForce = 0.0f;
     membraneColor = ofColor(40, 40, 130, 255);
 
+    tuneOrganismsLineWidth = 1.5f;
+
+    tuneCanvasWidth   = 120.0f;
+    tuneCanvasHeight  = 95.0f;
+    tuneVerticalBow   = 790.0f;
+    tuneHorizontalBow = 600.0f;
+    tuneEdges         = 25.0f;
+    tuneXpos          = 0.0f;
+    tuneYpos          = 0.0f;
+    tuneRotation      = 0.0f;
+
     tuneDendriteLength = 22.0f;
     tuneDendriteElasticity = -5.0f;
     tuneDendriteLimitForce = 0.0f;
@@ -132,10 +150,15 @@ void GuiApp::applyDefaults() {
     cellFreqMultiplier = 1.0f;
 
     pumperSyncDistance = 100;
+    pumperImpulseAttack = 12;
+    pumperImpulseHold = 214;
+    pumperImpulseRelease = 510;
+    pumperImpulseAmount = 0.05625f;
 
     neuronGrowSpeed = 500;
     neuronSignalInterval = 2000;
     neuronSyncDistance = 100;
+    neuronSignalSpeed = 73;
 
     intestineGrowInterval = 700;
     intestineDigestionInterval = 4000;
@@ -183,6 +206,16 @@ void GuiApp::publishValues() {
     values["tuneStructureElasticity"] = tuneStructureElasticity;
     values["tuneStructureLimitForce"] = tuneStructureLimitForce;
     values["membraneColor"] = membraneColor;
+    values["tuneOrganismsLineWidth"] = tuneOrganismsLineWidth;
+
+    values["tuneCanvasWidth"]   = tuneCanvasWidth;
+    values["tuneCanvasHeight"]  = tuneCanvasHeight;
+    values["tuneVerticalBow"]   = tuneVerticalBow;
+    values["tuneHorizontalBow"] = tuneHorizontalBow;
+    values["tuneEdges"]         = tuneEdges;
+    values["tuneXpos"]          = tuneXpos;
+    values["tuneYpos"]          = tuneYpos;
+    values["tuneRotation"]      = tuneRotation;
 
     values["tuneDendriteLength"] = tuneDendriteLength;
     values["tuneDendriteElasticity"] = tuneDendriteElasticity;
@@ -192,10 +225,15 @@ void GuiApp::publishValues() {
     values["cellFreqMultiplier"] = cellFreqMultiplier;
 
     values["pumperSyncDistance"] = pumperSyncDistance;
+    values["pumperImpulseAttack"] = pumperImpulseAttack;
+    values["pumperImpulseHold"] = pumperImpulseHold;
+    values["pumperImpulseRelease"] = pumperImpulseRelease;
+    values["pumperImpulseAmount"] = pumperImpulseAmount;
 
     values["neuronGrowSpeed"] = neuronGrowSpeed;
     values["neuronSignalInterval"] = neuronSignalInterval;
     values["neuronSyncDistance"] = neuronSyncDistance;
+    values["neuronSignalSpeed"] = neuronSignalSpeed;
 
     values["intestineGrowInterval"] = intestineGrowInterval;
     values["intestineDigestionInterval"] = intestineDigestionInterval;
@@ -266,6 +304,8 @@ bool GuiApp::loadSimulationPreset(const std::string& filePath) {
     tuneStructureLimitForce = getFloat("group:Tune_Intestine_Shape:Structure_Force_limit", tuneStructureLimitForce);
     membraneColor = getColor("group:Tune_Intestine_Shape:Membrane_Color", membraneColor);
 
+    tuneOrganismsLineWidth = getFloat("group:Tune_Organisms_Shape:Line_Width", tuneOrganismsLineWidth);
+
     tuneDendriteLength = getFloat("group:Tune_Neuron_Shape:Dendrite_Length", tuneDendriteLength);
     tuneDendriteElasticity = getFloat("group:Tune_Neuron_Shape:Dendrite_Elasticity", tuneDendriteElasticity);
     tuneDendriteLimitForce = getFloat("group:Tune_Neuron_Shape:Dendrite_Force_limit", tuneDendriteLimitForce);
@@ -277,10 +317,15 @@ bool GuiApp::loadSimulationPreset(const std::string& filePath) {
     cellFreqMultiplier = getFloat("group:Timings:Breathers:Cell_Freq_Multiplier", cellFreqMultiplier);
 
     pumperSyncDistance = getInt("group:Timings:Pumpers:Pumper_Sync_Distance", pumperSyncDistance);
+    pumperImpulseAttack = getInt("group:Timings:Pumpers:Pumper_Impulse_attack", pumperImpulseAttack);
+    pumperImpulseHold = getInt("group:Timings:Pumpers:Pumper_Impulse_hold", pumperImpulseHold);
+    pumperImpulseRelease = getInt("group:Timings:Pumpers:Pumper_Impulse_release", pumperImpulseRelease);
+    pumperImpulseAmount = getFloat("group:Timings:Pumpers:Pumper_Impulse_Amount", pumperImpulseAmount);
 
     neuronGrowSpeed = getInt("group:Timings:Neurons:Neuron_Grow_Speed", neuronGrowSpeed);
     neuronSignalInterval = getInt("group:Timings:Neurons:Neuron_Signal_Inteval", neuronSignalInterval);
     neuronSyncDistance = getInt("group:Timings:Neurons:Neuron_Sync_Distance", neuronSyncDistance);
+    neuronSignalSpeed = getInt("group:Timings:Neurons:Neuron_Signal_Speed", neuronSignalSpeed);
 
     intestineGrowInterval = getInt("group:Timings:Intestines:Intestine_Grow_Interval", intestineGrowInterval);
     intestineDigestionInterval = getInt("group:Timings:Intestines:Intestine_Digestion_Interval", intestineDigestionInterval);
@@ -308,27 +353,29 @@ bool GuiApp::loadTubeCalibrationPreset(const std::string& filePath) {
 
     bool foundAny = false;
 
-    for (int i = 0; i < mainPtr->numScreens; ++i) {
-        const std::string prefix = "group:Tune_Canvas:Shape_Tube_" + ofToString(i) + ":";
+    // for (int i = 0; i < mainPtr->numScreens; ++i) {
+    const std::string prefix = "group:Tune_Canvas:Shape_Tube_0:";
 
-        if (!xml.tagExists(prefix + "Canvas_Width")) {
-            continue;
-        }
-
-        mainPtr->molSystem[i].tuneCanvasWidth = xml.getValue(prefix + "Canvas_Width", (float)mainPtr->molSystem[i].tuneCanvasWidth);
-        mainPtr->molSystem[i].tuneCanvasHeight = xml.getValue(prefix + "Canvas_Height", (float)mainPtr->molSystem[i].tuneCanvasHeight);
-        mainPtr->molSystem[i].tuneVerticalBow = xml.getValue(prefix + "Vertical_Bow", (float)mainPtr->molSystem[i].tuneVerticalBow);
-        mainPtr->molSystem[i].tuneHorizontalBow = xml.getValue(prefix + "Horizontal_Bow", (float)mainPtr->molSystem[i].tuneHorizontalBow);
-        mainPtr->molSystem[i].tuneEdges = xml.getValue(prefix + "Smooth_Edges", (float)mainPtr->molSystem[i].tuneEdges);
-        mainPtr->molSystem[i].tuneXpos = xml.getValue(prefix + "X_Position", (float)mainPtr->molSystem[i].tuneXpos);
-        mainPtr->molSystem[i].tuneYpos = xml.getValue(prefix + "Y_Position", (float)mainPtr->molSystem[i].tuneYpos);
-
-        if (xml.tagExists(prefix + "Rotation")) {
-            mainPtr->molSystem[i].tuneRotation = xml.getValue(prefix + "Rotation", (float)mainPtr->molSystem[i].tuneRotation);
-        }
-
-        foundAny = true;
+    if (!xml.tagExists(prefix + "Canvas_Width")) {
+        return false;
     }
+
+    tuneCanvasWidth   = xml.getValue(prefix + "Canvas_Width",    tuneCanvasWidth);
+    tuneCanvasHeight  = xml.getValue(prefix + "Canvas_Height",   tuneCanvasHeight);
+    tuneVerticalBow   = xml.getValue(prefix + "Vertical_Bow",    tuneVerticalBow);
+    tuneHorizontalBow = xml.getValue(prefix + "Horizontal_Bow",  tuneHorizontalBow);
+    tuneEdges         = xml.getValue(prefix + "Smooth_Edges",    tuneEdges);
+    tuneXpos          = xml.getValue(prefix + "X_Position",      tuneXpos);
+    tuneYpos          = xml.getValue(prefix + "Y_Position",      tuneYpos);
+
+    if (xml.tagExists(prefix + "Rotation")) {
+        tuneRotation  = xml.getValue(prefix + "Rotation",        tuneRotation);
+    }
+
+    foundAny = true;
+    // }
+
+    mainPtr->molSystem.setVesselShape();
 
     maskChanged = foundAny;
     return foundAny;

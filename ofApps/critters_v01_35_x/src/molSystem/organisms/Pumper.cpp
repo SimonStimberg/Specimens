@@ -64,7 +64,9 @@ void Pumper::set(int num, int x, int y)
         systemPtr->allSprings.push_back(s);
     }
 
-
+    envAttack  = guiPtr->pumperImpulseAttack  / 1000.0f;
+    envHold    = guiPtr->pumperImpulseHold    / 1000.0f;
+    envRelease = guiPtr->pumperImpulseRelease / 1000.0f;
 
     
 
@@ -105,7 +107,7 @@ void Pumper::set(int num, int x, int y)
 void Pumper::update()
 {
 
-            if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Pumper " + ofToString(this) + " is NAN!");
+    if (isnan(cellMolecules[0]->position.x)) ofLogNotice("Pumper " + ofToString(this) + " is NAN!");
             
     adaptArousal(-0.01);
     adaptValence();
@@ -137,11 +139,21 @@ void Pumper::update()
 
             
     // SET THE IMPULSE RATE ACCORDING TO AROUSAL LEVEL
-    float impulseRate = arousal * arousal;   // use a squared curve for mapping
+    // float impulseRate = arousal * arousal;   // use a squared curve for mapping
     // impulseRate = (arousal > 0.1) ? ofMap(impulseRate, 0., 1., 0.25, 1.5) : 0.0;    // map the normalized and squared ratio to the desired frequency range
     // map the arousal level to frequency
-    impulseRate = ofMap(impulseRate, 0.75, 1., 0.5, 1.5, true);  // map max arousal to 1.5 Hz and reach idle frequency at arousal level of 0.75. Idle frequency should be 0.5 Hz
+    // impulseRate = ofMap(impulseRate, 0.75, 1., 0.5, 1.5, true);  // map max arousal to 1.5 Hz and reach idle frequency at arousal level of 0.75. Idle frequency should be 0.5 Hz
     // impulseRate >> audioModule->in_impulseRate();    // set the rate
+
+    lfoFrequency = ofMap(arousal * arousal, 0.75, 1.0, 0.5, 1.5, true);
+    if (lfoActive) {
+        float dt = ofGetLastFrameTime();
+        if (arousal > 0.1f) {
+            updateImpulseLFO(dt);   // only fire new triggers when arousal is sufficient
+        }
+        updateImpulseEnvelope(dt);  // always tick — lets the current release decay to 0
+    }
+    if (mature && lfoTriggerCount >= maxNumCycles && systemPtr->mySpecies == NONE) die();
     
     // if arousal level falls below 0.1: stop beating
     // if(arousal < 0.1) {
@@ -162,7 +174,7 @@ void Pumper::update()
 //------------------------------------------------------------------
 void Pumper::draw()
 {
-    float lineWidth = 1.5f; // define global line width
+    float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
     lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 
 
@@ -184,10 +196,12 @@ void Pumper::draw()
     if(mature) {
         float brtnss = col.getBrightness();
         // brtnss = ofMap( audioModule->impulseOut(), 0.0, 1.0, brtnss, 255.0 );
+        brtnss = ofMap(envValue, 0.0, 1.0, brtnss, 255.0);
         col.setBrightness(brtnss);
 
         float sat = col.getSaturation();
         // sat = ofMap( audioModule->impulseOut(), 0.0, 1.0, sat, 55.0 );
+        sat    = ofMap(envValue, 0.0, 1.0, sat,    55.0);
         col.setSaturation(sat);
         // col = ofColor(255, 25, 0);
     }
@@ -276,9 +290,16 @@ void Pumper::grow()
         
         mature = (cellMolecules.size() >= maxGrowth) ? true : false;
         if(mature) {
-            // audioModule->startImpulse();
+            lfoActive = true;
+            lfoPhase = 0.0f;
+            lfoTriggerCount = 0;
             timeOfMaturity = ofGetElapsedTimef();
+
+            // audioModule->startImpulse();
+            // timeOfMaturity = ofGetElapsedTimef();
             // ofLogNotice("Pumper is mature now!");
+
+            
         }
 
     }
@@ -298,13 +319,17 @@ void Pumper::contract() {
 	
 	if (mature == true && guiPtr->switchOscillation ) {
 
+        float oscillate = envValue * guiPtr->pumperImpulseAmount;  // (if pmprImpulseAmt is restored as ofParameter<float>)
+        float oscAmount = 1 - (1 - arousal) * (1 - arousal);
+        oscillate *= oscAmount;
+        pressure = 1.0f - oscillate;
 
         // float oscillate = -audioModule->impulseOut() * guiPtr->pmprImpulseAmt;
         // float oscillate = ofMap(audioModule->impulseOut(), 0., 1., -2. 1.)
         // float oscillate = audioModule->impulseOut() * 2.2;       // get the impulse envelope from the audioModule (values from 0. to 1.) factor them by certain amount
 
         // map the oscillator amount to the arousal level
-        float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
+        // float oscAmount = 1 - (1 - arousal) * (1 - arousal); // use a negative squared curve for mapping
         // oscillate *= oscAmount;     // apply the amount to the oscillation
 
 
@@ -392,6 +417,10 @@ void Pumper::sync()
                 //     trigPhase.trigger(1.0);
 
                 // }
+
+                if (other->lfoPhase < 0.05f && (lfoPhase > 0.6f || lfoPhase < 0.4f)) {
+                    lfoPhase = 0.5f;  // reset to mid-cycle, equivalent to the old setPhase(0.5) + retrigger
+                }
 
             }
         }
@@ -498,4 +527,48 @@ float Pumper::getInflation() {
     averageStretch = ofMap(averageStretch, -1.0, 3.5, 0.0, 1.0, false);
 
     return averageStretch;
+}
+
+
+
+//------------------------------------------------------------------
+void Pumper::updateImpulseLFO(float dt) {
+    lfoFired = false;
+    float prevPhase = lfoPhase;
+    lfoPhase += lfoFrequency * dt;
+    if (lfoPhase >= 1.0f) {
+        lfoPhase -= 1.0f;
+        lfoFired = true;
+        lfoTriggerCount++;
+        fireImpulseEnvelope();  // see below
+    }
+}
+
+//------------------------------------------------------------------
+void Pumper::fireImpulseEnvelope() {
+    envStage = ENV_ATTACK;
+    envTimer = 0.0f;
+}
+
+
+//------------------------------------------------------------------
+void Pumper::updateImpulseEnvelope(float dt) {
+    envTimer += dt;
+    switch (envStage) {
+        case ENV_ATTACK:
+            envValue = envTimer / envAttack;
+            if (envTimer >= envAttack) { envValue = 1.0f; envStage = ENV_HOLD; envTimer = 0.0f; }
+            break;
+        case ENV_HOLD:
+            envValue = 1.0f;
+            if (envTimer >= envHold) { envStage = ENV_RELEASE; envTimer = 0.0f; }
+            break;
+        case ENV_RELEASE:
+            envValue = 1.0f - (envTimer / envRelease);
+            if (envTimer >= envRelease) { envValue = 0.0f; envStage = ENV_IDLE; }
+            break;
+        case ENV_IDLE:
+            envValue = 0.0f;
+            break;
+    }
 }

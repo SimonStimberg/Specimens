@@ -13,7 +13,7 @@ void ofApp::setup() {
     // ofSetVerticalSync(true);
     ofSetFrameRate(50);
 
-    singleSpeciesMode = true;
+    // singleSpeciesMode = true;
 
 
     // initSynth();
@@ -28,75 +28,79 @@ void ofApp::setup() {
 
     // a resizing factor to account for different CRT screen sizes 
     // as the resolution stays the same for all screens, the depicted graphics would be perceived with different sizes
-    vector<float> screenSizeFactor;
-    screenSizeFactor.assign(4 ,1.0f);
+    // vector<float> screenSizeFactor;
+    // screenSizeFactor.assign(4 ,1.0f);
 
     // define the desired vessel size for each screen (the installation consists of four screens)
     // shrinking the native resolution by a custom factor
-    screenSizeFactor[0] = 0.4;    // Sanyo Ultraschall      // make this screen 80% the size of the native resolution 800px -> 640px
-    screenSizeFactor[1] = 0.8 * 0.85;   // Hitachi            // make the smaller screen even only 85% of the bigger screen to match the perceived size
-    screenSizeFactor[2] = 0.8 * 0.8;   // sanyo small 
-    screenSizeFactor[3] = 0.8 * 0.9;   // Philips      0.8 * 0.95
+    // screenSizeFactor[0] = 0.4;    // Sanyo Ultraschall      // make this screen 80% the size of the native resolution 800px -> 640px
+    // screenSizeFactor[1] = 0.8 * 0.85;   // Hitachi            // make the smaller screen even only 85% of the bigger screen to match the perceived size
+    // screenSizeFactor[2] = 0.8 * 0.8;   // sanyo small 
+    // screenSizeFactor[3] = 0.8 * 0.9;   // Philips      0.8 * 0.95
 
 
     // INITIALIZE THE SCREEN BUFFERS AND THE MOLECULAR SYSTEM FOR EACH SCREEN
-    for (int i = 0; i < numScreens; i++) {
+    // for (int i = 0; i < numScreens; i++) {
 
-        // anti-aliasing FBOs by multisampling! watch out: needs more performance
-        ofFbo::Settings settings;
-            // settings.numSamples = 1;    // also try 8, if your GPU supports it
-            // settings.useDepth = false; 
-            settings.width = screenResolution.x * screenSizeFactor[i];
-            settings.height = screenResolution.y * screenSizeFactor[i];
+    screenSizeFactor = 0.5;
+    float scalingFactor = 1.0 / screenSizeFactor;
+    glm::vec2 vesselSize = screenResolution * screenSizeFactor;
 
-        vessel[i].allocate(settings);   // the frame buffer is called vessel as it contains the rendered Molecular System
+    // anti-aliasing FBOs by multisampling! watch out: needs more performance
+    // ofFbo::Settings settings;
+        // settings.numSamples = 1;    // also try 8, if your GPU supports it
+        // settings.useDepth = false; 
+        // settings.width = vesselSize.x;
+        // settings.height = vesselSize.y;
 
-
-        // mask for mapping the screen shape
-        mask[i].allocate(vessel[i].getWidth(), vessel[i].getHeight(), GL_LUMINANCE);
-
-
-        float scalingFactor = 1.0 / screenSizeFactor[i];
+    // vessel[i].allocate(settings);   // the frame buffer is called vessel as it contains the rendered Molecular System
 
 
-        // initialize the Molecular System  
-        // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
-        // int setSpecies = (singleSpeciesMode) ? i+1 : 5;
-        int setSpecies = 1;
-        molSystem[i].setup(vessel[i].getWidth(), vessel[i].getHeight(), scalingFactor, setSpecies);  
-
-        // molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
-
-        // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
-        // the Molecular System creates stems for each organism type
-        // molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
-        // molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
-        // molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
-        // molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
-
-        // compressor[i].ch(0) >> sumBus.ch(i);
-        // compressor[i].ch(1) >> fxBus.ch(i);
-    
-        // molSystem[i].blackhole >> engine.blackhole();  
-        // molSystem[i].blackhole >> gain.ch(3);
+    // mask for mapping the screen shape
+    mask.allocate(screenResolution.x, screenResolution.y, GL_RGBA);
 
 
-        // add organisms or liquid (free floating particles) to the Molecular System
-        molSystem[i].addInitialDrop(2);
-        // molSystem[i].addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
-        // molSystem[i].addOrganisms(BREATHER,  2);
-        // molSystem[i].addOrganisms(PUMPER,    1);
-        // molSystem[i].addOrganisms(NEURON,    3);
-        // molSystem[i].addOrganisms(INTESTINE, 3);
 
-        ofLogNotice("Screen No. " + ofToString(i) + " with size: " + ofToString(vessel[i].getWidth()) + "x" + ofToString(vessel[i].getHeight()));
+
+
+    // initialize the Molecular System  
+    // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
+    // int setSpecies = (singleSpeciesMode) ? i+1 : 5;
+    int setSpecies = 5;
+    molSystem.setup(vesselSize.x, vesselSize.y, scalingFactor, setSpecies);  
+
+    // molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
+
+    // ROUTE THE AUDIO from the each Molecular System to a FX/Master bus for each screen
+    // the Molecular System creates stems for each organism type
+    // molSystem[i].masterBus.ch(0) >> fxBus.ch(i);      // channel1: breathers
+    // molSystem[i].masterBus.ch(1) >> cleanBus.ch(i);     // channel2: pumpers
+    // molSystem[i].masterBus.ch(2) >> fxBus.ch(i);      // channel3: neurons
+    // molSystem[i].masterBus.ch(3) >> cleanBus.ch(i);     // channel4: intestines
+
+    // compressor[i].ch(0) >> sumBus.ch(i);
+    // compressor[i].ch(1) >> fxBus.ch(i);
+
+    // molSystem[i].blackhole >> engine.blackhole();  
+    // molSystem[i].blackhole >> gain.ch(3);
+
+
+    // add organisms or liquid (free floating particles) to the Molecular System
+    molSystem.addInitialDrop(2);
+    // molSystem.addOrganisms(LIQUID,    floor(250 * screenSizeFactor[i]) );
+    // molSystem.addOrganisms(BREATHER,  2);
+    // molSystem.addOrganisms(PUMPER,    1);
+    // molSystem.addOrganisms(NEURON,    3);
+    // molSystem.addOrganisms(INTESTINE, 3);
+
+    ofLogNotice("Screen with size: " + ofToString(vesselSize.x) + "x" + ofToString(vesselSize.y) + " initialized.");
+    // }
+
+
+    if (!guiPtr) {
+        guiPtr = make_shared<GuiApp>();
     }
-
-    
-        if (!guiPtr) {
-            guiPtr = make_shared<GuiApp>();
-        }
-        guiPtr->setup(this);
+    guiPtr->setup(this);
 
     setTVmask();
     showMask = false;
@@ -153,104 +157,104 @@ void ofApp::update() {
 
 
     // UPDATE THE MOLECULAR SYSTEM OF EACH SCREEN
-    for (int i = 0; i < numScreens; i++) {
+    // for (int i = 0; i < numScreens; i++) {
 
 
-        #ifdef SHOW_ON_CRT
+    #ifdef SHOW_ON_CRT
 
-            // set kinect output as intrusion points for interaction
-            molSystem[i].setIntrusionPoints(kinectToPoints.getTouchPoints(i));
+        // set kinect output as intrusion points for interaction
+        molSystem.setIntrusionPoints(kinectToPoints.getTouchPoints(0));
 
-        #else
+    #else
 
-            // set mouse position as intrusion points for interaction
-            float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-            mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 ) * scalingFactor - vessel[i].getWidth() * i;
-            mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 ) * scalingFactor;
-            
-            // float angle = glm::radians(-90.0);
-            // mousePos[0] = glm::rotate(mousePos[0], angle);
-            if (testBool) {
-                mousePos[0].x = 0.0;
-                mousePos[0].y = 0.0;
-            }
-
-            // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
-            
-            molSystem[i].setIntrusionPoints(mousePos);
-
-        #endif
-
-        // if(singleSpeciesMode) {
-        //     glm::vec2 check = kinectToPoints.getTriggerPoint(i);
-        //     if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
-        // }
+        // set mouse position as intrusion points for interaction
+        // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
+        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 );
+        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 );
         
-        molSystem[i].update();
+        // float angle = glm::radians(-90.0);
+        // mousePos[0] = glm::rotate(mousePos[0], angle);
+        if (testBool) {
+            mousePos[0].x = 0.0;
+            mousePos[0].y = 0.0;
+        }
 
-
-        // draw the Molecular System to the frame buffer
-        // vessel[i].begin();
+        // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
         
-        //     ofBackground(0);
-        //     if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+        molSystem.setIntrusionPoints(mousePos);
 
-        //     // draw the Molecular System
-        //     ofPushMatrix();
-        //         ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
-        //         molSystem[i].draw();
-        //     ofPopMatrix();
+    #endif
 
-
-        //     // draw mask for screen shape mapping when activated
-        //     // if(guiPtr->switchScreenMask) {
-        //     //     mask[i].draw(0, 0);
-        //     // }
-
-            
-        //     // draw kinect callibration guides
-        //     // if(guiPtr->switchKinectCalibration) {
-        //     //     int iScreen = floor(ofGetMouseX()/ screenResolution.x);
-        //     //     if(iScreen == i) {
-        //     //         kinectToPoints.drawKinect(i);
-        //     //         kinectToPoints.drawCalibrationAids(i);
-        //     //     }
-        //     // }      
-        
-        // vessel[i].end();
+    // if(singleSpeciesMode) {
+    //     glm::vec2 check = kinectToPoints.getTriggerPoint(i);
+    //     if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
+    // }
+    
+    molSystem.update();
 
 
+    // draw the Molecular System to the frame buffer
+    // vessel[i].begin();
+    
+    //     ofBackground(0);
+    //     if(molSystem.flush && molSystem.flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
 
-        // if(molSystem[i].flush) {
-        //     1.0f >> disasterFX.distortion_ch(i);
-        // } else {
-        //     float pressure = molSystem[i].getSystemPressure();
-        //     pressure * pressure * 0.65 >> disasterFX.reverb_ch(i);
-        //     0.0f >> disasterFX.distortion_ch(i);
-        // }
+    //     // draw the Molecular System
+    //     ofPushMatrix();
+    //         ofTranslate(vessel[i].getWidth()*0.5, vessel[i].getHeight()*0.5);   // translate to the center of the screen
+    //         molSystem.draw();
+    //     ofPopMatrix();
+
+
+    //     // draw mask for screen shape mapping when activated
+    //     // if(guiPtr->switchScreenMask) {
+    //     //     mask[i].draw(0, 0);
+    //     // }
 
         
-        // audioMaster.switchDistortion(molSystem[i].flush, i);
-
-        // if(molSystem[i].flush) {
-        //     audioMaster.switchDistortion(true, i);
-        // } else {
-        //     float pressure = molSystem[i].getSystemPressure();
-        //     pressure = pressure * pressure * 0.65;
-        //     audioMaster.setReverbAmount(pressure, i);
-            
-        //     audioMaster.switchDistortion(false, i);
-        // }
-
+    //     // draw kinect callibration guides
+    //     // if(guiPtr->switchKinectCalibration) {
+    //     //     int iScreen = floor(ofGetMouseX()/ screenResolution.x);
+    //     //     if(iScreen == i) {
+    //     //         kinectToPoints.drawKinect(i);
+    //     //         kinectToPoints.drawCalibrationAids(i);
+    //     //     }
+    //     // }      
+    
+    // vessel[i].end();
 
 
 
+    // if(molSystem[i].flush) {
+    //     1.0f >> disasterFX.distortion_ch(i);
+    // } else {
+    //     float pressure = molSystem[i].getSystemPressure();
+    //     pressure * pressure * 0.65 >> disasterFX.reverb_ch(i);
+    //     0.0f >> disasterFX.distortion_ch(i);
+    // }
 
-        // if(guiPtr->maskChanged) { setTVmask(); }
+    
+    // audioMaster.switchDistortion(molSystem[i].flush, i);
+
+    // if(molSystem[i].flush) {
+    //     audioMaster.switchDistortion(true, i);
+    // } else {
+    //     float pressure = molSystem[i].getSystemPressure();
+    //     pressure = pressure * pressure * 0.65;
+    //     audioMaster.setReverbAmount(pressure, i);
+        
+    //     audioMaster.switchDistortion(false, i);
+    // }
 
 
 
-    }
+
+
+    // if(guiPtr->maskChanged) { setTVmask(); }
+
+
+
+    // }
 
 
     // if(molSystem[0].flush) 1.0f >> disasterFX.distortion_ch(0);
@@ -276,59 +280,69 @@ void ofApp::update() {
 void ofApp::draw(){
 
 
+    // ofPushMatrix();
+
+    #ifndef SHOW_ON_CRT
+        // simulate upright orientation of the CRT screens when in window mode
+        // ofTranslate(600, 0);
+        // ofRotateDeg(90);
+    #endif
+
+    // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
+    // for (int i = 0; i < numScreens; i++) {
+    //     int xShift = i * screenResolution.x;
+    //     vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
+    //     // vessel[i].draw(xShift, 0);
+    // }   
+    ofBackground(0);
+    // if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+
+    // draw the Molecular System
     ofPushMatrix();
+        ofTranslate(ofGetWidth()*0.5, ofGetHeight()*0.5);   // translate to the center of the screen
+        molSystem.draw();
+    ofPopMatrix();
 
-        #ifndef SHOW_ON_CRT
-            // simulate upright orientation of the CRT screens when in window mode
-            // ofTranslate(600, 0);
-            // ofRotateDeg(90);
-        #endif
 
-        // draw the screen buffers side by side to the canvas and scale it up to the native screen resolution
+    // draw mask for screen shape mapping when activated
+    if(showMask) {
+        setTVmask();
+        ofSetColor(ofColor::dimGrey);
+        mask.draw(0, 0);
+    }
+
+    
+    // draw status info
+    #ifndef SHOW_ON_CRT
+        int numMolecules = 0;
+        int itrPts = 0;
         // for (int i = 0; i < numScreens; i++) {
-        //     int xShift = i * screenResolution.x;
-        //     vessel[i].draw(xShift, 0, screenResolution.x, screenResolution.y);
-        //     // vessel[i].draw(xShift, 0);
-        // }   
-        ofBackground(0);
-        // if(molSystem[i].flush && molSystem[i].flushTimestamp + 50 > ofGetElapsedTimeMillis() ) ofBackground(200); 
+        numMolecules += molSystem.allMolecules.size();
+        // itrPts += kinectToPoints.getTouchPoints(i).size();
 
-        // draw the Molecular System
+        maxBreathers = (molSystem.breathers.size() > maxBreathers) ? molSystem.breathers.size() : maxBreathers;
+        maxPumpers = (molSystem.pumpers.size() > maxPumpers) ? molSystem.pumpers.size() : maxPumpers;
+        maxNeurons = (molSystem.neurons.size() > maxNeurons) ? molSystem.neurons.size() : maxNeurons;
+        maxIntestines = (molSystem.intestines.size() > maxIntestines) ? molSystem.intestines.size() : maxIntestines;
+        // }
+        ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
         ofPushMatrix();
-            ofTranslate(ofGetWidth()*0.5, ofGetHeight()*0.5);   // translate to the center of the screen
-            molSystem[0].draw();
+            string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
+            ofRotateDeg(-90);
+            ofSetColor(ofColor::white);
+            ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
+            // ofDrawBitmapString(infoTxt, 50, 50);
         ofPopMatrix();
-
-        
-
-        #ifndef SHOW_ON_CRT
-            int numMolecules = 0;
-            int itrPts = 0;
-            for (int i = 0; i < numScreens; i++) {
-                numMolecules += molSystem[i].allMolecules.size();
-                // itrPts += kinectToPoints.getTouchPoints(i).size();
-
-                maxBreathers = (molSystem[i].breathers.size() > maxBreathers) ? molSystem[i].breathers.size() : maxBreathers;
-                maxPumpers = (molSystem[i].pumpers.size() > maxPumpers) ? molSystem[i].pumpers.size() : maxPumpers;
-                maxNeurons = (molSystem[i].neurons.size() > maxNeurons) ? molSystem[i].neurons.size() : maxNeurons;
-                maxIntestines = (molSystem[i].intestines.size() > maxIntestines) ? molSystem[i].intestines.size() : maxIntestines;
-            }
-            ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
-            ofPushMatrix();
-                string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
-                ofRotateDeg(-90);
-                ofSetColor(ofColor::white);
-                ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
-                // ofDrawBitmapString(infoTxt, 50, 50);
-            ofPopMatrix();
-        #endif
+    #endif
 
 
         // ofSetColor(ofColor::aliceBlue);
         // ofFill();
         // ofDrawCircle(ofGetMouseX(), ofGetMouseY(), 4.);
 
-    ofPopMatrix();
+    // ofPopMatrix();
+
+
     
     // ofSetColor(ofColor::white);
     // ofDrawRectangle(10, 10, 100, 100);
@@ -340,37 +354,59 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::setTVmask() {
 
-    
-    // set the screen mask for mapping the CRT screen shape
-    for (int s = 0; s < numScreens; s++) {
-        ofPixels pixels;
-        mask[s].readToPixels(pixels);
-
-        Molecule * m = new Molecule(&molSystem[s]);
-        m->reset(0,0,0,0);
-
-        for(int i = 0; i < pixels.size(); i++) {
-            
-            float y = floor(i/vessel[s].getWidth());
-            float x = i - y * vessel[s].getWidth();
-            y -= vessel[s].getHeight() * 0.5;
-            x -= vessel[s].getWidth()  * 0.5;
+    guiPtr->loadPreset("DEFAULT_TUBE", 1);
   
-            // get the shape from the signed distance field in the Molecule class
-            float sdf = m->signedDistanceField(glm::vec2(x, y));
+    // set the screen mask for mapping the CRT screen shape
+    // for (int s = 0; s < numScreens; s++) {
+    ofPixels pixels;
+    // mask.readToPixels(pixels);
+    pixels.allocate(screenResolution.x, screenResolution.y, OF_PIXELS_RGBA);
 
-            if(sdf <= 0.0 ) {
-                pixels[i] = 255;
-            } else if(sdf > 0.0 && sdf <= 10.0) {
-                pixels[i] = 150;
-            } else {
-                pixels[i] = 0;
-            }
 
+    // Molecule * m = new Molecule(&molSystem);
+    Molecule m(&molSystem);
+    m.reset(0,0,0,0);
+
+    for (int y0 = 0; y0 < screenResolution.y; ++y0) {
+        for (int x0 = 0; x0 < screenResolution.x; ++x0) {
+            float x = x0 - screenResolution.x * 0.5f;
+            float y = y0 - screenResolution.y * 0.5f;
+            x *= screenSizeFactor;
+            y *= screenSizeFactor;
+
+            float sdf = m.signedDistanceField(glm::vec2(x, y));
+
+            unsigned char v = (sdf <= 0.0f) ? 255 : (sdf <= 10.0f ? 150 : 0);
+            pixels.setColor(x0, y0, ofColor(v, v, v, 255));
         }
-        mask[s].loadData(pixels);
-
     }
+    mask.loadData(pixels);
+
+    // for(int i = 0; i < pixels.size(); i++) {
+        
+    //     float y = floor(i/screenResolution.x);
+    //     float x = i - y * screenResolution.x;
+    //     y -= screenResolution.y * 0.5;
+    //     x -= screenResolution.x * 0.5;
+
+    //     x *= screenSizeFactor;  // convert to world space
+    //     y *= screenSizeFactor;  // convert to world space
+
+    //     // get the shape from the signed distance field in the Molecule class
+    //     float sdf = m.signedDistanceField(glm::vec2(x, y));
+
+    //     if(sdf <= 0.0 ) {
+    //         pixels[i] = 255;
+    //     } else if(sdf > 0.0 && sdf <= 10.0) {
+    //         pixels[i] = 150;
+    //     } else {
+    //         pixels[i] = 0;
+    //     }
+
+    // }
+    // mask.loadData(pixels);
+
+    // }
 
     // guiPtr->maskChanged = false;
 }
@@ -415,11 +451,11 @@ void ofApp::keyPressed(int key){
     }
 
 
-    if (key == '1')   molSystem[0].addOrganisms(BREATHER,  5);
-    if (key == '2')   molSystem[0].addOrganisms(PUMPER,    5);
-    if (key == '3')   molSystem[0].addOrganisms(NEURON,    5);
-    if (key == '4')   molSystem[0].addOrganisms(INTESTINE,  5);
-    if (key == '5')   molSystem[0].addOrganisms(LIQUID,  20);
+    if (key == '1')   molSystem.addOrganisms(BREATHER,  5);
+    if (key == '2')   molSystem.addOrganisms(PUMPER,    5);
+    if (key == '3')   molSystem.addOrganisms(NEURON,    5);
+    if (key == '4')   molSystem.addOrganisms(INTESTINE,  5);
+    if (key == '5')   molSystem.addOrganisms(LIQUID,  20);
 
 
     // if( key == 'x' ) { 
@@ -429,7 +465,11 @@ void ofApp::keyPressed(int key){
 
     // }
 
-    if( key == 'm' ) { 
+    if( key == 'm' ) {
+        showMask = !showMask;
+    }
+
+    if( key == 'q' ) { 
         ofLogNotice("system shutdown please per keypress");
         // ofSystem("sudo -S shutdown -h now < /Users/pablo/masterpw.txt");
 

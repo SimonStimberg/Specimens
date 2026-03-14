@@ -54,7 +54,7 @@ class molecularSystem{
         void addBisectedIntestine(vector<glm::vec2> positions);
         void addFromStack();
         
-        void setGui();
+        void setVesselShape();
         void setIntrusionPoints(vector <glm::vec2> pts) { intrusionPoints.clear(); intrusionPoints = pts; }
         void reset(bool random);
 
@@ -110,16 +110,15 @@ class molecularSystem{
         // audioModule::SubMaster * audioLink;
 
 
-        // gui parameters for the canvas shape
-        float tuneCanvasWidth;		
-		float tuneCanvasHeight;
-		float tuneVerticalBow;
-		float tuneHorizontalBow;
-		float tuneEdges;
-		float tuneXpos;
-		float tuneYpos;
-		float tuneRotation;
-		// ofParameterGroup gui;
+        // vessel shape parameters (world-space pixels, computed by setVesselShape())
+        float vesselCanvasWidth   = 120.0f;
+		float vesselCanvasHeight  = 95.0f;
+		float vesselVerticalBow   = 790.0f;
+		float vesselHorizontalBow = 600.0f;
+		float vesselEdges         = 25.0f;
+		float vesselXpos          = 0.0f;
+		float vesselYpos          = 0.0f;
+		float vesselRotation      = 0.0f;
 
 
         // ofApp * masterPtr;

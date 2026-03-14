@@ -136,7 +136,7 @@ void Neuron::update()
 //------------------------------------------------------------------
 void Neuron::draw()
 {
-    float lineWidth = 1.5f; // define global line width
+    float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
     lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 
 
@@ -145,7 +145,7 @@ void Neuron::draw()
     {
         ofSetColor(ofColor::white);
         ofFill();
-        ofDrawCircle(signalPos, 4);
+        ofDrawCircle(signalPos, lineWidth * 1.1);   
     }
 
 
@@ -163,7 +163,7 @@ void Neuron::draw()
 
     // Draw the center molecule
     ofFill();
-    ofDrawCircle(neuronMolecules[0]->position, 3);
+    ofDrawCircle(neuronMolecules[0]->position, lineWidth * 0.85);   // the center molecule is drawn bigger than the others to make it visible and to emphasize its role as the "soma" of the Neuron
 
     // Draw the arms (dendrites)
     ofNoFill();
@@ -218,7 +218,7 @@ void Neuron::draw()
 //------------------------------------------------------------------
 void Neuron::drawConnections()
 {
-    float lineWidth = 1.5f; // define global line width
+    float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
     lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 
     ofSetColor(ofColor::darkSlateGrey);
@@ -370,7 +370,7 @@ void Neuron::signal()
             
             // set the signal duration for the audio signal, depending on the length of the signal path and the signal speed
             float arousalFactor = ofMap((arousal*arousal), 0.75, 1.0, 1.0, 0.85, true);
-            // float signalDuration = guiPtr->nronSignalSpeed * arousalFactor * signalFlow.size();
+            float signalDuration = guiPtr->neuronSignalSpeed * arousalFactor * signalFlow.size();
             // signalDuration >> audioModule->in_sigDuration();
 
             // impulse.trigger(1.0);   // trigger audio
@@ -396,8 +396,8 @@ void Neuron::signal()
         // ofLogNotice("fire signal!");
   
         float arousalFactor = ofMap((arousal*arousal), 0.75, 1.0, 1.0, 0.85, true);
-        // int signalSpeed = (int)round(guiPtr->nronSignalSpeed * arousalFactor); // in milliseconds the signal needs for crossing one segment
-        int signalSpeed = 10;
+        int signalSpeed = (int)round(guiPtr->neuronSignalSpeed * arousalFactor); // in milliseconds the signal needs for crossing one segment
+        // int signalSpeed = 10;
         int timeIdx = ofGetElapsedTimeMillis()-startTime;   // the time used as basis for the animation
         int segmentIdx = floor(timeIdx / signalSpeed);      // the index for the Molecules in the signal path is incremented in steps defined by the signal speed
 
@@ -441,21 +441,19 @@ void Neuron::getSynced()
 {
     for (int i = 0; i < systemPtr->pumpers.size(); i++) { 
         Pumper * other = systemPtr->pumpers[i];
-        // glm::vec2 newForce = other->position - position;
+        
         if (other->mature) {
             float distance = glm::length2(other->position - position);
             float threshold = guiPtr->neuronSyncDistance;
 
             if (distance < threshold*threshold) {
-                // if (other->audioModule->meter() < 0.01) {
-
-                //     sync();
-                //     sync();
-                //     sync();
-                //     sync();
-                //     sync();
-
-                // }
+                if (other->lfoFired) {
+                    sync();
+                    sync();
+                    sync();
+                    sync();
+                    sync();
+                }
             }
         }
     }

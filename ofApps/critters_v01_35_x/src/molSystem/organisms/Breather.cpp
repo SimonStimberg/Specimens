@@ -181,7 +181,7 @@ void Breather::update()
 //------------------------------------------------------------------
 void Breather::draw()
 {
-    float lineWidth = 1.5f; // define global line width
+    float lineWidth = guiPtr->tuneOrganismsLineWidth; // define global line width
     lineWidth = systemPtr->scaledLineWidth(lineWidth); // scale it according to the system scaling factor
 
 

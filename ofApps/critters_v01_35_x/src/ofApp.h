@@ -39,10 +39,11 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 
-		static const int 	numScreens = 1;			// IMPORTANT: defines the number of screens/windows
-		molecularSystem 	molSystem[numScreens];	// there is one molecular system for each screen/window - the size amount of instances is defined by numScreens
-		ofFbo 				vessel[numScreens];		// frame buffer object - the size amount of instances is defined by numScreens
+		// static const int 	numScreens = 1;			// IMPORTANT: defines the number of screens/windows
+		molecularSystem 	molSystem;	// there is one molecular system for each screen/window - the size amount of instances is defined by numScreens
+		// ofFbo 				vessel[numScreens];		// frame buffer object - the size amount of instances is defined by numScreens
 		glm::vec2 			screenResolution;
+		float 				screenSizeFactor;		// a resizing factor to account for different CRT screen sizes as the resolution stays the same for all screens, the depicted graphics would be perceived with different sizes
 
 		
 		// AUDIO UNITS		
@@ -71,7 +72,7 @@ class ofApp : public ofBaseApp{
 
 
 		// mask for calibrating the screen shape 
-		ofTexture mask[numScreens];
+		ofTexture mask;
 		bool showMask;
 
 		bool singleSpeciesMode = false;

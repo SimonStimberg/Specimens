@@ -16,7 +16,7 @@ class GuiApp {
 		using ParamValue = std::variant<int, float, bool, glm::vec2, ofColor, std::string>;
 
 		void setup(ofApp* app);
-		bool loadPreset(const std::string& filePath, int panel);
+		bool loadPreset(std::string filePath, int panel);
 
 		const std::unordered_map<std::string, ParamValue>& getValues() const { return values; }
 
@@ -30,6 +30,9 @@ class GuiApp {
 			}
 			return false;
 		}
+
+		string defaultSimulationPreset;
+		string defaultTubeCalibration;
 		
 
 
@@ -80,6 +83,20 @@ class GuiApp {
 		float tuneStructureLimitForce;
 		ofColor membraneColor;
 
+		// ORGANISMS SHAPE
+		float tuneOrganismsLineWidth;
+
+
+		// TUBE CALIBRATION
+		float tuneCanvasWidth;
+		float tuneCanvasHeight;
+		float tuneVerticalBow;
+		float tuneHorizontalBow;
+		float tuneEdges;
+		float tuneXpos;
+		float tuneYpos;
+		float tuneRotation;
+
 
 		// NEURON SHAPE
 		float tuneDendriteLength;
@@ -92,10 +109,15 @@ class GuiApp {
 		float cellFreqMultiplier;
 
 		int pumperSyncDistance;
+		int pumperImpulseAttack;
+		int pumperImpulseHold;
+		int pumperImpulseRelease;
+		float pumperImpulseAmount;
 
 		int neuronGrowSpeed;
 		int neuronSignalInterval;
 		int neuronSyncDistance;
+		int neuronSignalSpeed;
 
 		int intestineGrowInterval;
 		int intestineDigestionInterval;
