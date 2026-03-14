@@ -521,8 +521,10 @@ float Molecule::signedDistanceField( glm::vec2 p)
 	}
 	if(systemPtr->drop) {
 		p.x += 550.0;
+		// p.y += 550.0;
 		// p.x -= 1500.0;
 		glm::vec2 rad(500.0, systemPtr->worldSize.y*0.1);
+		// glm::vec2 rad(systemPtr->worldSize.x*0.47, 500.0);
 		sdf = opSmoothUnion( sdf, sdBox(p, rad), systemPtr->vesselEdges );
 	}
 

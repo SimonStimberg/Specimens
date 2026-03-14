@@ -74,11 +74,12 @@ class ofApp : public ofBaseApp{
 		// mask for calibrating the screen shape 
 		ofTexture mask;
 		bool showMask;
+		bool showOverlay = false;
 
 		bool singleSpeciesMode = false;
 
 
-		bool testBool = false;
+		bool testBool = true;
 
 
 		// kinect class that processes the incoming data from the Kinect for interaction

@@ -32,13 +32,14 @@ void Breather::set(int num, int x, int y)
     phaseCompensation = 0.0;
     cycleCheck = true;
     cycleCount = 0;
-    maxNumCycles = (int)ofRandom(55, 60);
+    // maxNumCycles = (int)ofRandom(55, 60);
+    maxNumCycles = (int)ofRandom(35, 70);
 
     sinePhase = 0.0f;
     sineFrequency = 0.25f; // Hz
 
-    // arousal = 0.0;
-    arousal = ofRandom(0.75, 0.1);
+    // arousal = 0.7;
+    arousal = ofRandom(0.65, 0.75);
     valence = 0.0;
     pressure = 1.0;
     
@@ -125,7 +126,7 @@ void Breather::update()
     grow();
     updatePosition();
     
-    if(mature) syncFrequency();
+    // if(mature) syncFrequency();
     inflate();
 
     for (unsigned int i = 0; i < springs.size(); i++)
@@ -143,9 +144,9 @@ void Breather::update()
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
-    float rate = arousal * arousal;   // use a squared curve for mapping
-    rate = ofMap(rate, 0.85, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
-    frequency = ofLerp(frequency, initFrequency, rate);     // interpolate between current frequency and initial untuned frequency
+    // float rate = arousal * arousal;   // use a squared curve for mapping
+    // rate = ofMap(rate, 0.85, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
+    // frequency = ofLerp(frequency, initFrequency, rate);     // interpolate between current frequency and initial untuned frequency
     
     // pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
@@ -164,7 +165,7 @@ void Breather::update()
     // detune.set(valence * 0.5);
 
 
-
+    // adjust the breath rate of the inflation movement according to the arousal level
     float breathRate = arousal;     // map the breathRate to the amount of arousal
     breathRate *= breathRate;     // then square it for squared mapping
 
@@ -173,7 +174,7 @@ void Breather::update()
     sineFrequency = breathRate; 
 
 
-    // if(mature && audioModule->cycleCount() >= maxNumCycles && systemPtr->mySpecies == NONE) die();
+    if(mature && cycleCount >= maxNumCycles && systemPtr->evolve) die();
 
 
 }
@@ -284,7 +285,7 @@ void Breather::draw()
 void Breather::grow()
 {
 
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {   // previously && arousal > 0.0
 
         Molecule *first = cellMolecules[0];
         Molecule *last  = cellMolecules[cellMolecules.size()-1];
@@ -529,9 +530,9 @@ void Breather::adaptArousal(float amount)
 {
     if(!systemPtr->flush) {
         arousal += (amount / (float)cellMolecules.size()) * 0.5;
-        arousal = ofClamp(arousal, 0.0, 1.0);
+        arousal = ofClamp(arousal, systemPtr->arousalMin, systemPtr->arousalMax);
     } else {
-        arousal = 1.0;
+        arousal = systemPtr->arousalMax;
     }
 
 }
@@ -592,6 +593,9 @@ float Breather::getVelocity() {
 //------------------------------------------------------------------
 float Breather::getSineOsc(float deltaTime) {
     sinePhase += TWO_PI * sineFrequency * deltaTime;
-    if (sinePhase > TWO_PI) sinePhase -= TWO_PI; // wrap phase
+    if (sinePhase > TWO_PI) {
+        sinePhase -= TWO_PI; // wrap phase
+        cycleCount++;
+    }
     return sin(sinePhase);
 }

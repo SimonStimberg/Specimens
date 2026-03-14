@@ -31,9 +31,10 @@ void Pumper::set(int num, int x, int y)
     phaseCompensation = 0.0;
     cycleCheck = true;
     cycleCount = 0;
-    maxNumCycles = (int)ofRandom(55, 60);
+    maxNumCycles = (int)ofRandom(35, 70);
 
-    arousal = 0.0;
+    // arousal = 0.0;
+    arousal = ofRandom(0.65, 0.75);
     valence = 0.0;
 
     pressure = 1.0;
@@ -153,7 +154,7 @@ void Pumper::update()
         }
         updateImpulseEnvelope(dt);  // always tick — lets the current release decay to 0
     }
-    if (mature && lfoTriggerCount >= maxNumCycles && systemPtr->mySpecies == NONE) die();
+    if (mature && lfoTriggerCount >= maxNumCycles && systemPtr->evolve) die();
     
     // if arousal level falls below 0.1: stop beating
     // if(arousal < 0.1) {
@@ -163,9 +164,6 @@ void Pumper::update()
 
     // set the sound velocity according to the arousal 
     // setVelocity.set(ofMap(arousal, 0., 1., -9., 0.));   // dB non-linear mapping is used. also dim the sound only until -9 dB
-
-
-    // if(mature && audioModule->impulseCount() >= maxNumCycles && systemPtr->mySpecies == NONE) die();
    
 }
 
@@ -262,7 +260,7 @@ void Pumper::draw()
 void Pumper::grow()
 {
 
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {       //  && arousal > 0.0
 
         Molecule *first = cellMolecules[0];
         Molecule *last  = cellMolecules[cellMolecules.size()-1];
@@ -457,7 +455,7 @@ void Pumper::die()
             float x = cellCenter.x + ofRandom(-10.0, 10.0);
             float y = cellCenter.y + ofRandom(-10.0, 10.0);
             // systemPtr->addNeuron(x, y);
-            organismType species = (systemPtr->mySpecies != NONE) ? LIQUID : NEURON;
+            organismType species = (systemPtr->mySpecies != NONE) ? NEURON : NEURON;
             systemPtr->addOnNextFrame(species, x, y);
         }
     }
@@ -483,9 +481,7 @@ void Pumper::die()
 void Pumper::adaptArousal(float amount)
 {
     arousal += (amount / (float)cellMolecules.size()) * 0.5;
-    arousal = ofClamp(arousal, 0.0, 1.0);
-    // arousal = 1.0;
-
+    arousal = ofClamp(arousal, systemPtr->arousalMin, systemPtr->arousalMax);
 }
 
 //------------------------------------------------------------------
@@ -540,7 +536,8 @@ void Pumper::updateImpulseLFO(float dt) {
         lfoPhase -= 1.0f;
         lfoFired = true;
         lfoTriggerCount++;
-        fireImpulseEnvelope();  // see below
+        cycleCount++;
+        fireImpulseEnvelope();
     }
 }
 

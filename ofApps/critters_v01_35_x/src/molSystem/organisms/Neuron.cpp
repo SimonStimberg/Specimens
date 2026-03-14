@@ -24,13 +24,15 @@ void Neuron::set(int arms, int elements, int x, int y)
     mature = false;
     isDead = false;
     debugVal = 10000000;
-    arousal = 0.0;
+    // arousal = 0.0;
+    arousal = ofRandom(0.65, 0.75);
     arousalThreshold = ofRandom(0.1, 0.35);
     freqDivergence = ofRandom(-50., 50.);
 
     isSignaling = false;
     signalCounter = 0;
-    maxNumSignals = (int)ofRandom(50, 60);
+    // maxNumSignals = (int)ofRandom(50, 60);
+    maxNumSignals = (int)ofRandom(25, 45);
     nextSignal = ofGetElapsedTimeMillis();
 
 
@@ -119,15 +121,15 @@ void Neuron::update()
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
-    float rate = arousal * arousal;   // use a squared curve for mapping
-    rate = ofMap(rate, 0.75, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
-    float frequency = ofLerp(880, 880+freqDivergence, rate);     // interpolate between current frequency and initial untuned frequency
+    // float rate = arousal * arousal;   // use a squared curve for mapping
+    // rate = ofMap(rate, 0.75, 1., 0., 1., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
+    // float frequency = ofLerp(880, 880+freqDivergence, rate);     // interpolate between current frequency and initial untuned frequency
     
     // pdsp::f2p(frequency) >> audioModule->in_pitch();     // update frequency
 
 
     signal();
-    if(signalCounter >= maxNumSignals && systemPtr->mySpecies == NONE) die();
+    if(signalCounter >= maxNumSignals && systemPtr->evolve) die();
 
 }
 
@@ -237,7 +239,7 @@ void Neuron::grow()
     // here resources could be saved if a flag would notice that there is no more Dendrite to grow on
 
     // only grow if the time has come to
-    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature && arousal > 0.0) {
+    if ( ofGetElapsedTimeMillis() >= nextGrowth && !mature) {       //  && arousal > 0.0
 
         // choose a random dendrite to grow on
         int pick = floor(ofRandom(dendrites.size()));
@@ -509,7 +511,7 @@ void Neuron::die()
 void Neuron::adaptArousal(float amount)
 {
     arousal += (amount / (float)neuronMolecules.size()) * 0.5;
-    arousal = ofClamp(arousal, 0.0, 1.0);
+    arousal = ofClamp(arousal, systemPtr->arousalMin, systemPtr->arousalMax);
 }
 
 //------------------------------------------------------------------

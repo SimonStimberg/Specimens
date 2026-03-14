@@ -9,7 +9,7 @@ molecularSystem::molecularSystem() {
 
 
 //------------------------------------------------------------------
-void molecularSystem::setup(int width, int height, float scalingFactor, int species) {
+void molecularSystem::setup(int width, int height, float scalingFactor, organismType species) {
 
     // masterPtr = ptr;
 
@@ -17,13 +17,17 @@ void molecularSystem::setup(int width, int height, float scalingFactor, int spec
     worldSize.y = height;
     this->scalingFactor = scalingFactor;
 
-    mySpecies = (organismType)species;
+    mySpecies = (species > 0 && species <= 4) ? species : NONE;
+    evolve = (mySpecies == NONE) ? true : false;
 
     ofLogNotice("my Species type: " + ofToString(species));
 
     // ofLogNotice("width: " + ofToString(width));
     // ofLogNotice("height: " + ofToString(height));
 
+    arousalMin = 0.0;
+    arousalMax = 1.0;
+    
     flush = false;
     drop = false;
     flushTimestamp = 0;

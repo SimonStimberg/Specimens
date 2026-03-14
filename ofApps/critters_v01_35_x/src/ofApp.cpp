@@ -66,8 +66,13 @@ void ofApp::setup() {
     // initialize the Molecular System  
     // specify which organism types to spawn exclusively type 1-4 // 5 for all ("none")
     // int setSpecies = (singleSpeciesMode) ? i+1 : 5;
-    int setSpecies = 5;
-    molSystem.setup(vesselSize.x, vesselSize.y, scalingFactor, setSpecies);  
+    // int setSpecies = 5;
+    organismType singleSpecies = NONE;
+    molSystem.setup(vesselSize.x, vesselSize.y, scalingFactor, singleSpecies);  
+
+    // bool adaptArousal = true;
+    molSystem.clampArousal(0.7, 1.0);
+    // molSystem.evolveOrganisms(true);
 
     // molSystem[i].linkAudio( audioMaster.getSubMasterModule(i) );  
 
@@ -175,8 +180,8 @@ void ofApp::update() {
         // float angle = glm::radians(-90.0);
         // mousePos[0] = glm::rotate(mousePos[0], angle);
         if (testBool) {
-            mousePos[0].x = 0.0;
-            mousePos[0].y = 0.0;
+            mousePos[0].x = 10000.0;
+            mousePos[0].y = 10000.0;
         }
 
         // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
@@ -314,25 +319,30 @@ void ofApp::draw(){
     
     // draw status info
     #ifndef SHOW_ON_CRT
-        int numMolecules = 0;
-        int itrPts = 0;
-        // for (int i = 0; i < numScreens; i++) {
-        numMolecules += molSystem.allMolecules.size();
-        // itrPts += kinectToPoints.getTouchPoints(i).size();
 
-        maxBreathers = (molSystem.breathers.size() > maxBreathers) ? molSystem.breathers.size() : maxBreathers;
-        maxPumpers = (molSystem.pumpers.size() > maxPumpers) ? molSystem.pumpers.size() : maxPumpers;
-        maxNeurons = (molSystem.neurons.size() > maxNeurons) ? molSystem.neurons.size() : maxNeurons;
-        maxIntestines = (molSystem.intestines.size() > maxIntestines) ? molSystem.intestines.size() : maxIntestines;
-        // }
-        ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
-        ofPushMatrix();
-            string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
-            ofRotateDeg(-90);
-            ofSetColor(ofColor::white);
-            ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
-            // ofDrawBitmapString(infoTxt, 50, 50);
-        ofPopMatrix();
+        if(showOverlay) {
+
+
+            int numMolecules = 0;
+            int itrPts = 0;
+            // for (int i = 0; i < numScreens; i++) {
+            numMolecules += molSystem.allMolecules.size();
+            // itrPts += kinectToPoints.getTouchPoints(i).size();
+
+            maxBreathers = (molSystem.breathers.size() > maxBreathers) ? molSystem.breathers.size() : maxBreathers;
+            maxPumpers = (molSystem.pumpers.size() > maxPumpers) ? molSystem.pumpers.size() : maxPumpers;
+            maxNeurons = (molSystem.neurons.size() > maxNeurons) ? molSystem.neurons.size() : maxNeurons;
+            maxIntestines = (molSystem.intestines.size() > maxIntestines) ? molSystem.intestines.size() : maxIntestines;
+            // }
+            ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
+            ofPushMatrix();
+                string infoTxt = "fps: " + ofToString(ofGetFrameRate()) + "\nnum Molecules: " + ofToString(numMolecules) + "\nIntrusion Points: " + ofToString(itrPts) + "\n\nmax num Breathers: " + ofToString(maxBreathers) + "\nmax num Pumpers: " + ofToString(maxPumpers) + "\nmax num Neurons: " + ofToString(maxNeurons) + "\nmax num Intestines: " + ofToString(maxIntestines);
+                ofRotateDeg(-90);
+                ofSetColor(ofColor::white);
+                ofDrawBitmapString(infoTxt, -500, ofGetWidth()-600);
+                // ofDrawBitmapString(infoTxt, 50, 50);
+            ofPopMatrix();
+        }
     #endif
 
 
@@ -427,6 +437,10 @@ void ofApp::keyPressed(int key){
     // }
     if( key == ' ' ) {
         ofToggleFullscreen();
+    }
+
+    if( key == 'o' ) {
+        showOverlay = !showOverlay;
     }
 
     // if( key == 'c' && guiPtr->switchKinectCalibration ){

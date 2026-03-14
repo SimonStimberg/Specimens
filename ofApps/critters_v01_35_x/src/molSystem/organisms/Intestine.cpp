@@ -17,15 +17,18 @@ Intestine::Intestine(molecularSystem *system)
 void Intestine::set(int num, int x, int y)
 {
 
-    nextGrowth = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+    // nextGrowth = ofGetElapsedTimeMillis() + 2000 + (guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+    nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(2000, 5000));
     mature = false;
     isDead = false;
 
     isDigesting = false;
-    nextDigestion = ofGetElapsedTimeMillis() + 10000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
+    // nextDigestion = ofGetElapsedTimeMillis() + 10000 + (guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));
+    nextDigestion = ofGetElapsedTimeMillis() + (int)ofRandom(6000, 7000);
     digestionPos = glm::vec2(0, 0);
     // maxElements = 140;
     maxElements = 70;
+    arousal = ofRandom(0.65, 0.75);
 
     freqDivergence = ofRandom(20.);
 
@@ -134,8 +137,8 @@ void Intestine::update()
 
 
     // if very aroused, mess up syncing by detuning the frequency towards its initial untuned value
-    float rate = arousal * arousal;   // use a squared curve for mapping
-    rate = ofMap(rate, 0.75, 1., 0., 15., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
+    // float rate = arousal * arousal;   // use a squared curve for mapping
+    // rate = ofMap(rate, 0.75, 1., 0., 15., true);     // the detune amount depends on the arousal level. detune above 0.85 accordingly
     // rate >> audioModule->in_cutoff();
 
 
@@ -310,10 +313,11 @@ void Intestine::grow()
 
 
         nextGrowth = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineGrowInterval) + (int)(ofRandom(guiPtr->intestineGrowInterval*0.5));
+        // nextGrowth = ofGetElapsedTimeMillis() + (int)(ofRandom(100, 600));
 
     }
 
-    if (intestineMolecules.size() >= 20) mature = true;     // from a certain length its mature to start digestion
+    if (intestineMolecules.size() >= 10) mature = true;     // from a certain length its mature to start digestion
 
 }
 
@@ -378,7 +382,7 @@ void Intestine::digest()
     if ( ofGetElapsedTimeMillis() >= nextDigestion && mature && !isDigesting && arousal > 0.3 && !systemPtr->doNotDigest) {
 
         isDigesting = true;
-        systemPtr->doNotDigest = true;
+        // systemPtr->doNotDigest = true;
         startTime = ofGetElapsedTimeMillis();
         // soundCtrl.trigger(1.0);
   
@@ -443,10 +447,10 @@ void Intestine::digest()
         } else {    // if we have reached the end of the Intestine, stop the digestion
 
             isDigesting = false;
-            systemPtr->doNotDigest = false;
+            // systemPtr->doNotDigest = false;
             nextDigestion = ofGetElapsedTimeMillis() + (int)(guiPtr->intestineDigestionInterval) + (int)(ofRandom(guiPtr->intestineDigestionInterval*0.5));    // choose the next signal timestamp 
 
-            if(systemPtr->mySpecies == NONE) {
+            if(systemPtr->evolve) {
                 if( floor( ofRandom(2)) == 0) {
                     // systemPtr->addBreather(digestionPos.x, digestionPos.y);
                     systemPtr->addOnNextFrame(BREATHER, digestionPos.x, digestionPos.y);
@@ -592,7 +596,7 @@ float Intestine::minimumDistance2(glm::vec2 v, glm::vec2 w, glm::vec2 p) {
 void Intestine::adaptArousal(float amount)
 {
     arousal += (amount / (float)intestineMolecules.size()) * 0.25;
-    arousal = ofClamp(arousal, 0.0, 1.0);
+    arousal = ofClamp(arousal, systemPtr->arousalMin, systemPtr->arousalMax);
 }
 
 //------------------------------------------------------------------

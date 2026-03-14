@@ -24,7 +24,7 @@ class molecularSystem{
         
 
 		molecularSystem();
-        void setup(int width, int height, float scalingFactor, int species);
+        void setup(int width, int height, float scalingFactor, organismType species);
         // void linkAudio(audioModule::SubMaster & subMasterModule) { audioLink = &subMasterModule; }
         void update();
         void draw();
@@ -39,6 +39,8 @@ class molecularSystem{
         vector <int> getCellSizes();
         float getSystemPressure();
         void cleanUp();
+        void clampArousal(float min, float max) { arousalMin = min; arousalMax = max; }
+        void evolveOrganisms(bool bEvolve) { evolve = bEvolve; }
 
         void addLiquid(float x, float y);
         void addBreather(float x, float y);
@@ -101,7 +103,9 @@ class molecularSystem{
         int collapseThreshold;
 
         bool freshlySpawned;
-
+        bool evolve;
+        float arousalMin;
+        float arousalMax;
 
 
         // audio master bus containing the stems for each organism type
