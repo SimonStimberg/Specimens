@@ -110,6 +110,9 @@ void ofApp::setup() {
     setTVmask();
     showMask = false;
 
+    oscReceiver.setup(OSC_PORT);
+    ofLogNotice("OSC receiver listening on port " + ofToString(OSC_PORT));
+
     // kinectToPoints.setup(screenSizeFactor);
 
 
@@ -155,8 +158,8 @@ void ofApp::update() {
     #else
 
         // USE THIS FOR MOUSE INTERACTION   
-        vector <glm::vec2> mousePos;
-        mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
+        // vector <glm::vec2> mousePos;
+        // mousePos.assign(1, glm::vec2(ofGetMouseX() - ofGetWidth() * 0.5, ofGetMouseY() - ofGetHeight() * 0.5) );
 
     #endif
 
@@ -174,19 +177,19 @@ void ofApp::update() {
 
         // set mouse position as intrusion points for interaction
         // float scalingFactor = vessel[i].getWidth() / screenResolution.x;
-        mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 );
-        mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 );
+        // mousePos[0].x = (ofGetMouseX() - screenResolution.x * 0.5 );
+        // mousePos[0].y = (ofGetMouseY() - screenResolution.y * 0.5 );
         
-        // float angle = glm::radians(-90.0);
-        // mousePos[0] = glm::rotate(mousePos[0], angle);
-        if (testBool) {
-            mousePos[0].x = 10000.0;
-            mousePos[0].y = 10000.0;
-        }
+        // // float angle = glm::radians(-90.0);
+        // // mousePos[0] = glm::rotate(mousePos[0], angle);
+        // if (testBool) {
+        //     mousePos[0].x = 10000.0;
+        //     mousePos[0].y = 10000.0;
+        // }
 
-        // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
+        // // ofLogNotice("Mouse Pos: " + ofToString(mousePos[0]));
         
-        molSystem.setIntrusionPoints(mousePos);
+        // molSystem.setIntrusionPoints(mousePos);
 
     #endif
 
@@ -195,8 +198,36 @@ void ofApp::update() {
     //     if(check != glm::vec2(0, 0) && !molSystem[i].flush) molSystem[i].addControlledRandom(check.x, check.y);
     // }
     
-    molSystem.update();
+    
 
+
+    // --- OSC: receive intrusion points from master computer ---
+    // Message address: /intrusion   args: [float x0, float y0, float x1, float y1, ...]
+    while (oscReceiver.hasWaitingMessages()) {
+        ofxOscMessage msg;
+        oscReceiver.getNextMessage(msg);
+        if (msg.getAddress() == "/intrusion") {
+            oscIntrusionPoints.clear();
+            int numArgs = msg.getNumArgs();
+            for (int i = 0; i + 1 < numArgs; i += 2) {
+                oscIntrusionPoints.push_back(
+                    glm::vec2(msg.getArgAsFloat(i), msg.getArgAsFloat(i + 1))
+                );
+            }
+            ofLogNotice("Received OSC intrusion points: " + ofToString(oscIntrusionPoints));
+            lastOscTime = ofGetElapsedTimeMillis();
+        }
+    }
+    // Override intrusion points with fresh OSC data when available
+    if (!oscIntrusionPoints.empty() &&
+        ofGetElapsedTimeMillis() < lastOscTime + OSC_TIMEOUT_MS) {
+        molSystem.setIntrusionPointsNormalized(oscIntrusionPoints);
+    }
+
+
+
+
+    molSystem.update();
 
     // draw the Molecular System to the frame buffer
     // vessel[i].begin();

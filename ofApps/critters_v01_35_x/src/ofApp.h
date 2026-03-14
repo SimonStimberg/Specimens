@@ -2,8 +2,8 @@
 
 #include "ofMain.h"
 // #include "ofxGui.h"
-// #include "ofxPDSP.h"
 #include "GuiApp.h"
+#include "ofxOsc.h"
 
 #include "molSystem/molecularSystem.h"
 // #include "synth/synthFX.h"
@@ -90,6 +90,14 @@ class ofApp : public ofBaseApp{
 		bool mouseDown = false;
 		int mouseDownTime = 0;
 		int mouseDownButton;
+
+
+		// OSC receiver for intrusion points from master computer
+		static constexpr int OSC_PORT = 9000;
+		static constexpr int OSC_TIMEOUT_MS = 500;  // fall back to mouse if no data for this long
+		ofxOscReceiver      oscReceiver;
+		vector<glm::vec2>   oscIntrusionPoints;
+		uint64_t            lastOscTime = 0;
 
 
 		int maxBreathers = 0;

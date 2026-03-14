@@ -1,0 +1,16 @@
+#include "ofMain.h"
+#include "ofApp.h"
+
+//========================================================================
+int main(){
+
+	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
+	ofGLWindowSettings settings;
+	settings.setSize(720, 576);  // match Pi screenResolution so mouse coords map 1:1
+	settings.windowMode = OF_WINDOW;
+
+	auto window = ofCreateWindow(settings);
+
+	ofRunApp(window, std::make_shared<ofApp>());
+	ofRunMainLoop();
+}

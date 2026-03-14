@@ -3,8 +3,6 @@
 #include "Molecule.h"
 #include "Spring.h"
 #include "organisms.h"
-// #include "ofxPDSP.h"
-// #include "../synth/audioMaster.h"
 
 
 
@@ -58,6 +56,14 @@ class molecularSystem{
         
         void setVesselShape();
         void setIntrusionPoints(vector <glm::vec2> pts) { intrusionPoints.clear(); intrusionPoints = pts; }
+        // normalized coords in range [-0.5, +0.5] are converted to world space
+        void setIntrusionPointsNormalized(const vector<glm::vec2>& pts) {
+            intrusionPoints.resize(pts.size());
+            for (size_t i = 0; i < pts.size(); ++i) {
+                intrusionPoints[i] = glm::vec2(pts[i].x * worldSize.x,
+                                               pts[i].y * worldSize.y);
+            }
+        }
         void reset(bool random);
 
 

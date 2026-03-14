@@ -3,8 +3,6 @@
 #include "molecularSystem.h"
 #include "utils.h"
 
-// #include "ofxPDSP.h"
-// #include "../../synth/audioModules.h"
 
 
 // THIS HEADER FILE CONTAINS ALL CLASSES OF ORGANISMS
